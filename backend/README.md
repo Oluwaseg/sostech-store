@@ -14,14 +14,14 @@ The system is API-first and frontend-agnostic, making it suitable for web, mobil
 
 ### Authentication & Roles
 
-* User registration and login
-* JWT-based authentication
-* Password reset and email flows
-* Role-based access control:
+- User registration and login
+- JWT-based authentication
+- Password reset and email flows
+- Role-based access control:
 
-  * User
-  * Admin
-  * Moderator
+  - User
+  - Admin
+  - Moderator
 
 Admins and moderators can manage products, orders, chats, referrals, and shipping rules.
 
@@ -29,20 +29,20 @@ Admins and moderators can manage products, orders, chats, referrals, and shippin
 
 ### Product & Catalog Management
 
-* Products, categories, and subcategories
-* Search, filtering, and pagination
-* Stock tracking (variant-ready design)
-* Admin-managed catalog updates
+- Products, categories, and subcategories
+- Search, filtering, and pagination
+- Stock tracking (variant-ready design)
+- Admin-managed catalog updates
 
 ---
 
 ### Cart & Advanced Checkout
 
-* Add/remove/update cart items
-* Server-side total calculation
-* Coupon-aware checkout flow
-* Shipping-aware checkout logic
-* Validation before order creation
+- Add/remove/update cart items
+- Server-side total calculation
+- Coupon-aware checkout flow
+- Shipping-aware checkout logic
+- Validation before order creation
 
 Checkout is treated as a **decision engine**, not just arithmetic.
 
@@ -52,14 +52,14 @@ Checkout is treated as a **decision engine**, not just arithmetic.
 
 Orders follow a realistic lifecycle:
 
-* pending
-* payment_pending
-* paid
-* processing
-* shipped
-* delivered
-* cancelled
-* refunded
+- pending
+- payment_pending
+- paid
+- processing
+- shipped
+- delivered
+- cancelled
+- refunded
 
 The architecture supports future extensions such as partial shipments and partial refunds.
 
@@ -69,30 +69,30 @@ The architecture supports future extensions such as partial shipments and partia
 
 SOSTECH Store includes a **milestone-driven referral system**:
 
-* Each user gets a referral code
-* Invited users are tracked
-* Referral milestones trigger rewards
+- Each user gets a referral code
+- Invited users are tracked
+- Referral milestones trigger rewards
 
 Example:
 
-* Invite 5 users → 30% off coupon (single-use)
-* Invite 10 users → 35% off coupon (single-use)
+- Invite 5 users → 30% off coupon (single-use)
+- Invite 10 users → 35% off coupon (single-use)
 
 Referral rewards:
 
-* Are coupon-based (no wallet system)
-* Are user-bound and non-transferable
-* Expire after a configurable period
+- Are coupon-based (no wallet system)
+- Are user-bound and non-transferable
+- Expire after a configurable period
 
 ---
 
 ### Coupon & Promotion Engine
 
-* Percentage-based discount coupons
-* Single-use enforcement
-* Expiration and usage tracking
-* Checkout validation rules
-* No coupon stacking
+- Percentage-based discount coupons
+- Single-use enforcement
+- Expiration and usage tracking
+- Checkout validation rules
+- No coupon stacking
 
 Coupons are generated automatically by referral milestones or admin rules.
 
@@ -102,10 +102,10 @@ Coupons are generated automatically by referral milestones or admin rules.
 
 Shipping costs are calculated dynamically at checkout based on configurable rules:
 
-* Location-based zones
-* Weight-based pricing
-* Flat-rate and free-shipping thresholds
-* Multiple shipping rule strategies
+- Location-based zones
+- Weight-based pricing
+- Flat-rate and free-shipping thresholds
+- Multiple shipping rule strategies
 
 Admins can manage shipping rules without changing application code.
 
@@ -113,10 +113,10 @@ Admins can manage shipping rules without changing application code.
 
 ### Real-Time Chat & Support
 
-* Socket-based real-time messaging
-* User ↔ Admin / Moderator communication
-* Support-style conversations
-* Optional order-linked chats
+- Socket-based real-time messaging
+- User ↔ Admin / Moderator communication
+- Support-style conversations
+- Optional order-linked chats
 
 This enables live customer support directly within the platform.
 
@@ -124,10 +124,10 @@ This enables live customer support directly within the platform.
 
 ### Notifications & Emails
 
-* Order confirmation emails
-* Order status updates
-* Password reset emails
-* Referral reward notifications
+- Order confirmation emails
+- Order status updates
+- Password reset emails
+- Referral reward notifications
 
 Notifications are triggered via internal domain events for clean separation of concerns.
 
@@ -135,12 +135,12 @@ Notifications are triggered via internal domain events for clean separation of c
 
 ## Architecture Highlights
 
-* **Headless API-first design**
-* Modular domain-based structure (auth, orders, shipping, promotions, etc.)
-* Event-driven internal workflows (e.g. OrderCreated, CouponIssued)
-* Centralized error handling and validation
-* Config-driven behavior for shipping and promotions
-* Tenant-ready data modeling (single-store by default)
+- **Headless API-first design**
+- Modular domain-based structure (auth, orders, shipping, promotions, etc.)
+- Event-driven internal workflows (e.g. OrderCreated, CouponIssued)
+- Centralized error handling and validation
+- Config-driven behavior for shipping and promotions
+- Tenant-ready data modeling (single-store by default)
 
 ---
 
@@ -171,15 +171,15 @@ User registers or logs in → browses products → adds items to cart → applie
 
 **This project is:**
 
-* An advanced, extensible e-commerce backend
-* Designed with real production concerns in mind
-* Focused on depth, not feature bloat
+- An advanced, extensible e-commerce backend
+- Designed with real production concerns in mind
+- Focused on depth, not feature bloat
 
 **This project is not:**
 
-* A simple CRUD demo
-* A full multi-tenant SaaS (yet)
-* A wallet or accounting system
+- A simple CRUD demo
+- A full multi-tenant SaaS (yet)
+- A wallet or accounting system
 
 ---
 
@@ -192,4 +192,3 @@ SOSTECH Store reflects the SOSTECH brand philosophy: building systems that are p
 ## Status
 
 🚧 Active development – features are being implemented incrementally with a focus on correctness, clarity, and extensibility.
-

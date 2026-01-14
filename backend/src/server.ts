@@ -14,14 +14,12 @@ const io = new SocketIOServer(server, {
   cors: { origin: '*' },
 });
 
-// attach io to the express app so endpoints can use it (see /api/broadcast)
 app.set('io', io);
 
 io.on('connection', (socket: Socket) => {
   logger.info(`socket connected: ${socket.id}`);
 
   socket.on('chat message', (msg: string) => {
-    // broadcast received chat messages to all clients
     io.emit('chat message', msg);
   });
 

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import http from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
+import { connectDB } from './configs/db';
 import app from './index';
 import logger from './libs/logger';
 
@@ -28,8 +29,23 @@ io.on('connection', (socket: Socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  logger.info(`Server listening on port ${PORT}`);
-});
+// Connect to MongoDB and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+    server.listen(PORT, () => {
+      logger.info(`Server listening on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error(
+      `Failed to start server: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default server;

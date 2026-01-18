@@ -8,7 +8,9 @@
     "dev:nodemon": "nodemon --watch 'src' --ext ts --exec ts-node src/server.ts",
     "build": "tsc -p .",
     "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:accounts": "ts-node scripts/seed-accounts.ts",
+    "drop:db": "ts-node scripts/drop-db.ts"
   },
   "keywords": [],
   "author": "",

@@ -7,7 +7,7 @@ export interface IUser extends Document {
   // Core
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: 'user' | 'admin' | 'moderator';
 
   // Profile
@@ -29,6 +29,11 @@ export interface IUser extends Document {
 
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
+
+  googleId?: string;
+
+  // Referral
+  referralCode?: string;
 
   // Account state
   isActive: boolean;
@@ -54,7 +59,7 @@ const userSchema = new Schema<IUser>(
 
     password: {
       type: String,
-      required: true,
+      required: false, // Not required for OAuth users
       minlength: 6,
       select: false,
     },
@@ -96,6 +101,21 @@ const userSchema = new Schema<IUser>(
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+      uppercase: true,
+    },
+
     isActive: {
       type: Boolean,
       default: true,
@@ -113,8 +133,8 @@ const userSchema = new Schema<IUser>(
 ========================= */
 
 userSchema.pre<IUser>('save', async function () {
-  // Hash password
-  if (this.isModified('password')) {
+  // Hash password (only if password exists and is modified)
+  if (this.isModified('password') && this.password) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   }
@@ -127,6 +147,12 @@ userSchema.pre<IUser>('save', async function () {
       .replace(/[^a-z0-9]/g, '');
 
     this.username = `${base}-${this._id.toString().slice(-4)}`;
+  }
+
+  // Generate referral code (collision-safe)
+  if (!this.referralCode) {
+    const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+    this.referralCode = `${this.username.toUpperCase()}-${randomStr}`;
   }
 });
 

@@ -16,4 +16,9 @@ declare module 'express-serve-static-core' {
       errors?: any
     ) => Response;
   }
+
+  interface Request {
+    // populated by auth middleware when a valid token is provided
+    user?: any;
+  }
 }

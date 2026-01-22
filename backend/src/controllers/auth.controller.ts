@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import authService from '../services/auth.service';
+import { generateToken, TokenPayload } from '../utils/jwt';
 
 class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
@@ -23,7 +24,32 @@ class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await authService.login(req.body);
-      return (res as any).success(result, 'Login successful');
+
+      // Set token in secure HTTP-only cookie
+      const cookieName = process.env.JWT_COOKIE_NAME || 'token';
+      const cookieDays = parseInt(
+        process.env.JWT_COOKIE_EXPIRES_DAYS || '7',
+        10
+      );
+      const isProd = process.env.NODE_ENV === 'production';
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? ('none' as const) : ('lax' as const),
+        maxAge: cookieDays * 24 * 60 * 60 * 1000, // days -> ms
+      };
+
+      // Create token from returned user and set cookie
+      const tokenPayload: TokenPayload = {
+        userId: result.user._id,
+        email: result.user.email,
+        role: result.user.role,
+      };
+      const token = generateToken(tokenPayload);
+      res.cookie(cookieName, token, cookieOptions);
+
+      // Return user object only (token is in cookie)
+      return (res as any).success({ user: result.user }, 'Login successful');
     } catch (error: any) {
       return (res as any).error(
         error.message || 'Login failed',
@@ -87,15 +113,37 @@ class AuthController {
       }
 
       const result = await authService.handleGoogleOAuth(user);
-      
-      // Redirect to frontend with token
+      // Set token in secure HTTP-only cookie then redirect to frontend
+      const cookieName = process.env.JWT_COOKIE_NAME || 'token';
+      const cookieDays = parseInt(
+        process.env.JWT_COOKIE_EXPIRES_DAYS || '7',
+        10
+      );
+      const isProd = process.env.NODE_ENV === 'production';
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? ('none' as const) : ('lax' as const),
+        maxAge: cookieDays * 24 * 60 * 60 * 1000, // days -> ms
+      };
+
+      // Create token from returned user and set cookie
+      const tokenPayload: TokenPayload = {
+        userId: result.user._id,
+        email: result.user.email,
+        role: result.user.role,
+      };
+      const token = generateToken(tokenPayload);
+      res.cookie(cookieName, token, cookieOptions);
+
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}`;
-      
+      const redirectUrl = `${frontendUrl}/auth/callback`;
       return res.redirect(redirectUrl);
     } catch (error: any) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      const errorUrl = `${frontendUrl}/auth/error?message=${encodeURIComponent(error.message || 'Authentication failed')}`;
+      const errorUrl = `${frontendUrl}/auth/error?message=${encodeURIComponent(
+        error.message || 'Authentication failed'
+      )}`;
       return res.redirect(errorUrl);
     }
   }

@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
-import { generateToken as generateJWT, TokenPayload } from '../utils/jwt';
 import { generateToken, hashToken } from '../utils/crypto';
 import emailService from './email.service';
 import referralService from './referral.service';
@@ -26,7 +25,6 @@ export interface AuthResult {
     username: string;
     isEmailVerified: boolean;
   };
-  token: string;
 }
 
 class AuthService {
@@ -77,14 +75,6 @@ class AuthService {
       }
     }
 
-    // Generate JWT token
-    const tokenPayload: TokenPayload = {
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-    const token = generateJWT(tokenPayload);
-
     return {
       user: {
         _id: user._id.toString(),
@@ -94,7 +84,6 @@ class AuthService {
         username: user.username,
         isEmailVerified: user.isEmailVerified,
       },
-      token,
     };
   }
 
@@ -127,14 +116,6 @@ class AuthService {
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate JWT token
-    const tokenPayload: TokenPayload = {
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-    const token = generateJWT(tokenPayload);
-
     return {
       user: {
         _id: user._id.toString(),
@@ -144,7 +125,6 @@ class AuthService {
         username: user.username,
         isEmailVerified: user.isEmailVerified,
       },
-      token,
     };
   }
 
@@ -222,14 +202,6 @@ class AuthService {
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate JWT token
-    const tokenPayload: TokenPayload = {
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-    const token = generateJWT(tokenPayload);
-
     return {
       user: {
         _id: user._id.toString(),
@@ -239,7 +211,6 @@ class AuthService {
         username: user.username,
         isEmailVerified: user.isEmailVerified,
       },
-      token,
     };
   }
 }

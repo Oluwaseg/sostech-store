@@ -1,0 +1,41 @@
+export const ApiRoutes = {
+  auth: {
+    login: '/auth/login',
+    register: '/auth/register',
+    logout: '/auth/logout',
+    forgetPassword: '/auth/forget-password',
+    verifyEmail: '/auth/verify-email',
+    resetPassword: '/auth/reset-password',
+    googleAuth: '/auth/google',
+  },
+  categories: {
+    list: '/categories',
+    details: (slug: string) => `/categories/slug/${slug}`,
+    byId: (id: string) => `/categories/${id}`,
+  },
+  subcategories: {
+    list: '/subcategories',
+    details: (slug: string) => `/subcategories/slug/${slug}`,
+    byId: (id: string) => `/subcategories/${id}`,
+  },
+  products: {
+    list: '/products',
+    details: (slug: string) => `/products/slug/${slug}`,
+    bySku: (sku: string) => `/products/sku/${sku}`,
+    byId: (id: string) => `/products/${id}`,
+  },
+  cart: {
+    list: '/cart',
+    addItem: '/cart',
+    update: '/cart',
+    removeItem: (itemId: string) => `/cart/item/${itemId}`,
+    clear: '/cart/clear',
+  },
+  checkout: {
+    createSession: '/checkout/create-session',
+  },
+  orders: {
+    list: '/orders',
+    details: (orderId: string) => `/orders/${orderId}`,
+  },
+};

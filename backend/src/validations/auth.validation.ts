@@ -14,9 +14,15 @@ export const registerSchema = Joi.object({
     'string.empty': 'Password is required',
     'string.min': 'Password must be at least 6 characters',
   }),
-  referralCode: Joi.string().optional().uppercase().trim().messages({
-    'string.base': 'Referral code must be a string',
-  }),
+  referralCode: Joi.string()
+    .trim()
+    .uppercase()
+    .allow('')
+    .empty('')
+    .optional()
+    .messages({
+      'string.base': 'Referral code must be a string',
+    }),
 });
 
 export const loginSchema = Joi.object({

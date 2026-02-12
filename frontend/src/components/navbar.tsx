@@ -1,5 +1,6 @@
 'use client';
 
+import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/cart-context';
 import { useWishlist } from '@/contexts/wishlist-context';
@@ -12,6 +13,7 @@ import {
   ShoppingCart,
   X,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -78,16 +80,16 @@ export function Navbar() {
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between items-center h-20'>
             {/* Logo */}
-            <Link
-              href='/'
-              className='flex items-center space-x-3 group flex-shrink-0'
-            >
-              <div className='w-11 h-11 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300'>
-                <span className='text-primary-foreground font-black text-lg'>
-                  S
-                </span>
-              </div>
-              <span className='font-black text-lg text-primary hidden sm:inline tracking-tight'>
+            <Link href='/' className='flex items-center group flex-shrink-0'>
+              <Image
+                src={logo}
+                alt='SOS Store Logo'
+                width={40}
+                height={30}
+                priority
+                className='object-contain transition-transform duration-300 group-hover:scale-105'
+              />
+              <span className='ml-2 font-black text-lg text-primary tracking-tight'>
                 SOS
               </span>
             </Link>

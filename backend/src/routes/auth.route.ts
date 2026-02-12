@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import passport from '../configs/passport';
 import authController from '../controllers/auth.controller';
+import authMiddleware from '../middlewares/auth.middleware';
 import { validate } from '../middlewares/validation';
 import {
-  registerSchema,
-  loginSchema,
   forgetPasswordSchema,
-  verifyEmailSchema,
+  loginSchema,
+  registerSchema,
   resetPasswordSchema,
+  verifyEmailSchema,
 } from '../validations/auth.validation';
 
 const router = Router();
@@ -30,6 +31,16 @@ router.post(
   authController.resetPassword
 );
 
+// Resend email verification
+router.post(
+  '/resend-verification',
+  validate(forgetPasswordSchema),
+  authController.resendVerification
+);
+
+// Current authenticated user
+router.get('/me', authMiddleware, authController.getCurrentUser);
+
 // Google OAuth routes
 router.get(
   '/google',
@@ -38,13 +49,18 @@ router.get(
 
 router.get(
   '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/api/auth/google/error' }),
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: '/api/auth/google/error',
+  }),
   authController.googleCallback
 );
 
 router.get('/google/error', (_req, res) => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  res.redirect(`${frontendUrl}/auth/error?message=Google authentication failed`);
+  res.redirect(
+    `${frontendUrl}/auth/error?message=Google authentication failed`
+  );
 });
 
 export default router;

@@ -101,6 +101,47 @@ class AuthController {
     }
   }
 
+  async resendVerification(req: Request, res: Response, next: NextFunction) {
+    try {
+      await authService.resendVerification(req.body.email);
+      return (res as any).success(
+        null,
+        'If an account exists with this email, a verification email has been sent.'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to resend verification email',
+        'RESEND_VERIFICATION_ERROR',
+        500
+      );
+    }
+  }
+
+  async getCurrentUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const payload = (req as any).user;
+      if (!payload || !payload.userId) {
+        return (res as any).error(
+          'Authentication required',
+          'AUTH_REQUIRED',
+          401
+        );
+      }
+
+      const result = await authService.getCurrentUser(payload.userId);
+      return (res as any).success(
+        { user: result.user },
+        'Current user fetched'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to fetch current user',
+        'GET_CURRENT_USER_ERROR',
+        400
+      );
+    }
+  }
+
   async googleCallback(req: Request, res: Response, next: NextFunction) {
     try {
       const user = (req as any).user; // Set by passport

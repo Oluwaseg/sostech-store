@@ -13,7 +13,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 declare global {
   interface Window {
@@ -67,13 +66,10 @@ export default function LoginPage() {
     if (response.credential) {
       googleAuth(response.credential, {
         onSuccess: () => {
-          toast.success('Google login successful!');
-          router.push('/dashboard');
+          setTimeout(() => router.push('/dashboard'), 2500);
         },
         onError: (error: any) => {
-          toast.error(
-            error.message || 'Google login failed. Please try again.'
-          );
+          console.error('Google login error:', error);
         },
       });
     }
@@ -82,11 +78,13 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormData) => {
     login(data, {
       onSuccess: () => {
-        toast.success('Login successful!');
-        router.push('/dashboard');
+        setTimeout(() => router.push('/dashboard'), 2500);
       },
       onError: (error: any) => {
-        toast.error(error.message || 'Login failed. Please try again.');
+        console.error(
+          'Login error:',
+          error.message || 'Login failed. Please try again.'
+        );
       },
     });
   };

@@ -1,29 +1,35 @@
+import type { ApiResponse } from '@/types/api-response';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3025/api';
 
-const axiosInstance: AxiosInstance = axios.create({
+const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable cookies
 });
 
-// Response interceptor for error handling
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+api.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error: AxiosError<ApiResponse>) => {
+    if (error.response?.data) {
+      return Promise.reject(error.response.data);
     }
-    return Promise.reject(error);
+
+    return Promise.reject({
+      status: 'error',
+      statusCode: error.response?.status || 500,
+      message: error.message || 'Network error',
+      code: null,
+      errors: null,
+    });
   }
 );
 
-export default axiosInstance;
+export default api;

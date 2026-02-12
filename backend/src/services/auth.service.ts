@@ -101,6 +101,11 @@ class AuthService {
       throw new Error('Account is deactivated');
     }
 
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      throw new Error('Please verify your email before logging in');
+    }
+
     // Check if user is OAuth-only (no password)
     if (!user.password) {
       throw new Error('Please sign in with Google');
@@ -195,6 +200,56 @@ class AuthService {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
+  }
+
+  async resendVerification(email: string): Promise<void> {
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Do not reveal existence of user; simply return
+      return;
+    }
+
+    if (user.isEmailVerified) {
+      throw new Error('Email is already verified');
+    }
+
+    // Generate a new verification token and expiry (24 hours)
+    const emailVerificationToken = generateToken();
+    const emailVerificationExpire = new Date();
+    emailVerificationExpire.setHours(emailVerificationExpire.getHours() + 24);
+
+    user.emailVerificationToken = hashToken(emailVerificationToken);
+    user.emailVerificationExpire = emailVerificationExpire;
+    await user.save();
+
+    // Send verification email (log failures but don't crash)
+    try {
+      await emailService.sendVerificationEmail(
+        user.email,
+        user.name,
+        emailVerificationToken
+      );
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+    }
+  }
+
+  async getCurrentUser(userId: string): Promise<AuthResult> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      user: {
+        _id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        username: user.username,
+        isEmailVerified: user.isEmailVerified,
+      },
+    };
   }
 
   async handleGoogleOAuth(user: any): Promise<AuthResult> {

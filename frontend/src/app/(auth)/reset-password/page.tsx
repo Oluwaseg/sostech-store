@@ -47,13 +47,12 @@ export default function ResetPasswordPage() {
       },
       {
         onSuccess: () => {
-          toast.success('Password reset successfully!');
-          router.push('/login');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
         },
         onError: (error: any) => {
-          toast.error(
-            error.message || 'Failed to reset password. Please try again.'
-          );
+          console.error('Reset password error:', error);
         },
       }
     );

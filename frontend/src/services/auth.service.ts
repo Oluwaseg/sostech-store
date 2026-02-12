@@ -1,109 +1,98 @@
-import { ApiRoutes } from '@/api/index';
+import { ApiRoutes } from '@/api';
 import axiosInstance from '@/lib/axios';
+import { unwrap } from '@/lib/unwrap';
 import { ApiResponse } from '@/types/api-response';
+import {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+  ResendVerificationRequest,
+  ResetPasswordRequest,
+  VerifyEmailRequest,
+} from '@/types/auth';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+// ---------------- LOGIN ----------------
+export const login = async (data: LoginRequest): Promise<LoginResponse> => {
+  const res = await axiosInstance.post<ApiResponse<LoginResponse>>(
+    ApiRoutes.auth.login,
+    data
+  );
+  return unwrap(res.data);
+};
 
-export interface LoginResponse {
-  _id: string;
-  email: string;
-  name: string;
-  token: string;
-}
+// ---------------- REGISTER ----------------
+export const register = async (
+  data: RegisterRequest
+): Promise<RegisterResponse> => {
+  const res = await axiosInstance.post<ApiResponse<RegisterResponse>>(
+    ApiRoutes.auth.register,
+    data
+  );
+  return unwrap(res.data);
+};
 
-export interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  referralCode?: string;
-}
+// ---------------- LOGOUT ----------------
+export const logout = async (): Promise<null> => {
+  const res = await axiosInstance.post<ApiResponse<null>>(
+    ApiRoutes.auth.logout
+  );
+  return unwrap(res.data);
+};
 
-export interface RegisterResponse {
-  _id: string;
-  email: string;
-  name: string;
-  token: string;
-}
+// ---------------- FORGOT PASSWORD ----------------
+export const forgetPassword = async (email: string): Promise<null> => {
+  const res = await axiosInstance.post<ApiResponse<null>>(
+    ApiRoutes.auth.forgetPassword,
+    { email }
+  );
+  return unwrap(res.data);
+};
 
-export interface VerifyEmailRequest {
-  token: string;
-}
+// ---------------- VERIFY EMAIL ----------------
+export const verifyEmail = async (data: VerifyEmailRequest): Promise<null> => {
+  const res = await axiosInstance.post<ApiResponse<null>>(
+    ApiRoutes.auth.verifyEmail,
+    data
+  );
+  return unwrap(res.data);
+};
 
-export interface ResetPasswordRequest {
-  token: string;
-  password: string;
-}
+// ---------------- RESET PASSWORD ----------------
+export const resetPassword = async (
+  data: ResetPasswordRequest
+): Promise<null> => {
+  const res = await axiosInstance.post<ApiResponse<null>>(
+    ApiRoutes.auth.resetPassword,
+    data
+  );
+  return unwrap(res.data);
+};
 
-export class AuthService {
-  /**
-   * Login user with email and password
-   */
-  static async login(data: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.login, data);
-    return response.data;
-  }
+// ---------------- GOOGLE LOGIN ----------------
+export const googleAuth = async (token: string): Promise<LoginResponse> => {
+  const res = await axiosInstance.post<ApiResponse<LoginResponse>>(
+    ApiRoutes.auth.googleAuth,
+    { token }
+  );
+  return unwrap(res.data);
+};
 
-  /**
-   * Register new user
-   */
-  static async register(
-    data: RegisterRequest
-  ): Promise<ApiResponse<RegisterResponse>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.register, data);
-    return response.data;
-  }
+// ---------------- RESEND VERIFICATION EMAIL ----------------
+export const resendVerification = async (
+  data: ResendVerificationRequest
+): Promise<null> => {
+  const res = await axiosInstance.post<ApiResponse<null>>(
+    ApiRoutes.auth.resendVerification,
+    data
+  );
+  return unwrap(res.data);
+};
 
-  /**
-   * Logout user
-   */
-  static async logout(): Promise<ApiResponse<null>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.logout);
-    return response.data;
-  }
-
-  /**
-   * Request password reset
-   */
-  static async forgetPassword(email: string): Promise<ApiResponse<null>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.forgetPassword, {
-      email,
-    });
-    return response.data;
-  }
-
-  /**
-   * Verify email with code
-   */
-  static async verifyEmail(
-    data: VerifyEmailRequest
-  ): Promise<ApiResponse<null>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.verifyEmail, data);
-    return response.data;
-  }
-
-  /**
-   * Reset password with code and new password
-   */
-  static async resetPassword(
-    data: ResetPasswordRequest
-  ): Promise<ApiResponse<null>> {
-    const response = await axiosInstance.post(
-      ApiRoutes.auth.resetPassword,
-      data
-    );
-    return response.data;
-  }
-
-  /**
-   * Google OAuth login
-   */
-  static async googleAuth(token: string): Promise<ApiResponse<LoginResponse>> {
-    const response = await axiosInstance.post(ApiRoutes.auth.googleAuth, {
-      token,
-    });
-    return response.data;
-  }
-}
+// ---------------- GET CURRENT USER ----------------
+export const getCurrentUser = async (): Promise<LoginResponse> => {
+  const res = await axiosInstance.get<ApiResponse<LoginResponse>>(
+    ApiRoutes.auth.me
+  );
+  return unwrap(res.data);
+};

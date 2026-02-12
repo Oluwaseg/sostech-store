@@ -5,8 +5,10 @@ export const ApiRoutes = {
     logout: '/auth/logout',
     forgetPassword: '/auth/forget-password',
     verifyEmail: '/auth/verify-email',
+    resendVerification: '/auth/resend-verification',
     resetPassword: '/auth/reset-password',
     googleAuth: '/auth/google',
+    me: '/auth/me',
   },
   categories: {
     list: '/categories',

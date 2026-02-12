@@ -1,123 +1,149 @@
-'use client';
-
-import { handleApiError, unwrap } from '@/lib/unwrap';
 import {
-  AuthService,
+  forgetPassword,
+  getCurrentUser,
+  googleAuth,
+  login,
+  logout,
+  register,
+  resendVerification,
+  resetPassword,
+  verifyEmail,
+} from '@/services/auth.service';
+import {
   LoginRequest,
+  LoginResponse,
   RegisterRequest,
+  RegisterResponse,
+  ResendVerificationRequest,
   ResetPasswordRequest,
   VerifyEmailRequest,
-} from '@/services/auth.service';
+} from '@/types/auth';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
-/**
- * Hook for login mutation
- */
-export function useLogin() {
-  return useMutation({
-    mutationFn: async (data: LoginRequest) => {
-      const response = await AuthService.login(data);
-      const payload = unwrap(response);
-      // Token is stored in httpOnly cookie by backend
-      return payload;
+// ---------------- LOGIN ----------------
+export const useLogin = () => {
+  const router = useRouter();
+
+  return useMutation<LoginResponse, Error, LoginRequest>({
+    mutationFn: login,
+    onSuccess: () => {
+      toast.success('Login successful!');
+      router.push('/dashboard'); // or dynamically based on role
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Invalid credentials');
     },
   });
-}
+};
 
-/**
- * Hook for registration mutation
- */
-export function useRegister() {
-  return useMutation({
-    mutationFn: async (data: RegisterRequest) => {
-      const response = await AuthService.register(data);
-      const payload = unwrap(response);
-      // Token is stored in httpOnly cookie by backend
-      return payload;
+// ---------------- REGISTER ----------------
+export const useRegister = () => {
+  const router = useRouter();
+
+  return useMutation<RegisterResponse, Error, RegisterRequest>({
+    mutationFn: register,
+    onSuccess: () => {
+      toast.success('Registration successful!');
+      router.push('/login'); // maybe redirect to login or dashboard
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Registration failed');
     },
   });
-}
+};
 
-/**
- * Hook for logout mutation
- */
-export function useLogout() {
-  return useMutation({
-    mutationFn: async () => {
-      const response = await AuthService.logout();
-      unwrap(response);
-      // Token is cleared by backend
+// ---------------- LOGOUT ----------------
+export const useLogout = () => {
+  const router = useRouter();
+
+  return useMutation<null, Error>({
+    mutationFn: logout,
+    onSuccess: () => {
+      toast.success('Logged out successfully');
+      router.replace('/login');
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Logout failed');
     },
   });
-}
+};
 
-/**
- * Hook for forget password mutation
- */
-export function useForgetPassword() {
-  return useMutation({
-    mutationFn: async (email: string) => {
-      const response = await AuthService.forgetPassword(email);
-      return unwrap(response);
+// ---------------- FORGOT PASSWORD ----------------
+export const useForgotPassword = () => {
+  return useMutation<null, Error, { email: string }>({
+    mutationFn: ({ email }) => forgetPassword(email),
+    onSuccess: () => {
+      toast.success('Password reset email sent');
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Failed to send reset email');
     },
   });
-}
+};
 
-/**
- * Hook for verify email mutation
- */
-export function useVerifyEmail() {
-  return useMutation({
-    mutationFn: async (data: VerifyEmailRequest) => {
-      const response = await AuthService.verifyEmail(data);
-      return unwrap(response);
+// ---------------- RESET PASSWORD ----------------
+export const useResetPassword = () => {
+  return useMutation<null, Error, ResetPasswordRequest>({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      toast.success('Password reset successful');
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Failed to reset password');
     },
   });
-}
+};
 
-/**
- * Hook for reset password mutation
- */
-export function useResetPassword() {
-  return useMutation({
-    mutationFn: async (data: ResetPasswordRequest) => {
-      const response = await AuthService.resetPassword(data);
-      return unwrap(response);
+// ---------------- VERIFY EMAIL ----------------
+export const useVerifyEmail = () => {
+  return useMutation<null, Error, VerifyEmailRequest>({
+    mutationFn: verifyEmail,
+    onSuccess: () => {
+      toast.success('Email verified successfully');
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Failed to verify email');
     },
   });
-}
+};
 
-/**
- * Hook for Google OAuth login
- */
-export function useGoogleAuth() {
-  return useMutation({
-    mutationFn: async (token: string) => {
-      const response = await AuthService.googleAuth(token);
-      const payload = unwrap(response);
-      // Token is stored in httpOnly cookie by backend
-      return payload;
+// ---------------- GOOGLE LOGIN ----------------
+export const useGoogleAuth = () => {
+  const router = useRouter();
+
+  return useMutation<LoginResponse, Error, string>({
+    mutationFn: googleAuth,
+    onSuccess: () => {
+      toast.success('Google login successful!');
+      router.push('/dashboard');
     },
     onError: (error) => {
-      handleApiError(error);
+      toast.error(error.message || 'Google login failed');
     },
   });
-}
+};
+
+// ---------------- RESEND VERIFICATION ----------------
+export const useResendVerification = () => {
+  return useMutation<null, Error, ResendVerificationRequest>({
+    mutationFn: resendVerification,
+    onSuccess: () => {
+      toast.success('Verification email resent successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to resend verification email');
+    },
+  });
+};
+
+// ---------------- GET CURRENT USER ----------------
+export const useCurrentUser = () => {
+  return useMutation<LoginResponse, Error>({
+    mutationFn: getCurrentUser,
+    onError: (error) => {
+      toast.error(error.message || 'Failed to fetch user data');
+    },
+  });
+};

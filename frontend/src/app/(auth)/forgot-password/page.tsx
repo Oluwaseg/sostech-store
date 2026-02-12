@@ -4,7 +4,7 @@ import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useForgetPassword } from '@/hooks/use-auth';
+import { useForgotPassword } from '@/hooks/use-auth';
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,
@@ -14,11 +14,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 export default function ForgotPasswordPage() {
   const [emailSent, setEmailSent] = useState(false);
-  const { mutate: forgetPassword, isPending } = useForgetPassword();
+  const { mutate: forgetPassword, isPending } = useForgotPassword();
 
   const {
     register,
@@ -32,17 +31,17 @@ export default function ForgotPasswordPage() {
   const emailValue = watch('email');
 
   const onSubmit = (data: ForgotPasswordFormData) => {
-    forgetPassword(data.email, {
-      onSuccess: () => {
-        setEmailSent(true);
-        toast.success('Password reset email sent!');
-      },
-      onError: (error: any) => {
-        toast.error(
-          error.message || 'Failed to send reset email. Please try again.'
-        );
-      },
-    });
+    forgetPassword(
+      { email: data.email },
+      {
+        onSuccess: () => {
+          setEmailSent(true);
+        },
+        onError: (error: any) => {
+          console.error('Forgot password error:', error);
+        },
+      }
+    );
   };
 
   return (

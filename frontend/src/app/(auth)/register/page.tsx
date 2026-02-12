@@ -13,7 +13,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 declare global {
   interface Window {
@@ -68,13 +67,10 @@ export default function RegisterPage() {
     if (response.credential) {
       googleAuth(response.credential, {
         onSuccess: () => {
-          toast.success('Google signup successful!');
           setTimeout(() => router.push('/dashboard'), 2500);
         },
         onError: (error: any) => {
-          toast.error(
-            error.message || 'Google signup failed. Please try again.'
-          );
+          console.error('Google authentication error:', error);
         },
       });
     }
@@ -90,13 +86,10 @@ export default function RegisterPage() {
       },
       {
         onSuccess: () => {
-          toast.success('Account created successfully! Redirecting...');
           setTimeout(() => router.push('/login'), 2500);
         },
         onError: (error: any) => {
-          toast.error(
-            error.message || 'Registration failed. Please try again.'
-          );
+          console.error('Registration error:', error);
         },
       }
     );

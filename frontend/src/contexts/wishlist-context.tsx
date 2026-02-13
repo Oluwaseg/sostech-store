@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import { useLocalStorage } from '@/lib/use-local-storage';
+import React, { createContext, useContext } from 'react';
 import { useCart } from './cart-context';
-
 interface WishlistItem {
   id: number;
   name: string;
@@ -16,7 +16,7 @@ interface WishlistContextType {
   removeFromWishlist: (id: number) => void;
   isInWishlist: (id: number) => boolean;
   getWishlistCount: () => number;
-  addToCart: (item: any) => void;
+  addToCart: (item: WishlistItem) => void;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(
@@ -24,7 +24,11 @@ const WishlistContext = createContext<WishlistContextType | undefined>(
 );
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [wishlistItems, setWishlistItems] = useLocalStorage<WishlistItem[]>(
+    'wishlist_items',
+    []
+  );
+
   const { addToCart: addCartItem } = useCart();
 
   const addToWishlist = (item: WishlistItem) => {
@@ -47,8 +51,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     return wishlistItems.length;
   };
 
-  const addToCart = (item: any) => {
-    addCartItem(item);
+  const addToCart = (item: WishlistItem) => {
+    addCartItem({
+      ...item,
+      quantity: 1,
+    });
   };
 
   return (

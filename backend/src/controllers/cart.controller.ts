@@ -112,6 +112,28 @@ class CartController {
       );
     }
   }
+
+  async mergeCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = (req as any).user;
+      if (!user)
+        return (res as any).error(
+          'Authentication required',
+          'AUTH_REQUIRED',
+          401
+        );
+
+      const items = req.body.items || [];
+      const cart = await cartService.mergeCart(user.userId, items);
+      return (res as any).success(cart, 'Cart merged successfully');
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to merge cart',
+        'CART_MERGE_ERROR',
+        400
+      );
+    }
+  }
 }
 
 export default new CartController();

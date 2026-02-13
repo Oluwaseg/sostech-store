@@ -32,6 +32,7 @@ export const ApiRoutes = {
     update: '/cart',
     removeItem: (itemId: string) => `/cart/item/${itemId}`,
     clear: '/cart/clear',
+    merge: '/cart/merge',
   },
   checkout: {
     createSession: '/checkout/create-session',

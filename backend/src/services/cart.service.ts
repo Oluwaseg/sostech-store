@@ -72,6 +72,81 @@ class CartService {
     );
     return cart;
   }
+
+  /**
+   * Merge a client-side cart (local storage) into the user's server-side cart.
+   * Accepts items in the shape produced by the frontend and attempts to
+   * resolve them to products by _id, sku, or name. Quantities are summed
+   * with existing cart quantities.
+   */
+  async mergeCart(userId: string, localItems: any[]) {
+    if (!Array.isArray(localItems) || localItems.length === 0) {
+      return this.getCart(userId);
+    }
+
+    // Resolve local items to product IDs and quantities
+    const resolved: { productId: string; quantity: number }[] = [];
+
+    for (const li of localItems) {
+      const qty = Math.max(1, Number(li.quantity) || 1);
+      const candidateId = li.id ?? li.productId ?? li._id;
+
+      let product: any = null;
+
+      // Try treat candidate as ObjectId string
+      if (candidateId) {
+        try {
+          product = await Product.findById(candidateId).lean();
+        } catch (e) {
+          product = null;
+        }
+      }
+
+      // Try sku match
+      if (!product && candidateId != null) {
+        product = await Product.findOne({ sku: String(candidateId) }).lean();
+      }
+
+      // Try name match
+      if (!product && li.name) {
+        product = await Product.findOne({ name: li.name }).lean();
+      }
+
+      if (!product) {
+        // Skip items we can't resolve
+        continue;
+      }
+
+      resolved.push({ productId: (product._id as any).toString(), quantity: qty });
+    }
+
+    if (resolved.length === 0) {
+      return this.getCart(userId);
+    }
+
+    // Build a map of existing quantities
+    const existingCart = await Cart.findOne({ user: userId }).lean();
+    const qtyMap: Record<string, number> = {};
+
+    if (existingCart && Array.isArray(existingCart.items)) {
+      for (const it of existingCart.items) {
+        const pid = (it.product as any)?._id ? (it.product as any)._id.toString() : (it.product ? it.product.toString() : undefined);
+        if (pid) qtyMap[pid] = (qtyMap[pid] || 0) + (it.quantity || 0);
+      }
+    }
+
+    // Merge resolved items into qtyMap
+    for (const r of resolved) {
+      qtyMap[r.productId] = (qtyMap[r.productId] || 0) + r.quantity;
+    }
+
+    // Build final items array for createCart
+    const finalItems = Object.keys(qtyMap).map((pid) => ({ productId: pid, quantity: qtyMap[pid] }));
+
+    // Reuse createCart to build items with prices and persist
+    const mergedCart = await this.createCart(userId, finalItems);
+    return mergedCart;
+  }
 }
 
 export default new CartService();

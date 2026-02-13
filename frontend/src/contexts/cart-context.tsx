@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
-
+import { useLocalStorage } from '@/lib/use-local-storage';
+import React, { createContext, useContext } from 'react';
 interface CartItem {
   id: number;
   name: string;
@@ -21,7 +21,10 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useLocalStorage<CartItem[]>(
+    'cart_items',
+    []
+  );
 
   const addToCart = (item: CartItem) => {
     setCartItems((prevItems) => {

@@ -1,4 +1,4 @@
-import { Document, Schema, Types } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IReview extends Document {
   product: Types.ObjectId;
@@ -34,3 +34,7 @@ const reviewSchema = new Schema<IReview>(
 
 // One review per user per product
 reviewSchema.index({ product: 1, user: 1 }, { unique: true });
+
+export const Review = mongoose.model<IReview>('Review', reviewSchema);
+
+export default Review;

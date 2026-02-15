@@ -26,6 +26,10 @@ export const ApiRoutes = {
     bySku: (sku: string) => `/products/sku/${sku}`,
     byId: (id: string) => `/products/${id}`,
   },
+  reviews: {
+    listByProduct: (productId: string) => `/reviews/product/${productId}`,
+    details: (id: string) => `/reviews/${id}`,
+  },
   cart: {
     list: '/cart',
     addItem: '/cart',

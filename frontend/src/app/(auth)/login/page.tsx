@@ -4,7 +4,11 @@ import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useGoogleAuth, useLogin } from '@/hooks/use-auth';
+import {
+  useGoogleAuth,
+  useLogin,
+  useResendVerification,
+} from '@/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
@@ -23,9 +27,13 @@ declare global {
 export default function LoginPage() {
   const router = useRouter();
   const { mutate: login, isPending } = useLogin();
+  const { mutate: resendVerification, isPending: isResendPending } =
+    useResendVerification();
   const { mutate: googleAuth, isPending: isGooglePending } = useGoogleAuth();
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+  const [resendEmail, setResendEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -85,6 +93,15 @@ export default function LoginPage() {
           'Login error:',
           error.message || 'Login failed. Please try again.'
         );
+
+        // If server says user must verify email, show resend option
+        if (
+          error?.message &&
+          /verify|verification|not verified|please verify/i.test(error.message)
+        ) {
+          setShowResend(true);
+          setResendEmail(data.email);
+        }
       },
     });
   };
@@ -163,7 +180,35 @@ export default function LoginPage() {
                   </p>
                 )}
               </div>
+              {/* Resend Verification */}
+              {showResend && (
+                <div className='space-y-2'>
+                  <p className='text-xs text-amber-500'>
+                    Your email is not verified. Please verify your email.
+                  </p>
 
+                  <Button
+                    type='button'
+                    onClick={() =>
+                      resendVerification(
+                        { email: resendEmail || '' },
+                        {
+                          onSuccess: () => {
+                            setShowResend(false);
+                            setResendEmail(null);
+                          },
+                        }
+                      )
+                    }
+                    disabled={isResendPending}
+                    className='w-full bg-accent text-accent-foreground hover:bg-accent/90 h-9 sm:h-10 text-sm'
+                  >
+                    {isResendPending
+                      ? 'Resending...'
+                      : 'Resend Verification Email'}
+                  </Button>
+                </div>
+              )}
               {/* Remember & Forgot */}
               <div className='flex items-center justify-between text-xs py-1'>
                 <label className='flex items-center gap-2'>

@@ -41,6 +41,9 @@ router.post(
 // Current authenticated user
 router.get('/me', authMiddleware, authController.getCurrentUser);
 
+// Logout current user
+router.post('/logout', authMiddleware, authController.logout);
+
 // Google OAuth routes
 router.get(
   '/google',

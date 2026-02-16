@@ -268,6 +268,19 @@ class AuthService {
       },
     };
   }
+
+  async logout(userId?: string): Promise<void> {
+    if (!userId) return;
+    try {
+      const user = await User.findById(userId);
+      if (!user) return;
+      // If the schema includes a lastLogout field, record it; otherwise this will be a no-op
+      (user as any).lastLogout = new Date();
+      await user.save();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
 }
 
 export default new AuthService();

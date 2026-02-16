@@ -188,6 +188,35 @@ class AuthController {
       return res.redirect(errorUrl);
     }
   }
+
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const payload = (req as any).user;
+      const userId = payload?.userId;
+
+      // Let service record logout metadata if possible (no-op if not applicable)
+      await authService.logout(userId);
+
+      // Clear cookie on logout
+      const cookieName = process.env.JWT_COOKIE_NAME || 'token';
+      const isProd = process.env.NODE_ENV === 'production';
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? ('none' as const) : ('lax' as const),
+      };
+
+      res.clearCookie(cookieName, cookieOptions);
+
+      return (res as any).success(null, 'Logout successful');
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Logout failed',
+        'LOGOUT_ERROR',
+        400
+      );
+    }
+  }
 }
 
 export default new AuthController();

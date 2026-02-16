@@ -93,8 +93,11 @@ class CartService {
       // `product` may be a string id or an object with `_id`.
       const productField = li.product;
       const candidateId =
-        li.id ?? li.productId ?? li._id ??
-        (productField && (typeof productField === 'string' ? productField : productField._id));
+        li.id ??
+        li.productId ??
+        li._id ??
+        (productField &&
+          (typeof productField === 'string' ? productField : productField._id));
 
       let product: any = null;
 
@@ -122,7 +125,10 @@ class CartService {
         continue;
       }
 
-      resolved.push({ productId: (product._id as any).toString(), quantity: qty });
+      resolved.push({
+        productId: (product._id as any).toString(),
+        quantity: qty,
+      });
     }
 
     if (resolved.length === 0) {
@@ -135,7 +141,11 @@ class CartService {
 
     if (existingCart && Array.isArray(existingCart.items)) {
       for (const it of existingCart.items) {
-        const pid = (it.product as any)?._id ? (it.product as any)._id.toString() : (it.product ? it.product.toString() : undefined);
+        const pid = (it.product as any)?._id
+          ? (it.product as any)._id.toString()
+          : it.product
+          ? it.product.toString()
+          : undefined;
         if (pid) qtyMap[pid] = (qtyMap[pid] || 0) + (it.quantity || 0);
       }
     }
@@ -146,7 +156,10 @@ class CartService {
     }
 
     // Build final items array for createCart
-    const finalItems = Object.keys(qtyMap).map((pid) => ({ productId: pid, quantity: qtyMap[pid] }));
+    const finalItems = Object.keys(qtyMap).map((pid) => ({
+      productId: pid,
+      quantity: qtyMap[pid],
+    }));
 
     // Reuse createCart to build items with prices and persist
     const mergedCart = await this.createCart(userId, finalItems);

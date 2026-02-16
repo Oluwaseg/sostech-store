@@ -89,7 +89,12 @@ class CartService {
 
     for (const li of localItems) {
       const qty = Math.max(1, Number(li.quantity) || 1);
-      const candidateId = li.id ?? li.productId ?? li._id;
+      // Accept multiple local payload shapes: id, productId, _id, or product
+      // `product` may be a string id or an object with `_id`.
+      const productField = li.product;
+      const candidateId =
+        li.id ?? li.productId ?? li._id ??
+        (productField && (typeof productField === 'string' ? productField : productField._id));
 
       let product: any = null;
 

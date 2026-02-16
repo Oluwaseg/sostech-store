@@ -10,6 +10,17 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface CurrentUserResponse {
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+    username: string;
+    isEmailVerified: boolean;
+  };
+}
+
 export interface RegisterRequest {
   name: string;
   email: string;

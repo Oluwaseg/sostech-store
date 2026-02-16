@@ -2,7 +2,7 @@
 
 import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/cart-context';
+import { useCartContext } from '@/contexts/cart-context';
 import { useWishlist } from '@/contexts/wishlist-context';
 import {
   Heart,
@@ -24,7 +24,7 @@ export function Navbar() {
   const [activeTab, setActiveTab] = useState<'cart' | 'wishlist'>('cart');
   const pathname = usePathname();
   const { getCartCount, cartItems, removeFromCart, updateQuantity, clearCart } =
-    useCart();
+    useCartContext();
   const {
     getWishlistCount,
     wishlistItems,
@@ -60,7 +60,10 @@ export function Navbar() {
   const getTotalPrice = () => {
     return cartItems
       .reduce((total, item) => {
-        const price = parseFloat(item.price.replace('$', ''));
+        const price =
+          typeof item.price === 'number'
+            ? item.price
+            : parseFloat(String(item.price));
         return total + price * item.quantity;
       }, 0)
       .toFixed(2);
@@ -208,7 +211,7 @@ export function Navbar() {
                                         {item.name}
                                       </h4>
                                       <p className='text-accent font-bold text-base mt-2'>
-                                        {item.price}
+                                        ${item.price}
                                       </p>
                                     </div>
                                     <button
@@ -319,7 +322,7 @@ export function Navbar() {
                                         {item.name}
                                       </h4>
                                       <p className='text-accent font-bold text-base mt-2'>
-                                        {item.price}
+                                        ${item.price}
                                       </p>
                                       <div className='flex items-center gap-1 mt-2'>
                                         <div className='flex gap-0.5'>

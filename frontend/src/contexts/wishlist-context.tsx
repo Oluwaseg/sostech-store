@@ -2,19 +2,19 @@
 
 import { useLocalStorage } from '@/lib/use-local-storage';
 import React, { createContext, useContext } from 'react';
-import { useCart } from './cart-context';
+import { useCartContext } from './cart-context';
 interface WishlistItem {
-  id: number;
+  id: string;
   name: string;
-  price: string;
+  price: number;
   rating: number;
 }
 
 interface WishlistContextType {
   wishlistItems: WishlistItem[];
   addToWishlist: (item: WishlistItem) => void;
-  removeFromWishlist: (id: number) => void;
-  isInWishlist: (id: number) => boolean;
+  removeFromWishlist: (id: string) => void;
+  isInWishlist: (id: string) => boolean;
   getWishlistCount: () => number;
   addToCart: (item: WishlistItem) => void;
 }
@@ -29,7 +29,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const { addToCart: addCartItem } = useCart();
+  const { addToCart: addCartItem } = useCartContext();
 
   const addToWishlist = (item: WishlistItem) => {
     setWishlistItems((prevItems) => {
@@ -39,11 +39,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const removeFromWishlist = (id: number) => {
+  const removeFromWishlist = (id: string) => {
     setWishlistItems((prevItems) => prevItems.filter((i) => i.id !== id));
   };
 
-  const isInWishlist = (id: number) => {
+  const isInWishlist = (id: string) => {
     return wishlistItems.some((i) => i.id === id);
   };
 

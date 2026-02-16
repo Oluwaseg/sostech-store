@@ -10,6 +10,7 @@ import {
   verifyEmail,
 } from '@/services/auth.service';
 import {
+  CurrentUserResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -18,18 +19,22 @@ import {
   ResetPasswordRequest,
   VerifyEmailRequest,
 } from '@/types/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 // ---------------- LOGIN ----------------
 export const useLogin = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation<LoginResponse, Error, LoginRequest>({
     mutationFn: login,
     onSuccess: () => {
       toast.success('Login successful!');
+      // Refetch user/cart immediately so UI shows the real user without refresh
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       router.push('/dashboard'); // or dynamically based on role
     },
     onError: (error) => {
@@ -57,11 +62,15 @@ export const useRegister = () => {
 // ---------------- LOGOUT ----------------
 export const useLogout = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation<null, Error>({
     mutationFn: logout,
     onSuccess: () => {
       toast.success('Logged out successfully');
+      // Clear caches so app immediately reflects logged-out state
+      queryClient.removeQueries({ queryKey: ['current-user'] });
+      queryClient.removeQueries({ queryKey: ['cart'] });
       router.replace('/login');
     },
     onError: (error) => {
@@ -112,11 +121,15 @@ export const useVerifyEmail = () => {
 // ---------------- GOOGLE LOGIN ----------------
 export const useGoogleAuth = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation<LoginResponse, Error, string>({
     mutationFn: googleAuth,
     onSuccess: () => {
       toast.success('Google login successful!');
+      // Refetch user/cart immediately so UI shows the real user without refresh
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       router.push('/dashboard');
     },
     onError: (error) => {
@@ -140,10 +153,10 @@ export const useResendVerification = () => {
 
 // ---------------- GET CURRENT USER ----------------
 export const useCurrentUser = () => {
-  return useMutation<LoginResponse, Error>({
-    mutationFn: getCurrentUser,
-    onError: (error) => {
-      toast.error(error.message || 'Failed to fetch user data');
-    },
+  return useQuery<CurrentUserResponse, Error>({
+    queryKey: ['current-user'],
+    queryFn: getCurrentUser,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
   });
 };

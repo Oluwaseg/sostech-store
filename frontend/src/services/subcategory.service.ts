@@ -6,43 +6,43 @@ import { Subcategory } from '@/types/subcategory';
 
 // ---------------- GET ALL SUBCATEGORIES ----------------
 export const getSubcategories = async (): Promise<Subcategory[]> => {
-  const res = await axiosInstance.get<ApiResponse<Subcategory[]>>(
+  const res = (await axiosInstance.get<ApiResponse<Subcategory[]>>(
     ApiRoutes.subcategories.list
-  );
+  )) as unknown as ApiResponse<Subcategory[]>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };
 
 // ---------------- GET SUBCATEGORY BY SLUG ----------------
 export const getSubcategoryBySlug = async (
   slug: string
 ): Promise<Subcategory> => {
-  const res = await axiosInstance.get<ApiResponse<Subcategory>>(
+  const res = (await axiosInstance.get<ApiResponse<Subcategory>>(
     ApiRoutes.subcategories.details(slug)
-  );
+  )) as unknown as ApiResponse<Subcategory>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };
 
 // ---------------- GET SUBCATEGORY BY ID ----------------
 export const getSubcategoryById = async (id: string): Promise<Subcategory> => {
-  const res = await axiosInstance.get<ApiResponse<Subcategory>>(
+  const res = (await axiosInstance.get<ApiResponse<Subcategory>>(
     ApiRoutes.subcategories.byId(id)
-  );
+  )) as unknown as ApiResponse<Subcategory>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };
 
 // ---------------- CREATE SUBCATEGORY (Moderator/Admin) ----------------
 export const createSubcategory = async (
   data: Partial<Subcategory>
 ): Promise<Subcategory> => {
-  const res = await axiosInstance.post<ApiResponse<Subcategory>>(
+  const res = (await axiosInstance.post<ApiResponse<Subcategory>>(
     ApiRoutes.subcategories.list,
     data
-  );
+  )) as unknown as ApiResponse<Subcategory>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };
 
 // ---------------- UPDATE SUBCATEGORY (Moderator/Admin) ----------------
@@ -50,19 +50,19 @@ export const updateSubcategory = async (
   id: string,
   data: Partial<Subcategory>
 ): Promise<Subcategory> => {
-  const res = await axiosInstance.patch<ApiResponse<Subcategory>>(
+  const res = (await axiosInstance.patch<ApiResponse<Subcategory>>(
     ApiRoutes.subcategories.byId(id),
     data
-  );
+  )) as unknown as ApiResponse<Subcategory>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };
 
 // ---------------- DELETE SUBCATEGORY (Moderator/Admin) ----------------
 export const deleteSubcategory = async (id: string): Promise<null> => {
-  const res = await axiosInstance.delete<ApiResponse<null>>(
+  const res = (await axiosInstance.delete<ApiResponse<null>>(
     ApiRoutes.subcategories.byId(id)
-  );
+  )) as unknown as ApiResponse<null>;
 
-  return unwrap(res.data);
+  return unwrap(res);
 };

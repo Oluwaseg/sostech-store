@@ -12,10 +12,11 @@ import { toast } from 'sonner';
 const CART_QUERY_KEY = ['cart'];
 
 // ---------------- GET CART ----------------
-export const useCart = () => {
+export const useCart = (enabled: boolean = true) => {
   return useQuery<Cart, Error>({
     queryKey: CART_QUERY_KEY,
     queryFn: getCart,
+    enabled,
     staleTime: 1000 * 60, // 1 min cache
   });
 };

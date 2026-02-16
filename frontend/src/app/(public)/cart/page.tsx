@@ -3,17 +3,20 @@
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/cart-context';
+import { useCartContext } from '@/contexts/cart-context';
 import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCartContext();
 
   const getTotalPrice = () => {
     return cartItems
       .reduce((total, item) => {
-        const price = parseFloat(item.price.replace('$', ''));
+        const price =
+          typeof item.price === 'number'
+            ? item.price
+            : parseFloat(String(item.price));
         return total + price * item.quantity;
       }, 0)
       .toFixed(2);
@@ -90,7 +93,7 @@ export default function CartPage() {
                         {item.name}
                       </h3>
                       <p className='text-accent font-bold text-lg'>
-                        {item.price}
+                        ${item.price}
                       </p>
                     </div>
 
@@ -120,8 +123,9 @@ export default function CartPage() {
                       <p className='w-20 text-right font-bold text-foreground'>
                         $
                         {(
-                          parseFloat(item.price.replace('$', '')) *
-                          item.quantity
+                          (typeof item.price === 'number'
+                            ? item.price
+                            : parseFloat(String(item.price))) * item.quantity
                         ).toFixed(2)}
                       </p>
 

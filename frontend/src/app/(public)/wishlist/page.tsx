@@ -3,7 +3,7 @@
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/cart-context';
+import { useCartContext } from '@/contexts/cart-context';
 import { useWishlist } from '@/contexts/wishlist-context';
 import { ArrowLeft, Heart, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
@@ -11,8 +11,8 @@ import { useState } from 'react';
 
 export default function WishlistPage() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
-  const { addToCart } = useCart();
-  const [addedItems, setAddedItems] = useState<number[]>([]);
+  const { addToCart } = useCartContext();
+  const [addedItems, setAddedItems] = useState<string[]>([]);
 
   const handleAddToCart = (item: (typeof wishlistItems)[0]) => {
     addToCart({
@@ -21,9 +21,9 @@ export default function WishlistPage() {
       price: item.price,
       quantity: 1,
     });
-    setAddedItems([...addedItems, item.id]);
+    setAddedItems((prev) => [...prev, item.id]);
     setTimeout(() => {
-      setAddedItems(addedItems.filter((id) => id !== item.id));
+      setAddedItems((prev) => prev.filter((id) => id !== item.id));
     }, 2000);
   };
 
@@ -100,7 +100,7 @@ export default function WishlistPage() {
                         {item.name}
                       </h3>
                       <p className='text-accent font-bold text-lg mt-2'>
-                        {item.price}
+                        ${item.price}
                       </p>
                     </div>
                     <div className='flex items-center gap-1'>

@@ -22,7 +22,7 @@ app.use(
 app.use(express.json());
 
 app.use(
-  morgan('combined', {
+  morgan('dev', {
     stream: {
       write: (message: string) => logger.info(message.trim()),
     },

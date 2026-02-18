@@ -2,15 +2,22 @@
 
 import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/auth-context';
 import { useCartContext } from '@/contexts/cart-context';
 import { useWishlist } from '@/contexts/wishlist-context';
+import { useLogout } from '@/hooks/use-auth';
 import {
   Heart,
+  LayoutDashboard,
   Menu,
   Minus,
+  Package,
   Plus,
   Search,
+  Settings,
+  ShoppingBag,
   ShoppingCart,
+  User,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -31,10 +38,14 @@ export function Navbar() {
     removeFromWishlist,
     addToCart: addWishlistToCart,
   } = useWishlist();
+  const { user, isAuthenticated } = useAuth();
+  const logout = useLogout();
   const cartCount = getCartCount();
   const wishlistCount = getWishlistCount();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
+
+  const isDashboard = pathname.startsWith('/dashboard');
 
   useEffect(() => {
     setIsOpen(false);
@@ -71,6 +82,198 @@ export function Navbar() {
 
   const totalItems = cartCount + wishlistCount;
 
+  const handleLogout = () => {
+    logout.mutate();
+  };
+
+  /* Dashboard navigation config */
+  const dashboardNavItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
+    { href: '/dashboard/profile', label: 'Profile', icon: User },
+    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  ];
+
+  const dashboardAdminItems = [
+    { href: '/dashboard/products', label: 'Products', icon: Package },
+  ];
+
+  const isAdmin = user?.role === 'admin' || user?.role === 'moderator';
+
+  /* DASHBOARD NAVBAR */
+  if (isDashboard) {
+    return (
+      <nav className='sticky top-0 z-50 bg-card border-b border-border/50 backdrop-blur-sm shadow-sm'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex justify-between items-center h-16'>
+            {/* Logo */}
+            <Link
+              href='/dashboard'
+              className='flex items-center group flex-shrink-0'
+            >
+              <Image
+                src={logo}
+                alt='SOS Store Logo'
+                width={32}
+                height={24}
+                priority
+                className='object-contain transition-transform duration-300 group-hover:scale-105'
+              />
+              <span className='ml-2 font-black text-base text-primary tracking-tight'>
+                SOS Dashboard
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className='hidden lg:flex items-center space-x-1'>
+              {dashboardNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
+                    }`}
+                  >
+                    <Icon size={18} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {isAdmin &&
+                dashboardAdminItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
+                      }`}
+                    >
+                      <Icon size={18} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+            </div>
+
+            {/* Right Side */}
+            <div className='flex items-center gap-4'>
+              {/* User Info */}
+              <div className='hidden md:flex items-center gap-3'>
+                <div className='text-right'>
+                  <p className='text-sm font-medium text-foreground'>
+                    {user?.name || 'User'}
+                  </p>
+                  <p className='text-xs text-foreground/60'>
+                    {user?.email || ''}
+                  </p>
+                </div>
+                <div className='w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center'>
+                  <User size={20} className='text-primary' />
+                </div>
+              </div>
+
+              {/* Logout Button */}
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={handleLogout}
+                className='flex items-center gap-2'
+              >
+                <X size={16} />
+                <span className='hidden sm:inline'>Logout</span>
+              </Button>
+
+              {/* Back to Store */}
+              <Link href='/shop'>
+                <Button variant='ghost' size='sm' className='hidden md:flex'>
+                  Back to Store
+                </Button>
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className='lg:hidden p-2 rounded-lg hover:bg-secondary/40 transition-colors'
+                aria-label='Toggle menu'
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className='lg:hidden border-t border-border bg-card'>
+            <div className='px-4 py-4 space-y-2'>
+              {dashboardNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
+                    }`}
+                  >
+                    <Icon size={20} />
+                    <span className='font-medium'>{item.label}</span>
+                  </Link>
+                );
+              })}
+              {isAdmin &&
+                dashboardAdminItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
+                      }`}
+                    >
+                      <Icon size={20} />
+                      <span className='font-medium'>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              <div className='pt-4 border-t border-border'>
+                <Link href='/shop'>
+                  <Button
+                    variant='outline'
+                    className='w-full justify-start'
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Back to Store
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+    );
+  }
+
+  /* STORE NAVBAR (default) */
   return (
     <div>
       {/* Announcement Banner */}
@@ -392,21 +595,23 @@ export function Navbar() {
               </div>
 
               {/* Auth Buttons - Desktop */}
-              <div className='hidden md:flex items-center space-x-3'>
-                <Link href='/login'>
-                  <Button
-                    variant='outline'
-                    className='border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Link href='/register'>
-                  <Button className='bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg'>
-                    Register
-                  </Button>
-                </Link>
-              </div>
+              {!isAuthenticated && (
+                <div className='hidden md:flex items-center space-x-3'>
+                  <Link href='/login'>
+                    <Button
+                      variant='outline'
+                      className='border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href='/register'>
+                    <Button className='bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg'>
+                      Register
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               {/* Mobile Menu Button */}
               <button
@@ -451,21 +656,23 @@ export function Navbar() {
               </div>
 
               {/* Mobile Auth Buttons */}
-              <div className='flex flex-col space-y-2'>
-                <Link href='/login' onClick={() => setIsOpen(false)}>
-                  <Button
-                    variant='outline'
-                    className='w-full border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Link href='/register' onClick={() => setIsOpen(false)}>
-                  <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold'>
-                    Register
-                  </Button>
-                </Link>
-              </div>
+              {!isAuthenticated && (
+                <div className='flex flex-col space-y-2'>
+                  <Link href='/login' onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant='outline'
+                      className='w-full border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href='/register' onClick={() => setIsOpen(false)}>
+                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold'>
+                      Register
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

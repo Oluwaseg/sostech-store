@@ -23,9 +23,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className='font-sans antialiased'>
-        <CartProvider>
-          <WishlistProvider>{children}</WishlistProvider>
-        </CartProvider>
+        {children}
       </body>
     </html>
   );

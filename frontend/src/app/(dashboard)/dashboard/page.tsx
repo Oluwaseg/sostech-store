@@ -1,16 +1,16 @@
 'use client';
 
-import { DashboardNavbar } from '@/components/dashboard-navbar';
+import { Navbar } from '@/components/navbar';
 import { useAuth } from '@/contexts/auth-context';
 import { useCart } from '@/hooks/use-cart';
 import { useProducts } from '@/hooks/use-product';
 import {
+  Activity,
+  DollarSign,
   Package,
   ShoppingBag,
   TrendingUp,
   Users,
-  DollarSign,
-  Activity,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,7 +60,7 @@ export default function DashboardPage() {
 
   return (
     <main className='min-h-screen bg-background'>
-      <DashboardNavbar />
+      <Navbar />
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
         {/* Welcome Section */}
         <div className='mb-8'>
@@ -102,7 +102,9 @@ export default function DashboardPage() {
           {/* Recent Orders */}
           <div className='bg-card rounded-xl border border-border p-6'>
             <div className='flex items-center justify-between mb-4'>
-              <h2 className='text-xl font-bold text-foreground'>Recent Orders</h2>
+              <h2 className='text-xl font-bold text-foreground'>
+                Recent Orders
+              </h2>
               <Link
                 href='/dashboard/orders'
                 className='text-sm text-primary hover:underline'
@@ -119,7 +121,10 @@ export default function DashboardPage() {
                   >
                     <div>
                       <p className='font-medium text-foreground'>
-                        Product {item.product}
+                        Product{' '}
+                        {typeof item.product === 'string'
+                          ? item.product
+                          : item.product?.name ?? 'Product'}
                       </p>
                       <p className='text-sm text-foreground/60'>
                         Quantity: {item.quantity}
@@ -181,7 +186,9 @@ export default function DashboardPage() {
 
         {/* Quick Links */}
         <div className='bg-card rounded-xl border border-border p-6'>
-          <h2 className='text-xl font-bold text-foreground mb-4'>Quick Links</h2>
+          <h2 className='text-xl font-bold text-foreground mb-4'>
+            Quick Links
+          </h2>
           <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
             <Link
               href='/shop'

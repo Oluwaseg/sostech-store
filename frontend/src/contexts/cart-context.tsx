@@ -8,7 +8,6 @@ import {
   useUpdateCart,
 } from '@/hooks/use-cart';
 import { useLocalStorage } from '@/lib/use-local-storage';
-import type { CartItem as ServerCartItem } from '@/types/cart';
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 
 interface CartItem {
@@ -51,7 +50,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Map server cart to local-friendly CartItem[]
   const serverCartItems: CartItem[] = (serverCartData?.items ?? []).map(
     (it) => ({
-      id: it.product,
+      id: typeof it.product === 'string' ? it.product : it.product._id,
+      name: typeof it.product === 'string' ? undefined : it.product.name,
       price: it.price,
       quantity: it.quantity,
     })
@@ -60,13 +60,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Use server cart when authenticated, local cart when guest
   const cartItems = isAuthenticated ? serverCartItems : localCart;
 
-  // Helper to map local CartItem[] -> ServerCartItem[]
-  const toServerItems = (items: CartItem[]): ServerCartItem[] => {
+  // Helper to map local CartItem[] -> Request payload for server
+  const toServerItems = (
+    items: CartItem[]
+  ): { productId: string; quantity: number }[] => {
     return items.map((i) => ({
-      product: i.id,
+      productId: i.id,
       quantity: i.quantity,
-      price: i.price,
-      subtotal: i.price * i.quantity,
     }));
   };
 

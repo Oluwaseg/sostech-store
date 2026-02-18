@@ -5,7 +5,7 @@ import {
   removeCartItem,
   updateCart,
 } from '@/services/cart.service';
-import { Cart, CartItem } from '@/types/cart';
+import { Cart } from '@/types/cart';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -25,7 +25,7 @@ export const useCart = (enabled: boolean = true) => {
 export const useUpdateCart = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Cart, Error, CartItem[]>({
+  return useMutation<Cart, Error, { productId: string; quantity: number }[]>({
     mutationFn: updateCart,
 
     onSuccess: (data) => {

@@ -118,7 +118,8 @@ class ReviewService {
     }
 
     const productId = review.product.toString();
-    await review.remove();
+    // use deleteOne on document instead of deprecated remove()
+    await review.deleteOne();
 
     // Recalculate product rating
     await this.recalcProductRating(productId);

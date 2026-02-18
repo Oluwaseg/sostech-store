@@ -48,7 +48,11 @@ class CartController {
     }
   }
 
-  async updateCart(req: Request, res: Response, next: NextFunction) {
+  async removeItem(
+    req: Request<{ itemId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const user = (req as any).user;
       if (!user)
@@ -58,29 +62,12 @@ class CartController {
           401
         );
 
-      const items = req.body.items || [];
-      const cart = await cartService.updateCart(user.userId, items);
-      return (res as any).success(cart, 'Cart updated');
-    } catch (error: any) {
-      return (res as any).error(
-        error.message || 'Failed to update cart',
-        'CART_UPDATE_ERROR',
-        400
-      );
-    }
-  }
+      // Express params can sometimes be string[]; ensure we use a single string
+      let itemId = req.params.itemId;
+      if (Array.isArray(itemId)) {
+        itemId = itemId[0];
+      }
 
-  async removeItem(req: Request, res: Response, next: NextFunction) {
-    try {
-      const user = (req as any).user;
-      if (!user)
-        return (res as any).error(
-          'Authentication required',
-          'AUTH_REQUIRED',
-          401
-        );
-
-      const { itemId } = req.params;
       const cart = await cartService.removeItem(user.userId, itemId);
       return (res as any).success(cart, 'Item removed from cart');
     } catch (error: any) {

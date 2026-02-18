@@ -41,14 +41,6 @@ class CartService {
     return cart;
   }
 
-  async updateCart(
-    userId: string,
-    items: { productId: string; quantity: number }[]
-  ) {
-    // Replace items similarly to createCart
-    return this.createCart(userId, items);
-  }
-
   async removeItem(userId: string, itemId: string) {
     const cart = await Cart.findOne({ user: userId });
     if (!cart) throw new Error('Cart not found');
@@ -144,8 +136,8 @@ class CartService {
         const pid = (it.product as any)?._id
           ? (it.product as any)._id.toString()
           : it.product
-          ? it.product.toString()
-          : undefined;
+            ? it.product.toString()
+            : undefined;
         if (pid) qtyMap[pid] = (qtyMap[pid] || 0) + (it.quantity || 0);
       }
     }

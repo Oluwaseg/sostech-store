@@ -7,8 +7,10 @@ import { useCartContext } from '@/contexts/cart-context';
 import { useWishlist } from '@/contexts/wishlist-context';
 import { useLogout } from '@/hooks/use-auth';
 import {
+  ChevronDown,
   Heart,
   LayoutDashboard,
+  LogOut,
   Menu,
   Minus,
   Package,
@@ -28,6 +30,7 @@ import { useEffect, useRef, useState } from 'react';
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'cart' | 'wishlist'>('cart');
   const pathname = usePathname();
   const { getCartCount, cartItems, removeFromCart, updateQuantity, clearCart } =
@@ -44,12 +47,15 @@ export function Navbar() {
   const wishlistCount = getWishlistCount();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const cartButtonRef = useRef<HTMLButtonElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+  const userButtonRef = useRef<HTMLButtonElement>(null);
 
   const isDashboard = pathname.startsWith('/dashboard');
 
   useEffect(() => {
     setIsOpen(false);
     setIsCartDropdownOpen(false);
+    setIsUserDropdownOpen(false);
   }, [pathname]);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -60,6 +66,14 @@ export function Navbar() {
       !cartButtonRef.current.contains(event.target as Node)
     ) {
       setIsCartDropdownOpen(false);
+    }
+    if (
+      userDropdownRef.current &&
+      !userDropdownRef.current.contains(event.target as Node) &&
+      userButtonRef.current &&
+      !userButtonRef.current.contains(event.target as Node)
+    ) {
+      setIsUserDropdownOpen(false);
     }
   };
 
@@ -86,7 +100,7 @@ export function Navbar() {
     logout.mutate();
   };
 
-  /* Dashboard navigation config */
+  // Dashboard Navbar
   const dashboardNavItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
@@ -100,171 +114,192 @@ export function Navbar() {
 
   const isAdmin = user?.role === 'admin' || user?.role === 'moderator';
 
-  /* DASHBOARD NAVBAR */
   if (isDashboard) {
+    // Dashboard nav links
+    const navItems = [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
+      { href: '/dashboard/profile', label: 'Profile', icon: User },
+      { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+    ];
+
+    const adminItems = [
+      { href: '/dashboard/products', label: 'Products', icon: Package },
+    ];
+
+    const renderLinks = (items: typeof navItems) =>
+      items.map((item) => {
+        const Icon = item.icon;
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              isActive
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground/60 hover:text-foreground hover:bg-muted'
+            }`}
+          >
+            <Icon size={16} />
+            {item.label}
+          </Link>
+        );
+      });
+
     return (
-      <nav className='sticky top-0 z-50 bg-card border-b border-border/50 backdrop-blur-sm shadow-sm'>
+      <nav className='sticky top-0 z-50 bg-card border-b border-border'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex justify-between items-center h-16'>
             {/* Logo */}
-            <Link
-              href='/dashboard'
-              className='flex items-center group flex-shrink-0'
-            >
+            <Link href='/dashboard' className='flex items-center gap-2.5'>
               <Image
                 src={logo}
                 alt='SOS Store Logo'
                 width={32}
                 height={24}
                 priority
-                className='object-contain transition-transform duration-300 group-hover:scale-105'
+                className='object-contain'
               />
-              <span className='ml-2 font-black text-base text-primary tracking-tight'>
-                SOS Dashboard
-              </span>
+              <span className='font-bold text-primary text-sm'>Dashboard</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className='hidden lg:flex items-center space-x-1'>
-              {dashboardNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
-                    }`}
-                  >
-                    <Icon size={18} />
-                    {item.label}
-                  </Link>
-                );
-              })}
-              {isAdmin &&
-                dashboardAdminItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
-                      }`}
-                    >
-                      <Icon size={18} />
-                      {item.label}
-                    </Link>
-                  );
-                })}
+            {/* Desktop nav links */}
+            <div className='hidden lg:flex items-center gap-1'>
+              {renderLinks(navItems)}
+              {isAdmin && renderLinks(adminItems)}
             </div>
 
-            {/* Right Side */}
-            <div className='flex items-center gap-4'>
-              {/* User Info */}
-              <div className='hidden md:flex items-center gap-3'>
-                <div className='text-right'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {user?.name || 'User'}
-                  </p>
-                  <p className='text-xs text-foreground/60'>
-                    {user?.email || ''}
-                  </p>
+            {/* Right section */}
+            <div className='flex items-center gap-2'>
+              {/* User info dropdown */}
+              {isAuthenticated && (
+                <div className='relative' ref={userDropdownRef}>
+                  <button
+                    ref={userButtonRef}
+                    onClick={() => setIsUserDropdownOpen((prev) => !prev)}
+                    className='hidden md:flex items-center gap-2 px-3 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors'
+                  >
+                    <div className='w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center'>
+                      <User size={16} className='text-primary' />
+                    </div>
+                    <div className='text-left'>
+                      <p className='text-xs font-semibold text-foreground'>
+                        {user?.name?.split(' ')[0] || 'User'}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${isUserDropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {isUserDropdownOpen && (
+                    <div className='absolute top-full right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg p-0 z-50'>
+                      <div className='px-4 py-3 border-b border-border'>
+                        <p className='text-xs font-semibold text-foreground/60'>
+                          Signed in as
+                        </p>
+                        <p className='text-sm font-bold text-foreground mt-1'>
+                          {user?.name || 'User'}
+                        </p>
+                        <p className='text-xs text-foreground/50 mt-1'>
+                          {user?.email || ''}
+                        </p>
+                      </div>
+                      <div className='py-2 space-y-1'>
+                        <Link
+                          href='/dashboard'
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                        >
+                          <LayoutDashboard size={16} /> Dashboard
+                        </Link>
+                        <Link
+                          href='/dashboard/orders'
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                        >
+                          <ShoppingBag size={16} /> Orders
+                        </Link>
+                        <Link
+                          href='/dashboard/profile'
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                        >
+                          <User size={16} /> Profile
+                        </Link>
+                        <Link
+                          href='/dashboard/settings'
+                          onClick={() => setIsUserDropdownOpen(false)}
+                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                        >
+                          <Settings size={16} /> Settings
+                        </Link>
+                      </div>
+                      <div className='border-t border-border pt-2 pb-2 px-2'>
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsUserDropdownOpen(false);
+                          }}
+                          className='flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors'
+                        >
+                          <LogOut size={16} /> Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className='w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center'>
-                  <User size={20} className='text-primary' />
-                </div>
-              </div>
+              )}
 
-              {/* Logout Button */}
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={handleLogout}
-                className='flex items-center gap-2'
-              >
-                <X size={16} />
-                <span className='hidden sm:inline'>Logout</span>
-              </Button>
-
-              {/* Back to Store */}
-              <Link href='/shop'>
-                <Button variant='ghost' size='sm' className='hidden md:flex'>
-                  Back to Store
-                </Button>
-              </Link>
-
-              {/* Mobile Menu Button */}
+              {/* Mobile menu toggle */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className='lg:hidden p-2 rounded-lg hover:bg-secondary/40 transition-colors'
+                className='lg:hidden p-2 hover:bg-muted rounded-md transition-colors'
                 aria-label='Toggle menu'
               >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
+                {isOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile menu */}
         {isOpen && (
           <div className='lg:hidden border-t border-border bg-card'>
-            <div className='px-4 py-4 space-y-2'>
-              {dashboardNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
-                    }`}
-                  >
-                    <Icon size={20} />
-                    <span className='font-medium'>{item.label}</span>
-                  </Link>
-                );
-              })}
-              {isAdmin &&
-                dashboardAdminItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-foreground/70 hover:text-foreground hover:bg-secondary/40'
-                      }`}
-                    >
-                      <Icon size={20} />
-                      <span className='font-medium'>{item.label}</span>
+            <div className='px-4 py-3 flex flex-col gap-1'>
+              {renderLinks(navItems)}
+              {isAdmin && renderLinks(adminItems)}
+              <div className='pt-2 border-t border-border'>
+                {isAuthenticated ? (
+                  <>
+                    <Link href='/dashboard'>
+                      <Button
+                        variant='ghost'
+                        className='w-full justify-start text-xs'
+                      >
+                        <User size={16} /> Dashboard
+                      </Button>
                     </Link>
-                  );
-                })}
-              <div className='pt-4 border-t border-border'>
-                <Link href='/shop'>
-                  <Button
-                    variant='outline'
-                    className='w-full justify-start'
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Back to Store
-                  </Button>
-                </Link>
+                    <Button
+                      variant='outline'
+                      className='w-full text-xs'
+                      onClick={() => {
+                        handleLogout();
+                        setIsOpen(false);
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <Link href='/login'>
+                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs'>
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -273,40 +308,37 @@ export function Navbar() {
     );
   }
 
-  /* STORE NAVBAR (default) */
+  // Store Navbar
   return (
     <div>
       {/* Announcement Banner */}
-      <div className='bg-accent text-accent-foreground py-2.5 px-4 text-center text-sm font-semibold'>
+      <div className='bg-accent text-accent-foreground py-2 px-4 text-center text-xs font-semibold tracking-wide'>
         ✨ Premium Shopping Experience • Fast Shipping on All Orders
       </div>
 
-      {/* Main Navbar */}
-      <nav className='sticky top-0 z-50 bg-card border-b border-border/50 backdrop-blur-sm shadow-sm'>
+      <nav className='sticky top-0 z-50 bg-card border-b border-border'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center h-20'>
+          <div className='flex items-center justify-between h-16 gap-4'>
             {/* Logo */}
-            <Link href='/' className='flex items-center group flex-shrink-0'>
+            <Link href='/' className='flex items-center gap-2.5 flex-shrink-0'>
               <Image
                 src={logo}
                 alt='SOS Store Logo'
-                width={40}
-                height={30}
+                width={32}
+                height={24}
                 priority
-                className='object-contain transition-transform duration-300 group-hover:scale-105'
+                className='object-contain'
               />
-              <span className='ml-2 font-black text-lg text-primary tracking-tight'>
-                SOS
-              </span>
+              <span className='font-bold text-primary text-sm'>SOS</span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className='hidden lg:flex items-center space-x-1'>
+            <div className='hidden lg:flex items-center gap-0'>
               {['Home', 'Shop', 'About', 'Contact'].map((item) => (
                 <Link
                   key={item}
                   href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                  className='px-4 py-2.5 text-foreground/70 hover:text-foreground transition-colors font-medium text-sm rounded-lg hover:bg-secondary/40 active:bg-secondary'
+                  className='px-4 py-2 text-sm font-medium text-foreground/60 hover:text-foreground transition-colors rounded-md hover:bg-muted'
                 >
                   {item}
                 </Link>
@@ -314,118 +346,114 @@ export function Navbar() {
             </div>
 
             {/* Search Bar - Desktop */}
-            <div className='hidden md:flex items-center flex-1 mx-8 max-w-xs'>
+            <div className='hidden md:flex flex-1 max-w-xs items-center'>
               <div className='w-full relative'>
                 <Search
                   className='absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40'
-                  size={18}
+                  size={16}
                 />
                 <input
                   type='text'
                   placeholder='Search products...'
-                  className='w-full pl-10 pr-4 py-2.5 bg-secondary/40 border border-border rounded-lg text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-all'
+                  className='w-full pl-9 pr-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all'
                 />
               </div>
             </div>
 
             {/* Right Actions */}
-            <div className='flex items-center space-x-3 md:space-x-4'>
-              {/* Cart Dropdown */}
+            <div className='flex items-center gap-2'>
+              {/* Cart */}
               <div className='relative' ref={dropdownRef}>
                 <button
                   ref={cartButtonRef}
                   onClick={() => setIsCartDropdownOpen(!isCartDropdownOpen)}
-                  className='relative p-2.5 text-foreground/70 hover:text-foreground transition-all duration-200 rounded-lg hover:bg-secondary/40 focus:outline-none focus:ring-2 focus:ring-accent/40'
-                  aria-label={`Shopping cart with ${totalItems} items`}
+                  className='relative p-2 text-foreground/60 hover:text-foreground transition-colors rounded-md hover:bg-muted'
+                  aria-label={`Shopping cart with ${cartCount} items`}
                 >
-                  <ShoppingCart size={22} />
-                  {totalItems > 0 && (
-                    <span className='absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-lg'>
-                      {totalItems}
+                  <ShoppingCart size={20} />
+                  {cartCount > 0 && (
+                    <span className='absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center'>
+                      {cartCount}
                     </span>
                   )}
                 </button>
 
-                {/* Premium Cart/Wishlist Dropdown */}
+                {/* Cart Dropdown */}
                 {isCartDropdownOpen && (
-                  <div className='absolute right-0 mt-3 w-[420px] bg-card border border-border rounded-2xl shadow-2xl z-40 animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden'>
-                    {/* Header Tabs */}
-                    <div className='px-8 py-6 bg-gradient-to-r from-primary/5 to-accent/5 border-b border-border'>
-                      <div className='flex gap-8'>
-                        <button
-                          onClick={() => setActiveTab('cart')}
-                          className={`pb-4 font-bold text-sm transition-all relative ${
-                            activeTab === 'cart'
-                              ? 'text-primary'
-                              : 'text-foreground/60 hover:text-foreground'
-                          }`}
-                        >
-                          Shopping Cart
-                          {activeTab === 'cart' && (
-                            <div className='absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full'></div>
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('wishlist')}
-                          className={`pb-4 font-bold text-sm transition-all flex items-center gap-2 relative ${
-                            activeTab === 'wishlist'
-                              ? 'text-accent'
-                              : 'text-foreground/60 hover:text-foreground'
-                          }`}
-                        >
-                          <Heart size={16} />
-                          Saved Items
-                          {activeTab === 'wishlist' && (
-                            <div className='absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-full'></div>
-                          )}
-                        </button>
-                      </div>
+                  <div className='absolute right-0 mt-2 w-96 bg-card border border-border rounded-xl shadow-lg z-40 overflow-hidden'>
+                    {/* Tabs */}
+                    <div className='px-5 py-4 border-b border-border flex gap-4'>
+                      <button
+                        onClick={() => setActiveTab('cart')}
+                        className={`pb-2 text-sm font-semibold transition-colors relative ${
+                          activeTab === 'cart'
+                            ? 'text-primary'
+                            : 'text-foreground/60 hover:text-foreground'
+                        }`}
+                      >
+                        Cart ({cartCount})
+                        {activeTab === 'cart' && (
+                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full'></div>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('wishlist')}
+                        className={`pb-2 text-sm font-semibold flex items-center gap-1.5 transition-colors relative ${
+                          activeTab === 'wishlist'
+                            ? 'text-accent'
+                            : 'text-foreground/60 hover:text-foreground'
+                        }`}
+                      >
+                        <Heart size={14} />
+                        Saved ({wishlistCount})
+                        {activeTab === 'wishlist' && (
+                          <div className='absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-full'></div>
+                        )}
+                      </button>
                     </div>
 
-                    {/* Cart Tab */}
+                    {/* Cart Content */}
                     {activeTab === 'cart' && (
-                      <div className='flex flex-col h-96'>
+                      <div className='flex flex-col h-80'>
                         {cartItems.length === 0 ? (
-                          <div className='flex-1 flex flex-col items-center justify-center p-12 text-center'>
-                            <div className='w-20 h-20 bg-secondary/50 rounded-2xl flex items-center justify-center mx-auto mb-6'>
-                              <ShoppingCart
-                                size={40}
-                                className='text-foreground/25'
-                              />
-                            </div>
-                            <p className='text-foreground font-bold text-base mb-2'>
+                          <div className='flex-1 flex flex-col items-center justify-center p-8 text-center'>
+                            <ShoppingCart
+                              size={36}
+                              className='text-foreground/20 mb-3'
+                            />
+                            <p className='text-sm font-semibold text-foreground mb-1'>
                               Your cart is empty
                             </p>
-                            <p className='text-foreground/60 text-sm'>
-                              Start shopping to add items
+                            <p className='text-xs text-foreground/50'>
+                              Add items to get started
                             </p>
                           </div>
                         ) : (
                           <>
-                            <div className='flex-1 overflow-y-auto px-6 py-4 space-y-3'>
+                            <div className='flex-1 overflow-y-auto px-5 py-3 space-y-2'>
                               {cartItems.map((item) => (
                                 <div
                                   key={item.id}
-                                  className='bg-secondary/40 rounded-xl p-4 hover:bg-secondary/60 transition-all group'
+                                  className='bg-muted rounded-lg p-3 hover:bg-muted/80 transition-colors'
                                 >
-                                  <div className='flex justify-between items-start mb-4'>
-                                    <div className='flex-1 min-w-0'>
-                                      <h4 className='font-bold text-foreground text-sm group-hover:text-primary transition-colors truncate'>
+                                  <div className='flex justify-between items-start mb-2'>
+                                    <div className='flex-1'>
+                                      <h4 className='text-sm font-semibold text-foreground truncate'>
                                         {item.name}
                                       </h4>
-                                      <p className='text-accent font-bold text-base mt-2'>
+                                      <p className='text-accent font-bold text-sm mt-1'>
                                         ${item.price}
                                       </p>
                                     </div>
                                     <button
                                       onClick={() => removeFromCart(item.id)}
-                                      className='text-foreground/40 hover:text-destructive transition-colors ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 p-1'
+                                      className='text-foreground/40 hover:text-destructive transition-colors p-1'
                                       aria-label='Remove item'
                                     >
-                                      <X size={20} />
+                                      <X size={16} />
                                     </button>
                                   </div>
-                                  <div className='flex items-center gap-2 bg-white/40 rounded-lg w-fit p-1'>
+                                  <div className='flex items-center gap-1 bg-background rounded-md w-fit p-1'>
                                     <button
                                       onClick={() =>
                                         updateQuantity(
@@ -434,12 +462,12 @@ export function Navbar() {
                                         )
                                       }
                                       disabled={item.quantity <= 1}
-                                      className='p-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors'
+                                      className='p-1 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-30 disabled:cursor-not-allowed rounded transition-colors'
                                       aria-label='Decrease quantity'
                                     >
-                                      <Minus size={16} />
+                                      <Minus size={14} />
                                     </button>
-                                    <span className='text-sm font-bold min-w-8 text-center'>
+                                    <span className='text-xs font-bold min-w-6 text-center'>
                                       {item.quantity}
                                     </span>
                                     <button
@@ -449,23 +477,23 @@ export function Navbar() {
                                           item.quantity + 1
                                         )
                                       }
-                                      className='p-2 bg-foreground/10 hover:bg-foreground/20 rounded-lg transition-colors'
+                                      className='p-1 bg-foreground/10 hover:bg-foreground/20 rounded transition-colors'
                                       aria-label='Increase quantity'
                                     >
-                                      <Plus size={16} />
+                                      <Plus size={14} />
                                     </button>
                                   </div>
                                 </div>
                               ))}
                             </div>
 
-                            {/* Cart Footer */}
-                            <div className='border-t border-border px-6 py-5 bg-gradient-to-r from-primary/5 to-accent/5 space-y-3'>
+                            {/* Footer */}
+                            <div className='border-t border-border px-5 py-3 bg-muted/40 space-y-2'>
                               <div className='flex justify-between items-center'>
-                                <span className='text-foreground/80 font-semibold text-sm'>
+                                <span className='text-xs font-semibold text-foreground/70'>
                                   Subtotal
                                 </span>
-                                <span className='text-accent font-bold text-lg'>
+                                <span className='text-accent font-bold text-sm'>
                                   ${getTotalPrice()}
                                 </span>
                               </div>
@@ -474,20 +502,8 @@ export function Navbar() {
                                 onClick={() => setIsCartDropdownOpen(false)}
                                 className='block'
                               >
-                                <Button className='w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3 rounded-xl transition-all active:scale-95 text-sm'>
-                                  Proceed to Checkout
-                                </Button>
-                              </Link>
-                              <Link
-                                href='/cart'
-                                onClick={() => setIsCartDropdownOpen(false)}
-                                className='block'
-                              >
-                                <Button
-                                  variant='outline'
-                                  className='w-full border-primary/30 text-primary hover:bg-primary/5 font-semibold py-2.5 rounded-xl transition-all bg-transparent text-sm'
-                                >
-                                  View Full Cart
+                                <Button className='w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2 rounded-lg text-xs'>
+                                  Checkout
                                 </Button>
                               </Link>
                             </div>
@@ -496,95 +512,61 @@ export function Navbar() {
                       </div>
                     )}
 
-                    {/* Wishlist Tab */}
+                    {/* Wishlist Content */}
                     {activeTab === 'wishlist' && (
-                      <div className='flex flex-col h-96'>
+                      <div className='flex flex-col h-80'>
                         {wishlistItems.length === 0 ? (
-                          <div className='flex-1 flex flex-col items-center justify-center p-12 text-center'>
-                            <div className='w-20 h-20 bg-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-6'>
-                              <Heart size={40} className='text-accent/50' />
-                            </div>
-                            <p className='text-foreground font-bold text-base mb-2'>
-                              No saved items yet
+                          <div className='flex-1 flex flex-col items-center justify-center p-8 text-center'>
+                            <Heart
+                              size={36}
+                              className='text-foreground/20 mb-3'
+                            />
+                            <p className='text-sm font-semibold text-foreground mb-1'>
+                              No saved items
                             </p>
-                            <p className='text-foreground/60 text-sm'>
-                              Heart items to save for later
+                            <p className='text-xs text-foreground/50'>
+                              Save your favorites
                             </p>
                           </div>
                         ) : (
                           <>
-                            <div className='flex-1 overflow-y-auto px-6 py-4 space-y-3'>
+                            <div className='flex-1 overflow-y-auto px-5 py-3 space-y-2'>
                               {wishlistItems.map((item) => (
                                 <div
                                   key={item.id}
-                                  className='bg-accent/10 rounded-xl p-4 hover:bg-accent/20 transition-all group'
+                                  className='bg-muted rounded-lg p-3 hover:bg-muted/80 transition-colors'
                                 >
-                                  <div className='flex justify-between items-start mb-4'>
-                                    <div className='flex-1 min-w-0'>
-                                      <h4 className='font-bold text-foreground text-sm group-hover:text-primary transition-colors truncate'>
+                                  <div className='flex justify-between items-start mb-2'>
+                                    <div className='flex-1'>
+                                      <h4 className='text-sm font-semibold text-foreground truncate'>
                                         {item.name}
                                       </h4>
-                                      <p className='text-accent font-bold text-base mt-2'>
+                                      <p className='text-accent font-bold text-sm mt-1'>
                                         ${item.price}
                                       </p>
-                                      <div className='flex items-center gap-1 mt-2'>
-                                        <div className='flex gap-0.5'>
-                                          {[...Array(5)].map((_, i) => (
-                                            <span
-                                              key={i}
-                                              className='text-accent text-xs'
-                                            >
-                                              ★
-                                            </span>
-                                          ))}
-                                        </div>
-                                        <span className='text-foreground/50 text-xs'>
-                                          {item.rating}
-                                        </span>
-                                      </div>
                                     </div>
                                     <button
                                       onClick={() =>
                                         removeFromWishlist(item.id)
                                       }
-                                      className='text-accent hover:text-destructive transition-colors ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 p-1'
+                                      className='text-foreground/40 hover:text-destructive transition-colors p-1'
                                       aria-label='Remove from wishlist'
                                     >
-                                      <X size={20} />
+                                      <X size={16} />
                                     </button>
                                   </div>
                                   <Button
+                                    size='sm'
+                                    className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs'
                                     onClick={() => {
-                                      addWishlistToCart({
-                                        id: item.id,
-                                        name: item.name,
-                                        price: item.price,
-                                        quantity: 1,
-                                      });
+                                      addWishlistToCart(item);
                                       removeFromWishlist(item.id);
                                     }}
-                                    className='w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-2 rounded-lg transition-all active:scale-95 text-sm'
                                   >
                                     Add to Cart
                                   </Button>
                                 </div>
                               ))}
-                            </div>
-
-                            {/* Wishlist Footer */}
-                            <div className='border-t border-border px-6 py-5 bg-gradient-to-r from-primary/5 to-accent/5'>
-                              <Link
-                                href='/wishlist'
-                                onClick={() => setIsCartDropdownOpen(false)}
-                                className='block'
-                              >
-                                <Button
-                                  variant='outline'
-                                  className='w-full border-accent/30 text-accent hover:bg-accent/5 font-bold py-2.5 rounded-xl transition-all bg-transparent text-sm'
-                                >
-                                  View Full Wishlist
-                                </Button>
-                              </Link>
                             </div>
                           </>
                         )}
@@ -594,88 +576,175 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* Auth Buttons - Desktop */}
-              {!isAuthenticated && (
-                <div className='hidden md:flex items-center space-x-3'>
-                  <Link href='/login'>
-                    <Button
-                      variant='outline'
-                      className='border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
+              {/* Auth & Mobile Menu */}
+              <div className='flex items-center gap-2'>
+                {isAuthenticated ? (
+                  <div className='relative' ref={userDropdownRef}>
+                    <button
+                      ref={userButtonRef}
+                      onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                      className='hidden md:flex items-center gap-2 px-3 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors'
                     >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href='/register'>
-                    <Button className='bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg'>
-                      Register
-                    </Button>
-                  </Link>
-                </div>
-              )}
+                      <div className='w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center'>
+                        <User size={16} className='text-primary' />
+                      </div>
+                      <div className='text-left'>
+                        <p className='text-xs font-semibold text-foreground'>
+                          {user?.name?.split(' ')[0] || 'User'}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        size={16}
+                        className={`transition-transform ${isUserDropdownOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
 
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className='md:hidden p-2.5 text-foreground rounded-lg hover:bg-secondary/40 focus:outline-none focus:ring-2 focus:ring-accent/40'
-                aria-label='Toggle menu'
-              >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
+                    {/* User Dropdown */}
+                    {isUserDropdownOpen && (
+                      <div className='absolute top-full right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg p-0 z-50'>
+                        {/* User Info Section */}
+                        <div className='px-4 py-3 border-b border-border'>
+                          <p className='text-xs font-semibold text-foreground/60'>
+                            Signed in as
+                          </p>
+                          <p className='text-sm font-bold text-foreground mt-1'>
+                            {user?.name || 'User'}
+                          </p>
+                          <p className='text-xs text-foreground/50 mt-1'>
+                            {user?.email || ''}
+                          </p>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className='py-2 space-y-1'>
+                          <Link
+                            href='/dashboard'
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                          >
+                            <LayoutDashboard size={16} />
+                            Dashboard
+                          </Link>
+                          <Link
+                            href='/dashboard/orders'
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                          >
+                            <ShoppingBag size={16} />
+                            Orders
+                          </Link>
+                          <Link
+                            href='/dashboard/profile'
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                          >
+                            <User size={16} />
+                            Profile
+                          </Link>
+                          <Link
+                            href='/dashboard/settings'
+                            onClick={() => setIsUserDropdownOpen(false)}
+                            className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                          >
+                            <Settings size={16} />
+                            Settings
+                          </Link>
+                        </div>
+
+                        {/* Logout */}
+                        <div className='border-t border-border pt-2 pb-2 px-2'>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setIsUserDropdownOpen(false);
+                            }}
+                            className='flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors'
+                          >
+                            <LogOut size={16} />
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link href='/login' className='hidden md:block'>
+                    <Button
+                      size='sm'
+                      className='bg-primary hover:bg-primary/90 text-primary-foreground text-xs'
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Mobile Menu */}
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className='lg:hidden p-2 hover:bg-muted rounded-md transition-colors'
+                  aria-label='Toggle menu'
+                >
+                  {isOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Mobile Menu */}
-          {isOpen && (
-            <div className='md:hidden pb-6 pt-2 border-t border-border/50 animate-in fade-in slide-in-from-top-2 duration-200'>
-              <div className='flex flex-col space-y-2 mb-6'>
-                {['Home', 'Shop', 'About', 'Contact'].map((item) => (
-                  <Link
-                    key={item}
-                    href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                    onClick={() => setIsOpen(false)}
-                    className='px-4 py-3 text-foreground/70 hover:text-foreground hover:bg-secondary/40 rounded-lg transition-colors font-medium'
-                  >
-                    {item}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Mobile Search */}
-              <div className='mb-6'>
-                <div className='relative'>
-                  <Search
-                    className='absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40'
-                    size={18}
-                  />
-                  <input
-                    type='text'
-                    placeholder='Search products...'
-                    className='w-full pl-10 pr-4 py-2.5 bg-secondary/40 border border-border rounded-lg text-sm text-foreground placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all'
-                  />
-                </div>
-              </div>
-
-              {/* Mobile Auth Buttons */}
-              {!isAuthenticated && (
-                <div className='flex flex-col space-y-2'>
-                  <Link href='/login' onClick={() => setIsOpen(false)}>
-                    <Button
-                      variant='outline'
-                      className='w-full border-primary/30 text-primary hover:bg-primary/5 font-medium bg-transparent'
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href='/register' onClick={() => setIsOpen(false)}>
-                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold'>
-                      Register
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className='lg:hidden border-t border-border bg-card'>
+            <div className='px-4 py-3 space-y-2'>
+              {['Home', 'Shop', 'About', 'Contact'].map((item) => (
+                <Link
+                  key={item}
+                  href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                  onClick={() => setIsOpen(false)}
+                  className='flex px-3 py-2 rounded-md text-sm font-medium text-foreground/60 hover:text-foreground hover:bg-muted transition-colors'
+                >
+                  {item}
+                </Link>
+              ))}
+              <div className='pt-2 border-t border-border'>
+                <div className='md:hidden flex flex-col gap-2'>
+                  {isAuthenticated ? (
+                    <>
+                      <Link href='/dashboard' onClick={() => setIsOpen(false)}>
+                        <Button
+                          variant='ghost'
+                          className='w-full justify-start text-xs'
+                        >
+                          <User size={16} />
+                          Dashboard
+                        </Button>
+                      </Link>
+                      <Button
+                        variant='outline'
+                        className='w-full text-xs'
+                        onClick={() => {
+                          handleLogout();
+                          setIsOpen(false);
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <Link
+                      href='/login'
+                      onClick={() => setIsOpen(false)}
+                      className='block'
+                    >
+                      <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs'>
+                        Sign In
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
     </div>
   );

@@ -2,7 +2,7 @@ import { ApiRoutes } from '@/api';
 import axiosInstance from '@/lib/axios';
 import { unwrap } from '@/lib/unwrap';
 import { ApiResponse } from '@/types/api-response';
-import { Cart, CartItem } from '@/types/cart';
+import { Cart } from '@/types/cart';
 
 // ---------------- GET USER CART ----------------
 export const getCart = async (): Promise<Cart> => {
@@ -15,7 +15,9 @@ export const getCart = async (): Promise<Cart> => {
 
 // ---------------- CREATE CART ----------------
 // Usually not needed manually, but keeping for completeness
-export const createCart = async (items: CartItem[]): Promise<Cart> => {
+export const createCart = async (
+  items: { productId: string; quantity: number }[]
+): Promise<Cart> => {
   const res = (await axiosInstance.post<ApiResponse<Cart>>(
     ApiRoutes.cart.addItem,
     { items }
@@ -25,8 +27,10 @@ export const createCart = async (items: CartItem[]): Promise<Cart> => {
 };
 
 // ---------------- UPDATE CART ----------------
-export const updateCart = async (items: CartItem[]): Promise<Cart> => {
-  const res = (await axiosInstance.patch<ApiResponse<Cart>>(
+export const updateCart = async (
+  items: { productId: string; quantity: number }[]
+): Promise<Cart> => {
+  const res = (await axiosInstance.post<ApiResponse<Cart>>(
     ApiRoutes.cart.update,
     { items }
   )) as unknown as ApiResponse<Cart>;

@@ -14,7 +14,7 @@ interface SeedUser {
   username: string;
 }
 
-const REFERRAL_CODE = 'SAGEP-4875-ZMKKOA';
+const REFERRAL_CODE = 'SAGEP-B151-OYYS4L';
 
 const seedUsers: SeedUser[] = [
   {

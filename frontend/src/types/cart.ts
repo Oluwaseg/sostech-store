@@ -1,9 +1,11 @@
 // cart.type.ts
 
+import { Product } from './product';
+
 export interface CartItem {
   _id?: string;
 
-  product: string; // Product _id
+  product: string | Product; // Product _id or Product object
   quantity: number;
 
   price: number; // price at time added

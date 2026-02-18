@@ -2,15 +2,15 @@ import { ApiRoutes } from '@/api';
 import axiosInstance from '@/lib/axios';
 import { unwrap } from '@/lib/unwrap';
 import { ApiResponse } from '@/types/api-response';
-import { Review } from '@/types/review';
+import { Review, ReviewListResponse } from '@/types/review';
 
 // ---------------- GET REVIEWS BY PRODUCT ----------------
 export const getReviewsByProduct = async (
   productId: string
-): Promise<Review[]> => {
-  const res = (await axiosInstance.get<ApiResponse<Review[]>>(
+): Promise<ReviewListResponse> => {
+  const res = (await axiosInstance.get<ApiResponse<ReviewListResponse>>(
     ApiRoutes.reviews.listByProduct(productId)
-  )) as unknown as ApiResponse<Review[]>;
+  )) as unknown as ApiResponse<ReviewListResponse>;
 
   return unwrap(res);
 };
@@ -31,19 +31,6 @@ export const createReview = async (
 ): Promise<Review> => {
   const res = (await axiosInstance.post<ApiResponse<Review>>(
     ApiRoutes.reviews.listByProduct(productId),
-    data
-  )) as unknown as ApiResponse<Review>;
-
-  return unwrap(res);
-};
-
-// ---------------- UPDATE REVIEW ----------------
-export const updateReview = async (
-  reviewId: string,
-  data: { rating: number; comment?: string }
-): Promise<Review> => {
-  const res = (await axiosInstance.patch<ApiResponse<Review>>(
-    ApiRoutes.reviews.details(reviewId),
     data
   )) as unknown as ApiResponse<Review>;
 

@@ -1,10 +1,11 @@
 import { Providers } from '@/providers';
 // import type { Metadata } from 'next';
+import { CartProvider } from '@/contexts/cart-context';
+import { CurrencyProvider } from '@/contexts/currency-context';
+import { WishlistProvider } from '@/contexts/wishlist-context';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 import './globals.css';
-import { CartProvider } from '@/contexts/cart-context';
-import { WishlistProvider } from '@/contexts/wishlist-context';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,7 +34,9 @@ export default function RootLayout({
       >
         <Providers>
           <CartProvider>
-            <WishlistProvider>{children}</WishlistProvider>
+            <WishlistProvider>
+              <CurrencyProvider>{children}</CurrencyProvider>
+            </WishlistProvider>
           </CartProvider>
           <Toaster position='top-center' richColors />
         </Providers>

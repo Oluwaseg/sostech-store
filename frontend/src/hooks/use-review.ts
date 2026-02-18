@@ -3,9 +3,8 @@ import {
   deleteReview,
   getReviewById,
   getReviewsByProduct,
-  updateReview,
 } from '@/services/review.service';
-import { Review } from '@/types/review';
+import { Review, ReviewListResponse } from '@/types/review';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -25,7 +24,7 @@ const REVIEW_KEYS = {
 ================================= */
 
 export const useReviewsByProduct = (productId: string) => {
-  return useQuery<Review[], Error>({
+  return useQuery<ReviewListResponse, Error>({
     queryKey: REVIEW_KEYS.lists(productId),
     queryFn: () => getReviewsByProduct(productId),
     enabled: !!productId,
@@ -59,53 +58,27 @@ export const useCreateReview = () => {
   >({
     mutationFn: ({ productId, data }) => createReview(productId, data),
 
-    onSuccess: (newReview, variables) => {
-      // Update product reviews list cache
-      queryClient.setQueryData<Review[]>(
-        REVIEW_KEYS.lists(variables.productId),
-        (old = []) => [newReview, ...old]
-      );
-
-      toast.success('Review created successfully');
-    },
-
-    onError: (error) => {
-      toast.error(error.message || 'Failed to create review');
-    },
-  });
-};
-
-/* ===============================
-   UPDATE REVIEW
-================================= */
-
-export const useUpdateReview = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation<
-    Review,
-    Error,
-    { reviewId: string; data: { rating: number; comment?: string } }
-  >({
-    mutationFn: ({ reviewId, data }) => updateReview(reviewId, data),
-
-    onSuccess: (updatedReview) => {
-      // Update single review cache
-      queryClient.setQueryData(
-        REVIEW_KEYS.detail(updatedReview._id),
-        updatedReview
-      );
-
-      // Invalidate all review lists (safe + consistent)
+    onSuccess: (review, variables) => {
+      // Refetch reviews list (safe for upsert)
       queryClient.invalidateQueries({
-        queryKey: REVIEW_KEYS.all,
+        queryKey: REVIEW_KEYS.lists(variables.productId),
       });
 
-      toast.success('Review updated successfully');
+      // Refetch product detail (averageRating, reviewCount, etc.)
+      queryClient.invalidateQueries({
+        queryKey: ['products', 'detail', variables.productId],
+      });
+
+      const msg =
+        review.createdAt === review.updatedAt
+          ? 'Review created successfully'
+          : 'Review updated successfully';
+
+      toast.success(msg);
     },
 
     onError: (error) => {
-      toast.error(error.message || 'Failed to update review');
+      toast.error(error.message || 'Failed to submit review');
     },
   });
 };

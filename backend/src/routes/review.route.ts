@@ -10,7 +10,6 @@ router.get('/:id', reviewController.getReviewById);
 
 // Protected: create/update/delete (ownership enforced in controller/service)
 router.post('/product/:product', auth, reviewController.createReview);
-router.patch('/:id', auth, reviewController.updateReview);
 router.delete('/:id', auth, reviewController.deleteReview);
 
 export default router;

@@ -36,15 +36,25 @@ class ReviewService {
       throw new Error('Product not found');
     }
 
-    // Create review (unique index on product+user will prevent duplicates)
-    const review = await Review.create({
-      product: data.product,
-      user: data.user,
-      rating: data.rating,
-      comment: data.comment,
-    });
+    const review = await Review.findOneAndUpdate(
+      {
+        product: data.product,
+        user: data.user,
+      },
+      {
+        $set: {
+          rating: data.rating,
+          ...(data.comment !== undefined && { comment: data.comment }),
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      }
+    );
 
-    // Recalculate product rating
+    // Always recalc (cheap + safe)
     await this.recalcProductRating(data.product);
 
     await review.populate({ path: 'user', select: 'name email' });

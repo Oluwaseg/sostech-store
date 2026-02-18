@@ -26,6 +26,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { CurrencySwitcher } from './currency-switcher';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -613,6 +614,9 @@ export function Navbar() {
                           <p className='text-xs text-foreground/50 mt-1'>
                             {user?.email || ''}
                           </p>
+                          <div className='mt-3'>
+                            <CurrencySwitcher />
+                          </div>
                         </div>
 
                         {/* Menu Items */}

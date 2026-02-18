@@ -8,38 +8,29 @@ const COOKIE_NAME = process.env.JWT_COOKIE_NAME || 'token';
  * - reads token from `Authorization: Bearer <token>` header OR from a cookie
  * - verifies the token using `verifyToken` and attaches payload to `req.user`
  */
-const extractTokenFromHeaderOrCookie = (req: Request): string | undefined => {
-  let token: string | undefined;
-
-  const authHeader = req.headers.authorization;
-  if (
-    authHeader &&
-    typeof authHeader === 'string' &&
-    authHeader.startsWith('Bearer ')
-  ) {
-    token = authHeader.split(' ')[1];
+// Only read the JWT from the cookie.  We prefer a cookie-based
+// approach for frontend clients and avoid having to send an
+// Authorization header (makes CSR requests simpler).
+const extractTokenFromCookie = (req: Request): string | undefined => {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader || typeof cookieHeader !== 'string') {
+    return undefined;
   }
 
-  if (!token) {
-    const cookieHeader = req.headers.cookie;
-    if (cookieHeader && typeof cookieHeader === 'string') {
-      const cookies = cookieHeader.split(';').map((c) => c.trim());
-      for (const c of cookies) {
-        const [name, ...valParts] = c.split('=');
-        if (name === COOKIE_NAME) {
-          token = decodeURIComponent(valParts.join('='));
-          break;
-        }
-      }
+  const cookies = cookieHeader.split(';').map((c) => c.trim());
+  for (const c of cookies) {
+    const [name, ...valParts] = c.split('=');
+    if (name === COOKIE_NAME) {
+      return decodeURIComponent(valParts.join('='));
     }
   }
 
-  return token;
+  return undefined;
 };
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = extractTokenFromHeaderOrCookie(req);
+    const token = extractTokenFromCookie(req);
 
     if (!token) {
       return (res as any).error(
@@ -50,7 +41,10 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     }
 
     const payload = verifyToken(token);
-    (req as any).user = payload;
+    (req as any).user = {
+      ...payload,
+      _id: payload.userId,
+    };
 
     return next();
   } catch (error: any) {
@@ -69,11 +63,14 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
  */
 const authOptional = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = extractTokenFromHeaderOrCookie(req);
+    const token = extractTokenFromCookie(req);
     if (!token) return next();
 
     const payload = verifyToken(token);
-    (req as any).user = payload;
+    (req as any).user = {
+      ...payload,
+      _id: payload.userId,
+    };
     return next();
   } catch (error) {
     // If token invalid, we ignore and continue as anonymous

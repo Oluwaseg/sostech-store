@@ -48,14 +48,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const hasMergedRef = useRef(false);
 
   // Map server cart to local-friendly CartItem[]
-  const serverCartItems: CartItem[] = (serverCartData?.items ?? []).map(
-    (it) => ({
-      id: typeof it.product === 'string' ? it.product : it.product._id,
-      name: typeof it.product === 'string' ? undefined : it.product.name,
-      price: it.price,
-      quantity: it.quantity,
-    })
-  );
+  const serverCartItems: CartItem[] = (serverCartData?.items ?? [])
+    .filter((it) => it.product) // 🚨 IMPORTANT
+    .map((it) => {
+      const productId =
+        typeof it.product === 'string' ? it.product : it.product._id;
+
+      return {
+        id: productId,
+        name: typeof it.product === 'string' ? undefined : it.product.name,
+        price: it.price,
+        quantity: it.quantity,
+      };
+    });
 
   // Use server cart when authenticated, local cart when guest
   const cartItems = isAuthenticated ? serverCartItems : localCart;

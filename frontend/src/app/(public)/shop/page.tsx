@@ -4,19 +4,25 @@ import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { useCartContext } from '@/contexts/cart-context';
+import { useCurrency } from '@/contexts/currency-context';
 import { useWishlist } from '@/contexts/wishlist-context';
 import { useProducts } from '@/hooks/use-product';
+import { formatPrice } from '@/lib/format-price';
 import type { Product } from '@/types/product';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { ArrowRight, Heart, ShoppingCart, Star } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function ShopPage() {
   const { addToCart } = useCartContext();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [addedItems, setAddedItems] = useState<string[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(12);
+  const { currency, convert } = useCurrency();
 
-  // Fetch products from the hook (no hardcoded data)
-  const { data, isLoading, isError } = useProducts({ limit: 12 });
+  const { data, isLoading, isError } = useProducts({ page, limit });
   const products: Product[] = data?.products ?? [];
 
   const handleAddToCart = (product: Product) => {
@@ -45,101 +51,212 @@ export default function ShopPage() {
     }
   };
 
+  function RatingStars({ rating }: { rating: number }) {
+    return (
+      <div className='flex items-center gap-1'>
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            size={14}
+            className={
+              i < Math.round(rating)
+                ? 'fill-accent text-accent'
+                : 'text-foreground/20'
+            }
+          />
+        ))}
+        <span className='text-xs text-foreground/60 ml-1'>
+          {rating.toFixed(1)}
+        </span>
+      </div>
+    );
+  }
+
+  function ProductCard({ product }: { product: Product }) {
+    const isAdded = addedItems.includes(product._id);
+    const inWishlist = isInWishlist(product._id);
+
+    return (
+      <Link href={`/shop/${product.slug}`}>
+        <div className='group cursor-pointer'>
+          <div className='relative overflow-hidden rounded-lg bg-secondary/50 aspect-square mb-4'>
+            <Image
+              src={product.images?.[0]?.url ?? '/placeholder.png'}
+              alt={product.name}
+              fill
+              className='object-cover group-hover:scale-110 transition-transform duration-500'
+            />
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleWishlist(product);
+              }}
+              className='absolute top-3 right-3 p-2.5 rounded-full bg-white/90 hover:bg-white transition-colors shadow-sm'
+            >
+              <Heart
+                size={18}
+                className={
+                  inWishlist ? 'fill-red-500 text-red-500' : 'text-foreground'
+                }
+              />
+            </button>
+          </div>
+          <div className='space-y-2'>
+            <h3 className='font-semibold text-foreground text-sm group-hover:text-primary transition-colors line-clamp-2'>
+              {product.name}
+            </h3>
+            <RatingStars rating={product.averageRating ?? 0} />
+            <div className='flex items-center justify-between pt-1'>
+              <p className='text-lg font-bold text-primary'>
+                {formatPrice(convert(product.basePrice), currency)}
+              </p>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddToCart(product);
+                }}
+                className={`p-2 rounded-lg transition-all ${
+                  isAdded
+                    ? 'bg-green-100 text-green-600'
+                    : 'bg-primary/10 text-primary hover:bg-primary/20'
+                }`}
+              >
+                <ShoppingCart size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
   return (
     <main>
       <Navbar />
-      <section className='pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-background'>
-        <div className='max-w-7xl mx-auto'>
-          <div className='space-y-12'>
-            <div className='space-y-4'>
-              <h1 className='text-5xl font-bold text-foreground'>
-                Curated Products
-              </h1>
-              <p className='text-lg text-foreground/60'>
-                Handpicked items that meet our standards of quality, usefulness,
-                and value.
-              </p>
-            </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-              {isLoading ? (
-                <div>Loading products...</div>
-              ) : isError ? (
-                <div>Failed to load products.</div>
-              ) : products.length === 0 ? (
-                <div>No products found.</div>
-              ) : (
-                products.map((product) => (
-                  <div
-                    key={product._id}
-                    className='bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all group'
-                  >
-                    <div className='w-full h-48 bg-secondary/30 flex items-center justify-center relative overflow-hidden'>
-                      <div className='text-6xl text-accent/20 group-hover:scale-110 transition-transform'>
-                        ✓
-                      </div>
-                    </div>
-                    <div className='p-6 space-y-4'>
-                      <div>
-                        <h3 className='font-bold text-foreground text-lg'>
-                          {product.name}
-                        </h3>
-                        <p className='text-accent font-bold text-lg mt-2'>
-                          ${product.basePrice}
-                        </p>
-                      </div>
-                      <div className='flex items-center gap-1'>
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className='text-accent'>
-                            ★
-                          </span>
-                        ))}
-                        <span className='text-sm text-foreground/60 ml-2'>
-                          {product.averageRating ?? '—'}
-                        </span>
-                      </div>
-                      <div className='flex gap-2 pt-4'>
-                        <Button
-                          onClick={() => handleAddToCart(product)}
-                          className={`flex-1 transition-all ${
-                            addedItems.includes(product._id)
-                              ? 'bg-green-600 hover:bg-green-700'
-                              : 'bg-primary hover:bg-primary/90'
-                          } text-primary-foreground font-medium`}
-                        >
-                          <ShoppingCart size={18} className='mr-2' />
-                          {addedItems.includes(product._id)
-                            ? 'Added!'
-                            : 'Add to Cart'}
-                        </Button>
-                        <Button
-                          onClick={() => handleWishlist(product)}
-                          variant='outline'
-                          size='icon'
-                          className={`transition-all ${
-                            isInWishlist(product._id)
-                              ? 'bg-red-50 border-red-300 text-red-500 hover:bg-red-100'
-                              : 'border-primary text-primary hover:bg-primary/5 bg-transparent'
-                          }`}
-                        >
-                          <Heart
-                            size={18}
-                            fill={
-                              isInWishlist(product._id)
-                                ? 'currentColor'
-                                : 'none'
-                            }
-                          />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
+      {/* Hero Section */}
+      <section className='relative overflow-hidden bg-gradient-to-b from-primary/5 to-background pt-32 pb-24 px-4 sm:px-6 lg:px-8'>
+        <div className='max-w-7xl mx-auto'>
+          <div className='flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto'>
+            <div className='inline-block'>
+              <span className='text-xs font-semibold text-primary uppercase tracking-widest'>
+                Curated Collection
+              </span>
+            </div>
+            <h1 className='text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-tight text-balance'>
+              Discover Premium Products
+            </h1>
+            <p className='text-lg sm:text-xl text-foreground/60 max-w-2xl text-balance'>
+              Handpicked items that combine quality, functionality, and
+              exceptional value. Every product tells a story.
+            </p>
+            <div className='flex items-center gap-3 pt-4'>
+              <div className='w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center'>
+                <ArrowRight size={20} className='text-accent' />
+              </div>
+              <p className='text-sm font-semibold text-foreground'>
+                Explore our latest collection below
+              </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Products Section */}
+      <section className='px-4 sm:px-6 lg:px-8 py-20 bg-background'>
+        <div className='max-w-7xl mx-auto'>
+          {/* Section Header */}
+          <div className='flex items-center justify-between mb-16'>
+            <div>
+              <h2 className='text-3xl sm:text-4xl font-bold text-foreground mb-2'>
+                All Products
+              </h2>
+              <p className='text-foreground/60'>
+                Shop from our complete collection
+              </p>
+            </div>
+            <div className='hidden sm:flex items-center gap-2 bg-muted p-1 rounded-lg'>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className='bg-transparent px-3 py-2 text-sm font-medium text-foreground focus:outline-none'
+              >
+                <option value={6}>Show 6</option>
+                <option value={12}>Show 12</option>
+                <option value={24}>Show 24</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          {isLoading ? (
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8'>
+              {[...Array(12)].map((_, i) => (
+                <div key={i} className='animate-pulse'>
+                  <div className='bg-muted aspect-square rounded-lg mb-4' />
+                  <div className='h-4 bg-muted rounded w-3/4 mb-2' />
+                  <div className='h-3 bg-muted rounded w-1/2' />
+                </div>
+              ))}
+            </div>
+          ) : isError ? (
+            <div className='text-center py-20'>
+              <p className='text-foreground/60'>
+                Failed to load products. Please try again.
+              </p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className='text-center py-20'>
+              <p className='text-foreground/60'>No products found.</p>
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8'>
+              {products.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {products.length > 0 && (
+            <div className='flex flex-col sm:flex-row items-center justify-between gap-6 mt-20 pt-12 border-t border-border'>
+              <div className='flex items-center gap-3'>
+                <span className='text-sm text-foreground/60'>
+                  Page{' '}
+                  <span className='font-semibold text-foreground'>
+                    {data?.page ?? page}
+                  </span>{' '}
+                  of{' '}
+                  <span className='font-semibold text-foreground'>
+                    {data?.pages ?? 1}
+                  </span>
+                </span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  variant='outline'
+                  className='disabled:opacity-50'
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={page >= (data?.pages ?? 1)}
+                  className='disabled:opacity-50'
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       <Footer />
     </main>
   );

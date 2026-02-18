@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import logger from '../src/libs/logger';
 import { Category } from '../src/models/Category';
+import { Product } from '../src/models/Product';
 import { Subcategory } from '../src/models/SubCategory';
 import { User } from '../src/models/User';
-import { Product } from '../src/models/Product';
 
 dotenv.config();
 
@@ -84,6 +84,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['smartphone', 'android', 'pixel', 'google'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1527430253220-4f2b9719f55e?w=500',
+        publicId: 'sostech/products/google-pixel-8-pro',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'OnePlus 12',
@@ -98,6 +105,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['smartphone', 'android', 'gaming', 'oneplus'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500',
+        publicId: 'sostech/products/oneplus-12',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Electronics - Laptops
@@ -114,6 +128,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['laptop', 'macbook', 'professional', 'apple'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
+        publicId: 'sostech/products/macbook-pro-16-m3-max',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Dell XPS 15',
@@ -128,6 +149,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['laptop', 'windows', 'gaming', 'professional'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1518110799669-ecf926333c3a?w=500',
+        publicId: 'sostech/products/dell-xps-15',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Lenovo ThinkPad X1 Carbon',
@@ -142,6 +170,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['laptop', 'business', 'windows', 'lenovo'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500',
+        publicId: 'sostech/products/lenovo-thinkpad-x1-carbon',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Electronics - Headphones
@@ -158,6 +193,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['headphones', 'wireless', 'noise-cancelling', 'premium'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=500',
+        publicId: 'sostech/products/sony-wh-1000xm5',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Apple AirPods Pro (2nd Gen)',
@@ -172,6 +214,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['earbuds', 'wireless', 'airpods', 'apple'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500',
+        publicId: 'sostech/products/apple-airpods-pro-2nd-gen',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Bose QuietComfort Ultra Headphones',
@@ -186,6 +235,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['headphones', 'wireless', 'noise-cancelling', 'bose'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500',
+        publicId: 'sostech/products/bose-quietcomfort-ultra',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Fashion - Men's Clothing
@@ -202,6 +258,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['clothing', 'tshirt', 'mens', 'casual'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
+        publicId: 'sostech/products/premium-cotton-tshirt',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Formal Business Shirt',
@@ -216,6 +279,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['clothing', 'formal', 'mens', 'business'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1562158070-1f7a8f6247db?w=500',
+        publicId: 'sostech/products/formal-business-shirt',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Fashion - Shoes
@@ -232,6 +302,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['shoes', 'running', 'athletic', 'sports'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1515548219659-65efc9a268f6?w=500',
+        publicId: 'sostech/products/running-athletic-shoes',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Casual Sneakers',
@@ -246,6 +323,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['shoes', 'sneakers', 'casual', 'mens'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1528701800484-41b1d44f983c?w=500',
+        publicId: 'sostech/products/casual-sneakers',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Home & Garden - Furniture
@@ -262,6 +346,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['furniture', 'dining', 'wooden', 'home'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?w=500',
+        publicId: 'sostech/products/wooden-dining-table',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Comfortable Office Chair',
@@ -276,6 +367,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['furniture', 'chair', 'office', 'ergonomic'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1581180696654-6c0fdc74b6cd?w=500',
+        publicId: 'sostech/products/comfortable-office-chair',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Sports & Outdoors
@@ -292,6 +390,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['yoga', 'fitness', 'mat', 'exercise'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1571019613572-2b0c1a9d1278?w=500',
+        publicId: 'sostech/products/yoga-mat',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Camping Tent',
@@ -306,6 +411,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['camping', 'tent', 'outdoor', 'adventure'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1501426026826-31c667bdf23d?w=500',
+        publicId: 'sostech/products/camping-tent',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Books & Media
@@ -322,6 +434,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['book', 'programming', 'education', 'technology'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500',
+        publicId: 'sostech/products/the-art-of-programming',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Fiction Adventure Novel',
@@ -336,6 +455,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['book', 'fiction', 'adventure', 'novel'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=500',
+        publicId: 'sostech/products/fiction-adventure-novel',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Beauty & Personal Care
@@ -352,6 +478,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['skincare', 'cream', 'moisturizer', 'natural'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1580894732444-54f84b913e52?w=500',
+        publicId: 'sostech/products/moisturizing-face-cream',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Premium Makeup Set',
@@ -366,6 +499,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['makeup', 'cosmetics', 'beauty', 'set'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1586034676321-e5d15f1abe9d?w=500',
+        publicId: 'sostech/products/premium-makeup-set',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Toys & Games
@@ -382,6 +522,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['toys', 'action-figures', 'collectibles', 'figurines'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1561353359-87bcfbad2411?w=500',
+        publicId: 'sostech/products/action-figure-collection',
+        isThumbnail: true,
+      },
+    ],
   },
   {
     name: 'Latest AAA Video Game',
@@ -396,6 +543,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['video-game', 'gaming', 'ps5', 'xbox'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1587202372775-454b563a4806?w=500',
+        publicId: 'sostech/products/latest-aaa-video-game',
+        isThumbnail: true,
+      },
+    ],
   },
 
   // Automotive
@@ -412,6 +566,13 @@ const seedProducts: SeedProduct[] = [
     tags: ['car-accessories', 'seat-covers', 'automotive'],
     isPublished: true,
     visibility: 'public',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=500',
+        publicId: 'sostech/products/car-seat-covers-set',
+        isThumbnail: true,
+      },
+    ],
   },
 ];
 
@@ -454,9 +615,7 @@ async function seedProductsData(): Promise<void> {
     const adminUser = await User.findOne({ role: 'admin' });
 
     if (!adminUser) {
-      logger.error(
-        'No admin user found. Please create an admin user first.'
-      );
+      logger.error('No admin user found. Please create an admin user first.');
       await disconnectDB();
       process.exit(1);
     }

@@ -1,3 +1,6 @@
+import { Category } from './category';
+import { Subcategory } from './subcategory';
+
 export type ProductVisibility = 'public' | 'private' | 'archived';
 
 export interface ProductImage {
@@ -20,8 +23,8 @@ export interface Product {
 
   images: ProductImage[];
 
-  category: string;
-  subcategory?: string;
+  category: Category;
+  subcategory?: Subcategory;
   createdBy: string;
 
   brand?: string;

@@ -13,22 +13,25 @@ class ReviewController {
         );
       }
 
+      const userId = user._id || user.userId;
+
       const { product } = req.params;
       const { rating, comment } = req.body;
 
       const review = await reviewService.createReview({
         product: product || req.body.product,
-        user: user._id,
+        user: userId,
         rating,
         comment,
       });
 
-      return (res as any).success(
-        review,
-        'Review created successfully',
-        null,
-        201
-      );
+      // the service handles both creation and updates
+      const msg =
+        review.createdAt.getTime() === review.updatedAt.getTime()
+          ? 'Review created successfully'
+          : 'Review updated successfully';
+
+      return (res as any).success(review, msg, null, 201);
     } catch (error: any) {
       return (res as any).error(
         error.message || 'Failed to create review',
@@ -92,6 +95,8 @@ class ReviewController {
         );
       }
 
+      const userId = user._id || user.userId;
+
       let { id } = req.params;
       if (Array.isArray(id)) id = id[0];
 
@@ -99,7 +104,7 @@ class ReviewController {
 
       const review = await reviewService.updateReview(
         id,
-        user._id,
+        userId,
         req.body,
         isAdmin
       );
@@ -124,12 +129,14 @@ class ReviewController {
         );
       }
 
+      const userId = user._id || user.userId;
+
       let { id } = req.params;
       if (Array.isArray(id)) id = id[0];
 
       const isAdmin = user.role === 'admin';
 
-      await reviewService.deleteReview(id, user._id, isAdmin);
+      await reviewService.deleteReview(id, userId, isAdmin);
       return (res as any).success(null, 'Review deleted successfully');
     } catch (error: any) {
       return (res as any).error(

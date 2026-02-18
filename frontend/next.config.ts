@@ -1,8 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  reactStrictMode: true, // optional, good practice
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // ⚡ accepts all hostnames
+      },
+    ],
+  },
 };
 
 export default nextConfig;

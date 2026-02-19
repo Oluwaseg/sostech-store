@@ -17,6 +17,7 @@ import {
   Plus,
   Search,
   Settings,
+  Shield,
   ShoppingBag,
   ShoppingCart,
   User,
@@ -32,6 +33,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'cart' | 'wishlist'>('cart');
   const pathname = usePathname();
   const { getCartCount, cartItems, removeFromCart, updateQuantity, clearCart } =
@@ -50,6 +52,8 @@ export function Navbar() {
   const cartButtonRef = useRef<HTMLButtonElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const userButtonRef = useRef<HTMLButtonElement>(null);
+  const adminDropdownRef = useRef<HTMLDivElement>(null);
+  const adminButtonRef = useRef<HTMLButtonElement>(null);
 
   const isDashboard = pathname.startsWith('/dashboard');
 
@@ -57,6 +61,7 @@ export function Navbar() {
     setIsOpen(false);
     setIsCartDropdownOpen(false);
     setIsUserDropdownOpen(false);
+    setIsAdminDropdownOpen(false);
   }, [pathname]);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -75,6 +80,14 @@ export function Navbar() {
       !userButtonRef.current.contains(event.target as Node)
     ) {
       setIsUserDropdownOpen(false);
+    }
+    if (
+      adminDropdownRef.current &&
+      !adminDropdownRef.current.contains(event.target as Node) &&
+      adminButtonRef.current &&
+      !adminButtonRef.current.contains(event.target as Node)
+    ) {
+      setIsAdminDropdownOpen(false);
     }
   };
 
@@ -111,203 +124,21 @@ export function Navbar() {
 
   const dashboardAdminItems = [
     { href: '/dashboard/products', label: 'Products', icon: Package },
+    {
+      href: '/dashboard/categories',
+      label: 'Categories',
+      icon: LayoutDashboard,
+    },
+    {
+      href: '/dashboard/subcategories',
+      label: 'Subcategories',
+      icon: LayoutDashboard,
+    },
+    { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
+    { href: '/dashboard/users', label: 'Users', icon: User },
   ];
 
   const isAdmin = user?.role === 'admin' || user?.role === 'moderator';
-
-  if (isDashboard) {
-    // Dashboard nav links
-    const navItems = [
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
-      { href: '/dashboard/profile', label: 'Profile', icon: User },
-      { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-    ];
-
-    const adminItems = [
-      { href: '/dashboard/products', label: 'Products', icon: Package },
-    ];
-
-    const renderLinks = (items: typeof navItems) =>
-      items.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-              isActive
-                ? 'bg-primary text-primary-foreground'
-                : 'text-foreground/60 hover:text-foreground hover:bg-muted'
-            }`}
-          >
-            <Icon size={16} />
-            {item.label}
-          </Link>
-        );
-      });
-
-    return (
-      <nav className='sticky top-0 z-50 bg-card border-b border-border'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='flex justify-between items-center h-16'>
-            {/* Logo */}
-            <Link href='/dashboard' className='flex items-center gap-2.5'>
-              <Image
-                src={logo}
-                alt='SOS Store Logo'
-                width={32}
-                height={24}
-                priority
-                className='object-contain'
-              />
-              <span className='font-bold text-primary text-sm'>Dashboard</span>
-            </Link>
-
-            {/* Desktop nav links */}
-            <div className='hidden lg:flex items-center gap-1'>
-              {renderLinks(navItems)}
-              {isAdmin && renderLinks(adminItems)}
-            </div>
-
-            {/* Right section */}
-            <div className='flex items-center gap-2'>
-              {/* User info dropdown */}
-              {isAuthenticated && (
-                <div className='relative' ref={userDropdownRef}>
-                  <button
-                    ref={userButtonRef}
-                    onClick={() => setIsUserDropdownOpen((prev) => !prev)}
-                    className='hidden md:flex items-center gap-2 px-3 py-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors'
-                  >
-                    <div className='w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center'>
-                      <User size={16} className='text-primary' />
-                    </div>
-                    <div className='text-left'>
-                      <p className='text-xs font-semibold text-foreground'>
-                        {user?.name?.split(' ')[0] || 'User'}
-                      </p>
-                    </div>
-                    <ChevronDown
-                      size={16}
-                      className={`transition-transform ${isUserDropdownOpen ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-
-                  {isUserDropdownOpen && (
-                    <div className='absolute top-full right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg p-0 z-50'>
-                      <div className='px-4 py-3 border-b border-border'>
-                        <p className='text-xs font-semibold text-foreground/60'>
-                          Signed in as
-                        </p>
-                        <p className='text-sm font-bold text-foreground mt-1'>
-                          {user?.name || 'User'}
-                        </p>
-                        <p className='text-xs text-foreground/50 mt-1'>
-                          {user?.email || ''}
-                        </p>
-                      </div>
-                      <div className='py-2 space-y-1'>
-                        <Link
-                          href='/dashboard'
-                          onClick={() => setIsUserDropdownOpen(false)}
-                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                        >
-                          <LayoutDashboard size={16} /> Dashboard
-                        </Link>
-                        <Link
-                          href='/dashboard/orders'
-                          onClick={() => setIsUserDropdownOpen(false)}
-                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                        >
-                          <ShoppingBag size={16} /> Orders
-                        </Link>
-                        <Link
-                          href='/dashboard/profile'
-                          onClick={() => setIsUserDropdownOpen(false)}
-                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                        >
-                          <User size={16} /> Profile
-                        </Link>
-                        <Link
-                          href='/dashboard/settings'
-                          onClick={() => setIsUserDropdownOpen(false)}
-                          className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                        >
-                          <Settings size={16} /> Settings
-                        </Link>
-                      </div>
-                      <div className='border-t border-border pt-2 pb-2 px-2'>
-                        <button
-                          onClick={() => {
-                            handleLogout();
-                            setIsUserDropdownOpen(false);
-                          }}
-                          className='flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 rounded transition-colors'
-                        >
-                          <LogOut size={16} /> Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Mobile menu toggle */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className='lg:hidden p-2 hover:bg-muted rounded-md transition-colors'
-                aria-label='Toggle menu'
-              >
-                {isOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {isOpen && (
-          <div className='lg:hidden border-t border-border bg-card'>
-            <div className='px-4 py-3 flex flex-col gap-1'>
-              {renderLinks(navItems)}
-              {isAdmin && renderLinks(adminItems)}
-              <div className='pt-2 border-t border-border'>
-                {isAuthenticated ? (
-                  <>
-                    <Link href='/dashboard'>
-                      <Button
-                        variant='ghost'
-                        className='w-full justify-start text-xs'
-                      >
-                        <User size={16} /> Dashboard
-                      </Button>
-                    </Link>
-                    <Button
-                      variant='outline'
-                      className='w-full text-xs'
-                      onClick={() => {
-                        handleLogout();
-                        setIsOpen(false);
-                      }}
-                    >
-                      Logout
-                    </Button>
-                  </>
-                ) : (
-                  <Link href='/login'>
-                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs'>
-                      Sign In
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-    );
-  }
 
   // Store Navbar
   return (
@@ -680,6 +511,51 @@ export function Navbar() {
                       Sign In
                     </Button>
                   </Link>
+                )}
+
+                {/* Admin Dropdown */}
+                {isAuthenticated && isAdmin && (
+                  <div
+                    className='relative hidden md:block'
+                    ref={adminDropdownRef}
+                  >
+                    <button
+                      ref={adminButtonRef}
+                      onClick={() => setIsAdminDropdownOpen((prev) => !prev)}
+                      className='flex items-center gap-2 px-3 py-2 text-sm text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors'
+                      aria-label='Admin menu'
+                    >
+                      <Shield size={16} />
+                      <span className='hidden lg:inline'>Admin</span>
+                    </button>
+
+                    {isAdminDropdownOpen && (
+                      <div className='absolute top-full right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50'>
+                        <div className='px-4 py-3 border-b border-border flex items-center gap-2'>
+                          <Shield size={16} className='text-primary' />
+                          <p className='text-sm font-bold text-foreground'>
+                            Admin Panel
+                          </p>
+                        </div>
+                        <div className='py-2'>
+                          {dashboardAdminItems.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setIsAdminDropdownOpen(false)}
+                                className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                              >
+                                <Icon size={16} />
+                                {item.label}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Mobile Menu */}

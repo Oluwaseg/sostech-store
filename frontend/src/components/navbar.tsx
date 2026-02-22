@@ -798,10 +798,10 @@ export function Navbar() {
               className='fixed inset-0 bg-black/50 z-40 lg:hidden'
               onClick={() => setIsOpen(false)}
             />
-            {/* Panel */}
-            <div className='fixed right-0 top-0 h-screen w-80 bg-card shadow-xl z-50 flex flex-col overflow-y-auto animate-in slide-in-from-right-full duration-300 lg:hidden'>
+            {/* Panel - Full Screen */}
+            <div className='fixed inset-0 top-16 bg-card shadow-xl z-50 flex flex-col overflow-hidden animate-in slide-in-from-right-full duration-300 lg:hidden'>
               {/* Close Button */}
-              <div className='flex items-center justify-between px-4 py-4 border-b border-border sticky top-0 bg-card'>
+              <div className='flex items-center justify-between px-4 py-3 border-b border-border sticky top-0 bg-card'>
                 <span className='text-sm font-semibold text-foreground'>
                   Menu
                 </span>
@@ -814,98 +814,101 @@ export function Navbar() {
                 </button>
               </div>
 
-              {/* User Info Section - Top */}
-              {isAuthenticated ? (
-                <div className='px-4 py-4 border-b border-border bg-muted/50'>
-                  <div className='flex items-center gap-3 mb-3'>
-                    <div className='w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center'>
-                      <User size={20} className='text-primary' />
-                    </div>
-                    <div className='flex-1'>
-                      <p className='text-sm font-semibold text-foreground'>
-                        {user?.name || 'User'}
-                      </p>
-                      <p className='text-xs text-foreground/60'>
-                        {user?.email || ''}
-                      </p>
+              {/* Scrollable Content */}
+              <div className='flex-1 overflow-y-auto'>
+                {/* User Info Section - Top */}
+                {isAuthenticated ? (
+                  <div className='px-4 py-4 border-b border-border bg-muted/50'>
+                    <div className='flex items-center gap-3 mb-3'>
+                      <div className='w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center'>
+                        <User size={20} className='text-primary' />
+                      </div>
+                      <div className='flex-1'>
+                        <p className='text-sm font-semibold text-foreground'>
+                          {user?.name || 'User'}
+                        </p>
+                        <p className='text-xs text-foreground/60'>
+                          {user?.email || ''}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className='px-4 py-4 border-b border-border bg-muted/50'>
-                  <p className='text-sm font-semibold text-foreground mb-3'>
-                    Welcome to SOS Store
-                  </p>
-                  <Link
-                    href='/login'
-                    onClick={() => setIsOpen(false)}
-                    className='block'
-                  >
-                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold'>
-                      Sign In
-                    </Button>
-                  </Link>
-                </div>
-              )}
+                ) : (
+                  <div className='px-4 py-4 border-b border-border bg-muted/50'>
+                    <p className='text-sm font-semibold text-foreground mb-3'>
+                      Welcome to SOS Store
+                    </p>
+                    <Link
+                      href='/login'
+                      onClick={() => setIsOpen(false)}
+                      className='block'
+                    >
+                      <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold'>
+                        Sign In
+                      </Button>
+                    </Link>
+                  </div>
+                )}
 
-              {/* Primary Navigation */}
-              <div className='px-4 py-4 space-y-2 border-b border-border'>
-                {['Home', 'Shop', 'About', 'Contact'].map((item) => (
-                  <Link
-                    key={item}
-                    href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                    onClick={() => setIsOpen(false)}
-                    className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                  >
-                    {item}
-                  </Link>
-                ))}
+                {/* Primary Navigation */}
+                <div className='px-4 py-4 space-y-2 border-b border-border'>
+                  {['Home', 'Shop', 'About', 'Contact'].map((item) => (
+                    <Link
+                      key={item}
+                      href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+                      onClick={() => setIsOpen(false)}
+                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                    >
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* User Section - Authenticated Only */}
+                {isAuthenticated && (
+                  <div className='px-4 py-4 space-y-2 border-b border-border'>
+                    <p className='text-xs font-semibold text-foreground/60 uppercase tracking-wide px-3 mb-2'>
+                      Account
+                    </p>
+                    <Link
+                      href='/dashboard'
+                      onClick={() => setIsOpen(false)}
+                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                    >
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href='/dashboard/orders'
+                      onClick={() => setIsOpen(false)}
+                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                    >
+                      <ShoppingBag size={16} />
+                      Orders
+                    </Link>
+                    <Link
+                      href='/dashboard/profile'
+                      onClick={() => setIsOpen(false)}
+                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                    >
+                      <User size={16} />
+                      Profile
+                    </Link>
+                    <Link
+                      href='/dashboard/settings'
+                      onClick={() => setIsOpen(false)}
+                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
+                    >
+                      <Settings size={16} />
+                      Settings
+                    </Link>
+                  </div>
+                )}
               </div>
 
-              {/* User Section - Authenticated Only */}
-              {isAuthenticated && (
-                <div className='px-4 py-4 space-y-2 border-b border-border'>
-                  <p className='text-xs font-semibold text-foreground/60 uppercase tracking-wide px-3 mb-2'>
-                    Account
-                  </p>
-                  <Link
-                    href='/dashboard'
-                    onClick={() => setIsOpen(false)}
-                    className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                  >
-                    <LayoutDashboard size={16} />
-                    Dashboard
-                  </Link>
-                  <Link
-                    href='/dashboard/orders'
-                    onClick={() => setIsOpen(false)}
-                    className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                  >
-                    <ShoppingBag size={16} />
-                    Orders
-                  </Link>
-                  <Link
-                    href='/dashboard/profile'
-                    onClick={() => setIsOpen(false)}
-                    className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                  >
-                    <User size={16} />
-                    Profile
-                  </Link>
-                  <Link
-                    href='/dashboard/settings'
-                    onClick={() => setIsOpen(false)}
-                    className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                  >
-                    <Settings size={16} />
-                    Settings
-                  </Link>
-                </div>
-              )}
-
-              {/* Footer Actions */}
-              <div className='px-4 py-4 mt-auto border-t border-border space-y-2'>
-                <div className='mb-3'>
+              {/* Footer Actions - Sticky Bottom */}
+              <div className='px-4 py-4 border-t border-border space-y-3 bg-card flex-shrink-0'>
+                <div>
                   <CurrencySwitcher />
                 </div>
                 {isAuthenticated && (

@@ -7,6 +7,31 @@ class CartService {
     return Cart.findOne({ user: userId }).populate('items.product').lean();
   }
 
+  // compute price including any active flash sale
+  private computePrice(product: any): number {
+    const basePrice = product?.basePrice ?? 0;
+    let price = basePrice;
+
+    const fs = product?.flashSale;
+    if (
+      fs &&
+      fs.isActive &&
+      fs.startsAt &&
+      fs.endsAt &&
+      new Date() >= new Date(fs.startsAt) &&
+      new Date() <= new Date(fs.endsAt)
+    ) {
+      if (fs.discountType === 'percentage') {
+        price = basePrice - basePrice * (fs.discountValue / 100);
+      } else {
+        price = basePrice - fs.discountValue;
+      }
+      if (price < 0) price = 0;
+    }
+
+    return price;
+  }
+
   async createCart(
     userId: string,
     items: { productId: string; quantity: number }[]
@@ -19,7 +44,7 @@ class CartService {
       const product = await Product.findById(it.productId).lean();
       if (!product) throw new Error('Product not found: ' + it.productId);
 
-      const price = (product as any).basePrice ?? 0;
+      const price = this.computePrice(product);
       const qty = Math.max(1, Math.floor(it.quantity || 1));
       const subtotal = price * qty;
       total += subtotal;

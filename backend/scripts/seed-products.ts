@@ -25,6 +25,16 @@ interface SeedProduct {
     publicId: string;
     isThumbnail: boolean;
   }[];
+  // optional flash sale configuration
+  flashSale?: {
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    startsAt: Date;
+    endsAt: Date;
+    isActive: boolean;
+  };
+  // simple flag for best seller products
+  isBestSeller?: boolean;
 }
 
 const seedProducts: SeedProduct[] = [
@@ -34,10 +44,19 @@ const seedProducts: SeedProduct[] = [
     description:
       'Latest Apple flagship smartphone with A17 Pro chip, titanium design, and advanced camera system',
     sku: 'APPLE-IP15PM-001',
-    basePrice: 149999,
+    basePrice: 1499,
     stock: 25,
     category: 'Electronics',
     subcategory: 'Smartphones',
+    // example flash sale and best seller flag
+    flashSale: {
+      discountType: 'percentage',
+      discountValue: 10,
+      startsAt: new Date(),
+      endsAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      isActive: true,
+    },
+    isBestSeller: true,
     brand: 'Apple',
     tags: ['smartphone', 'ios', 'flagship', 'apple'],
     isPublished: true,
@@ -55,7 +74,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium Android smartphone with Snapdragon 8 Gen 3, 200MP camera, and dynamic AMOLED display',
     sku: 'SAMSUNG-S24U-001',
-    basePrice: 139999,
+    basePrice: 1399,
     stock: 30,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -76,7 +95,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Google flagship with Tensor G3, advanced AI features, and exceptional computational photography',
     sku: 'GOOGLE-P8P-001',
-    basePrice: 119999,
+    basePrice: 1199,
     stock: 20,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -97,7 +116,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Fast and smooth Android experience with Snapdragon 8 Gen 3, 120Hz AMOLED display, and 100W charging',
     sku: 'ONEPLUS-12-001',
-    basePrice: 64999,
+    basePrice: 649,
     stock: 40,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -120,7 +139,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Powerful laptop for professionals with M3 Max chip, 16" Liquid Retina XDR display, and exceptional battery life',
     sku: 'APPLE-MBP16M3-001',
-    basePrice: 249999,
+    basePrice: 2499,
     stock: 15,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -141,7 +160,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium Windows laptop with Intel Core i9, RTX 4090, 15.6" OLED display, and sleek design',
     sku: 'DELL-XPS15-001',
-    basePrice: 189999,
+    basePrice: 1899,
     stock: 18,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -162,7 +181,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Business laptop with Intel vPro, 14" IPS display, excellent keyboard, and portability',
     sku: 'LENOVO-X1C-001',
-    basePrice: 139999,
+    basePrice: 1399,
     stock: 22,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -185,7 +204,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium noise-cancelling headphones with 30-hour battery life, industry-leading ANC, and premium sound',
     sku: 'SONY-WH1000XM5-001',
-    basePrice: 29999,
+    basePrice: 299,
     stock: 35,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -206,7 +225,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium in-ear headphones with ANC, spatial audio, seamless Apple integration, and 6-hour battery',
     sku: 'APPLE-AIRPODS2-001',
-    basePrice: 24999,
+    basePrice: 249,
     stock: 50,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -227,7 +246,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Bose premium headphones with industry-leading noise cancellation and immersive sound quality',
     sku: 'BOSE-QCU-001',
-    basePrice: 34999,
+    basePrice: 349,
     stock: 25,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -250,7 +269,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Classic mens t-shirt made from 100% premium cotton with comfortable fit and durability',
     sku: 'FASHION-TSHIRT-001',
-    basePrice: 1499,
+    basePrice: 149,
     stock: 100,
     category: 'Fashion',
     subcategory: "Men's Clothing",
@@ -271,7 +290,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Professional formal shirt in white and blue, perfect for office and business meetings',
     sku: 'FASHION-FORMAL-001',
-    basePrice: 3499,
+    basePrice: 349,
     stock: 60,
     category: 'Fashion',
     subcategory: "Men's Clothing",
@@ -294,7 +313,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Lightweight running shoes with cushioned sole, breathable mesh, and excellent support',
     sku: 'FASHION-RUNNING-001',
-    basePrice: 4999,
+    basePrice: 499,
     stock: 80,
     category: 'Fashion',
     subcategory: 'Shoes',
@@ -315,7 +334,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Trendy casual sneakers in multiple colors with comfortable padding and stylish design',
     sku: 'FASHION-SNEAKER-001',
-    basePrice: 3999,
+    basePrice: 399,
     stock: 90,
     category: 'Fashion',
     subcategory: 'Shoes',
@@ -338,7 +357,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Elegant dining table made from solid wood, seats 6 people, with beautiful finish',
     sku: 'HOME-DINING-001',
-    basePrice: 24999,
+    basePrice: 2499,
     stock: 12,
     category: 'Home & Garden',
     subcategory: 'Furniture',
@@ -359,7 +378,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Ergonomic office chair with lumbar support, adjustable height, and breathable mesh back',
     sku: 'HOME-CHAIR-001',
-    basePrice: 8999,
+    basePrice: 899,
     stock: 40,
     category: 'Home & Garden',
     subcategory: 'Furniture',
@@ -382,7 +401,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium non-slip yoga mat with extra cushioning for comfort during exercise',
     sku: 'SPORTS-YOGA-001',
-    basePrice: 1999,
+    basePrice: 199,
     stock: 150,
     category: 'Sports & Outdoors',
     subcategory: 'Fitness Equipment',
@@ -403,7 +422,7 @@ const seedProducts: SeedProduct[] = [
     description:
       '4-person camping tent with waterproof material and easy setup for outdoor adventures',
     sku: 'SPORTS-TENT-001',
-    basePrice: 5999,
+    basePrice: 599,
     stock: 30,
     category: 'Sports & Outdoors',
     subcategory: 'Outdoor Gear',
@@ -426,7 +445,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Comprehensive guide to programming concepts and best practices for developers',
     sku: 'BOOKS-PROG-001',
-    basePrice: 1299,
+    basePrice: 129,
     stock: 50,
     category: 'Books & Media',
     subcategory: 'Non-Fiction Books',
@@ -447,7 +466,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Thrilling adventure novel with engaging characters and unexpected plot twists',
     sku: 'BOOKS-FICTION-001',
-    basePrice: 599,
+    basePrice: 59,
     stock: 80,
     category: 'Books & Media',
     subcategory: 'Fiction Books',
@@ -470,7 +489,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Hydrating face cream with natural ingredients for soft and glowing skin',
     sku: 'BEAUTY-CREAM-001',
-    basePrice: 999,
+    basePrice: 99,
     stock: 200,
     category: 'Beauty & Personal Care',
     subcategory: 'Skincare',
@@ -491,7 +510,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Complete makeup set with foundation, lipstick, eyeshadow, and brushes',
     sku: 'BEAUTY-MAKEUP-001',
-    basePrice: 2499,
+    basePrice: 249,
     stock: 75,
     category: 'Beauty & Personal Care',
     subcategory: 'Makeup',
@@ -514,7 +533,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Set of 5 detailed action figures with articulated joints and accessories',
     sku: 'TOYS-ACTION-001',
-    basePrice: 1499,
+    basePrice: 149,
     stock: 60,
     category: 'Toys & Games',
     subcategory: 'Action Figures',
@@ -535,7 +554,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Epic adventure video game for PS5/Xbox Series X with stunning graphics and immersive gameplay',
     sku: 'GAMES-AAA-001',
-    basePrice: 4999,
+    basePrice: 499,
     stock: 45,
     category: 'Toys & Games',
     subcategory: 'Video Games',
@@ -558,7 +577,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium car seat covers with cushioning for comfort and protection',
     sku: 'AUTO-SEAT-001',
-    basePrice: 3499,
+    basePrice: 349,
     stock: 55,
     category: 'Automotive',
     subcategory: 'Car Accessories',
@@ -670,7 +689,7 @@ async function seedProductsData(): Promise<void> {
           subcategoryId = subcategory._id;
         }
 
-        // Create product
+        // Create product (include optional flashSale and best‑seller flags)
         const newProduct = await Product.create({
           name: seedProduct.name,
           description: seedProduct.description,
@@ -684,6 +703,9 @@ async function seedProductsData(): Promise<void> {
           isPublished: seedProduct.isPublished,
           visibility: seedProduct.visibility,
           images: seedProduct.images || [],
+          // pass through extra fields if provided
+          flashSale: seedProduct.flashSale,
+          isBestSeller: seedProduct.isBestSeller,
           createdBy: adminUser._id,
         });
 

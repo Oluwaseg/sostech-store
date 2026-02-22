@@ -5,7 +5,7 @@ import authorize from '../middlewares/authorize.middleware';
 
 const router = Router();
 
-// Public
+// Public - optional auth for visibility filtering
 router.get('/', productController.getProducts);
 router.get('/slug/:slug', productController.getProductBySlug);
 router.get('/sku/:sku', productController.getProductBySku);

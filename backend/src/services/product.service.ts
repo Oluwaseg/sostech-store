@@ -20,6 +20,17 @@ export interface CreateProductData {
     publicId: string;
     isThumbnail: boolean;
   }[];
+
+  // optional promos / flags
+  flashSale?: {
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    startsAt: Date;
+    endsAt: Date;
+    isActive: boolean;
+  };
+  isBestSeller?: boolean;
+
   createdBy: string;
 }
 
@@ -40,6 +51,15 @@ export interface UpdateProductData {
     publicId: string;
     isThumbnail: boolean;
   }[];
+
+  flashSale?: {
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    startsAt: Date;
+    endsAt: Date;
+    isActive: boolean;
+  };
+  isBestSeller?: boolean;
 }
 
 interface FilterOptions {
@@ -52,6 +72,9 @@ interface FilterOptions {
   maxPrice?: number;
   tags?: string[];
   search?: string;
+  // optional boolean filters
+  flashSaleActive?: boolean;
+  isBestSeller?: boolean;
 }
 
 interface PaginationOptions {
@@ -123,6 +146,14 @@ class ProductService {
 
     if (filters?.brand) {
       query.brand = { $regex: filters.brand, $options: 'i' };
+    }
+
+    if (filters?.isBestSeller !== undefined) {
+      query.isBestSeller = filters.isBestSeller;
+    }
+
+    if (filters?.flashSaleActive !== undefined) {
+      query['flashSale.isActive'] = filters.flashSaleActive;
     }
 
     // Price range filter

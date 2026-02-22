@@ -32,6 +32,8 @@ class ProductController {
         maxPrice,
         tags,
         search,
+        flashSaleActive,
+        isBestSeller,
         page,
         limit,
       } = req.query;
@@ -41,13 +43,28 @@ class ProductController {
       if (subcategory) filters.subcategory = subcategory;
       if (isPublished !== undefined)
         filters.isPublished = isPublished === 'true';
-      if (visibility) filters.visibility = visibility;
       if (brand) filters.brand = brand;
       if (minPrice) filters.minPrice = parseFloat(minPrice as string);
       if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
       if (tags)
         filters.tags = Array.isArray(tags) ? tags : (tags as string).split(',');
       if (search) filters.search = search;
+      if (flashSaleActive !== undefined)
+        filters.flashSaleActive = flashSaleActive === 'true';
+      if (isBestSeller !== undefined)
+        filters.isBestSeller = isBestSeller === 'true';
+
+      // Determine user role (admin can see all, regular users see public only)
+      const user = (req as any).user;
+      const isAdmin = user && user.role === 'admin';
+
+      // If visibility is explicitly requested and user is admin, allow it
+      // Otherwise default to 'public' for non-admin users
+      if (visibility && isAdmin) {
+        filters.visibility = visibility;
+      } else if (!isAdmin) {
+        filters.visibility = 'public';
+      }
 
       const pagination = {
         page: page ? parseInt(page as string) : 1,

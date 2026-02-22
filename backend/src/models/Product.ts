@@ -29,6 +29,18 @@ export interface IProduct extends Document {
   averageRating: number;
   ratingCount: number;
 
+  // flash sale info – optional and computed when needed
+  flashSale?: {
+    discountType: 'percentage' | 'fixed';
+    discountValue: number;
+    startsAt: Date;
+    endsAt: Date;
+    isActive: boolean;
+  };
+
+  // flag set by analytics/admin
+  isBestSeller: boolean;
+
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -125,6 +137,35 @@ const productSchema = new Schema<IProduct>(
     ratingCount: {
       type: Number,
       default: 0,
+    },
+
+    // flash sale sub-document
+    flashSale: {
+      discountType: {
+        type: String,
+        enum: ['percentage', 'fixed'],
+      },
+
+      discountValue: {
+        type: Number,
+        min: 0,
+      },
+
+      startsAt: Date,
+      endsAt: Date,
+
+      isActive: {
+        type: Boolean,
+        default: false,
+        index: true,
+      },
+    },
+
+    // best seller flag
+    isBestSeller: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
 
     createdBy: {

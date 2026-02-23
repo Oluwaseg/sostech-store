@@ -45,6 +45,7 @@ export interface Product {
 
   averageRating: number;
   ratingCount: number;
+  reviewCount: number;
 
   flashSale?: FlashSale;
   isBestSeller: boolean;

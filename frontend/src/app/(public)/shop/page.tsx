@@ -78,23 +78,36 @@ export default function ShopPage() {
     }
   };
 
-  function RatingStars({ rating }: { rating: number }) {
+  function RatingStars({
+    rating,
+    reviewCount = 0,
+  }: {
+    rating: number;
+    reviewCount?: number;
+  }) {
     return (
-      <div className='flex items-center gap-1'>
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className={
-              i < Math.round(rating)
-                ? 'fill-accent text-accent'
-                : 'text-foreground/20'
-            }
-          />
-        ))}
-        <span className='text-xs text-foreground/60 ml-1'>
-          {rating.toFixed(1)}
-        </span>
+      <div className='space-y-1'>
+        <div className='flex items-center gap-1.5'>
+          {[...Array(5)].map((_, i) => (
+            <Star
+              key={i}
+              size={14}
+              className={
+                i < Math.round(rating)
+                  ? 'fill-accent text-accent'
+                  : 'text-foreground/20'
+              }
+            />
+          ))}
+          <span className='text-xs font-medium text-foreground'>
+            {rating.toFixed(1)}
+          </span>
+        </div>
+        {reviewCount > 0 && (
+          <span className='text-xs text-foreground/60'>
+            {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+          </span>
+        )}
       </div>
     );
   }
@@ -151,7 +164,10 @@ export default function ShopPage() {
             <h3 className='font-semibold text-foreground text-sm group-hover:text-primary transition-colors line-clamp-2'>
               {product.name}
             </h3>
-            <RatingStars rating={product.averageRating ?? 0} />
+            <RatingStars
+              rating={product.averageRating ?? 0}
+              reviewCount={product.reviewCount ?? 0}
+            />
             <div className='flex items-center justify-between pt-1'>
               <div className='flex flex-col gap-1'>
                 <p className='text-lg font-bold text-primary'>

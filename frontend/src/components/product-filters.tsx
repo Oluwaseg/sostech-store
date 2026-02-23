@@ -61,31 +61,6 @@ export function ProductFilters({
       })
     : [];
 
-  console.log(
-    '[v0] Subcategories loaded:',
-    safeSubcategories.length,
-    'All subcategories:',
-    safeSubcategories.map((s: any) => ({
-      name: s.name,
-      category: typeof s.category === 'string' ? s.category : s.category?._id,
-      categoryFull: s.category,
-    }))
-  );
-
-  if (filters.category) {
-    console.log(
-      '[v0] Selected category:',
-      filters.category,
-      'Filtered count:',
-      filteredSubcategories.length,
-      'Filtered subcategories:',
-      filteredSubcategories.map((s: any) => ({
-        name: s.name,
-        category: typeof s.category === 'string' ? s.category : s.category?._id,
-      }))
-    );
-  }
-
   const handleFilterChange = (newFilters: Partial<FilterState>) => {
     const updated = { ...filters, ...newFilters };
     // Reset subcategory when category changes

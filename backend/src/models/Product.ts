@@ -28,6 +28,7 @@ export interface IProduct extends Document {
 
   averageRating: number;
   ratingCount: number;
+  reviewCount: number;
 
   // flash sale info – optional and computed when needed
   flashSale?: {
@@ -135,6 +136,10 @@ const productSchema = new Schema<IProduct>(
     },
 
     ratingCount: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
       type: Number,
       default: 0,
     },

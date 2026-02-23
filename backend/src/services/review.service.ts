@@ -22,10 +22,12 @@ class ReviewService {
       ratingCount === 0
         ? 0
         : reviews.reduce((s, r) => s + (r.rating || 0), 0) / ratingCount;
+    const reviewCount = ratingCount;
 
     await Product.findByIdAndUpdate(productId, {
       averageRating,
       ratingCount,
+      reviewCount,
     });
   }
 

@@ -4,8 +4,10 @@ import { logo } from '@/assets';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/auth-context';
 import { useCartContext } from '@/contexts/cart-context';
+import { useCurrency } from '@/contexts/currency-context';
 import { useWishlist } from '@/contexts/wishlist-context';
 import { useLogout } from '@/hooks/use-auth';
+import { formatPrice } from '@/lib/format-price';
 import {
   Heart,
   LayoutDashboard,
@@ -46,6 +48,7 @@ export function Navbar() {
   } = useWishlist();
   const { user, isAuthenticated } = useAuth();
   const logout = useLogout();
+  const { currency, convert } = useCurrency();
   const cartCount = getCartCount();
   const wishlistCount = getWishlistCount();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -97,15 +100,14 @@ export function Navbar() {
   }, []);
 
   const getTotalPrice = () => {
-    return cartItems
-      .reduce((total, item) => {
-        const price =
-          typeof item.price === 'number'
-            ? item.price
-            : parseFloat(String(item.price));
-        return total + price * item.quantity;
-      }, 0)
-      .toFixed(2);
+    const total = cartItems.reduce((total, item) => {
+      const price =
+        typeof item.price === 'number'
+          ? item.price
+          : parseFloat(String(item.price));
+      return total + price * item.quantity;
+    }, 0);
+    return formatPrice(convert(total), currency);
   };
 
   const totalItems = cartCount + wishlistCount;
@@ -285,7 +287,14 @@ export function Navbar() {
                                         {item.name}
                                       </h4>
                                       <p className='text-accent font-bold text-sm mt-1'>
-                                        ${item.price}
+                                        {formatPrice(
+                                          convert(
+                                            typeof item.price === 'number'
+                                              ? item.price
+                                              : parseFloat(String(item.price))
+                                          ),
+                                          currency
+                                        )}
                                       </p>
                                     </div>
                                     <button
@@ -337,7 +346,7 @@ export function Navbar() {
                                   Subtotal
                                 </span>
                                 <span className='text-accent font-bold text-sm'>
-                                  ${getTotalPrice()}
+                                  {getTotalPrice()}
                                 </span>
                               </div>
                               <Link
@@ -385,7 +394,14 @@ export function Navbar() {
                                         {item.name}
                                       </h4>
                                       <p className='text-accent font-bold text-sm mt-1'>
-                                        ${item.price}
+                                        {formatPrice(
+                                          convert(
+                                            typeof item.price === 'number'
+                                              ? item.price
+                                              : parseFloat(String(item.price))
+                                          ),
+                                          currency
+                                        )}
                                       </p>
                                     </div>
                                     <button
@@ -497,7 +513,16 @@ export function Navbar() {
                                             {item.name}
                                           </h4>
                                           <p className='text-accent font-bold text-sm mt-1'>
-                                            ${item.price}
+                                            {formatPrice(
+                                              convert(
+                                                typeof item.price === 'number'
+                                                  ? item.price
+                                                  : parseFloat(
+                                                      String(item.price)
+                                                    )
+                                              ),
+                                              currency
+                                            )}
                                           </p>
                                         </div>
                                         <button
@@ -551,7 +576,7 @@ export function Navbar() {
                                       Subtotal
                                     </span>
                                     <span className='text-accent font-bold text-sm'>
-                                      ${getTotalPrice()}
+                                      {getTotalPrice()}
                                     </span>
                                   </div>
                                   <Link
@@ -599,7 +624,16 @@ export function Navbar() {
                                             {item.name}
                                           </h4>
                                           <p className='text-accent font-bold text-sm mt-1'>
-                                            ${item.price}
+                                            {formatPrice(
+                                              convert(
+                                                typeof item.price === 'number'
+                                                  ? item.price
+                                                  : parseFloat(
+                                                      String(item.price)
+                                                    )
+                                              ),
+                                              currency
+                                            )}
                                           </p>
                                         </div>
                                         <button

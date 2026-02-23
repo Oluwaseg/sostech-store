@@ -2,6 +2,7 @@
 
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
+import { ProductFilters, type FilterState } from '@/components/product-filters';
 import { Button } from '@/components/ui/button';
 import { useCartContext } from '@/contexts/cart-context';
 import { useCurrency } from '@/contexts/currency-context';
@@ -9,7 +10,7 @@ import { useWishlist } from '@/contexts/wishlist-context';
 import { useProducts } from '@/hooks/use-product';
 import { formatPrice } from '@/lib/format-price';
 import type { Product } from '@/types/product';
-import { ArrowRight, Heart, ShoppingCart, Star } from 'lucide-react';
+import { ArrowRight, Heart, ShoppingCart, Star, Zap } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -21,9 +22,35 @@ export default function ShopPage() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(12);
   const { currency, convert } = useCurrency();
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    category: '',
+    subcategory: '',
+    minPrice: 0,
+    maxPrice: 10000,
+    isBestSeller: false,
+    flashSaleActive: false,
+  });
 
-  const { data, isLoading, isError } = useProducts({ page, limit });
+  const { data, isLoading, isError } = useProducts({
+    page,
+    limit,
+    ...(filters.search && { search: filters.search }),
+    ...(filters.category && { category: filters.category }),
+    ...(filters.subcategory && { subcategory: filters.subcategory }),
+    ...(filters.minPrice > 0 && { minPrice: filters.minPrice }),
+    ...(filters.maxPrice < 10000 && { maxPrice: filters.maxPrice }),
+    ...(filters.isBestSeller && { isBestSeller: filters.isBestSeller }),
+    ...(filters.flashSaleActive && {
+      flashSaleActive: filters.flashSaleActive,
+    }),
+  });
   const products: Product[] = data?.products ?? [];
+
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setPage(1);
+  };
 
   const handleAddToCart = (product: Product) => {
     addToCart({
@@ -75,6 +102,14 @@ export default function ShopPage() {
   function ProductCard({ product }: { product: Product }) {
     const isAdded = addedItems.includes(product._id);
     const inWishlist = isInWishlist(product._id);
+    const hasFlashSale =
+      product.flashSale && product.flashSale.isActive ? true : false;
+    const salePrice =
+      hasFlashSale && product.flashSale
+        ? product.flashSale.discountType === 'percentage'
+          ? product.basePrice * (1 - product.flashSale.discountValue / 100)
+          : product.basePrice - product.flashSale.discountValue
+        : product.basePrice;
 
     return (
       <Link href={`/shop/${product.slug}`}>
@@ -86,6 +121,17 @@ export default function ShopPage() {
               fill
               className='object-cover group-hover:scale-110 transition-transform duration-500'
             />
+            {hasFlashSale && (
+              <div className='absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-accent text-accent-foreground text-xs font-bold flashsale'>
+                <Zap size={14} className='fill-current' />
+                Flash Sale
+              </div>
+            )}
+            {product.isBestSeller && !hasFlashSale && (
+              <div className='absolute top-3 left-3 px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold'>
+                Best Seller
+              </div>
+            )}
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -107,9 +153,16 @@ export default function ShopPage() {
             </h3>
             <RatingStars rating={product.averageRating ?? 0} />
             <div className='flex items-center justify-between pt-1'>
-              <p className='text-lg font-bold text-primary'>
-                {formatPrice(convert(product.basePrice), currency)}
-              </p>
+              <div className='flex flex-col gap-1'>
+                <p className='text-lg font-bold text-primary'>
+                  {formatPrice(convert(salePrice), currency)}
+                </p>
+                {hasFlashSale && (
+                  <p className='text-xs text-foreground/50 line-through'>
+                    {formatPrice(convert(product.basePrice), currency)}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -191,69 +244,80 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* Products Grid */}
-          {isLoading ? (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8'>
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className='animate-pulse'>
-                  <div className='bg-muted aspect-square rounded-lg mb-4' />
-                  <div className='h-4 bg-muted rounded w-3/4 mb-2' />
-                  <div className='h-3 bg-muted rounded w-1/2' />
-                </div>
-              ))}
+          {/* Filters and Products Layout */}
+          <div className='flex flex-col lg:flex-row gap-8'>
+            {/* Sidebar Filters */}
+            <div className='lg:w-64 flex-shrink-0'>
+              <ProductFilters onFilterChange={handleFilterChange} />
             </div>
-          ) : isError ? (
-            <div className='text-center py-20'>
-              <p className='text-foreground/60'>
-                Failed to load products. Please try again.
-              </p>
-            </div>
-          ) : products.length === 0 ? (
-            <div className='text-center py-20'>
-              <p className='text-foreground/60'>No products found.</p>
-            </div>
-          ) : (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8'>
-              {products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          )}
 
-          {/* Pagination */}
-          {products.length > 0 && (
-            <div className='flex flex-col sm:flex-row items-center justify-between gap-6 mt-20 pt-12 border-t border-border'>
-              <div className='flex items-center gap-3'>
-                <span className='text-sm text-foreground/60'>
-                  Page{' '}
-                  <span className='font-semibold text-foreground'>
-                    {data?.page ?? page}
-                  </span>{' '}
-                  of{' '}
-                  <span className='font-semibold text-foreground'>
-                    {data?.pages ?? 1}
-                  </span>
-                </span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <Button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                  variant='outline'
-                  className='disabled:opacity-50'
-                >
-                  Previous
-                </Button>
-                <Button
-                  onClick={() => setPage((p) => p + 1)}
-                  disabled={page >= (data?.pages ?? 1)}
-                  className='disabled:opacity-50'
-                >
-                  Next
-                </Button>
-              </div>
+            {/* Products Grid */}
+            <div className='flex-1'>
+              {/* Products Grid */}
+              {isLoading ? (
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
+                  {[...Array(12)].map((_, i) => (
+                    <div key={i} className='animate-pulse'>
+                      <div className='bg-muted aspect-square rounded-lg mb-4' />
+                      <div className='h-4 bg-muted rounded w-3/4 mb-2' />
+                      <div className='h-3 bg-muted rounded w-1/2' />
+                    </div>
+                  ))}
+                </div>
+              ) : isError ? (
+                <div className='text-center py-20'>
+                  <p className='text-foreground/60'>
+                    Failed to load products. Please try again.
+                  </p>
+                </div>
+              ) : products.length === 0 ? (
+                <div className='text-center py-20'>
+                  <p className='text-foreground/60'>No products found.</p>
+                </div>
+              ) : (
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
+                  {products.map((product) => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {products.length > 0 && (
+                <div className='flex flex-col sm:flex-row items-center justify-between gap-6 mt-20 pt-12 border-t border-border'>
+                  <div className='flex items-center gap-3'>
+                    <span className='text-sm text-foreground/60'>
+                      Page{' '}
+                      <span className='font-semibold text-foreground'>
+                        {data?.page ?? page}
+                      </span>{' '}
+                      of{' '}
+                      <span className='font-semibold text-foreground'>
+                        {data?.pages ?? 1}
+                      </span>
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page <= 1}
+                      variant='outline'
+                      className='disabled:opacity-50'
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={page >= (data?.pages ?? 1)}
+                      className='disabled:opacity-50'
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </section>
 

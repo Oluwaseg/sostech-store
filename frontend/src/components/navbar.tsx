@@ -116,28 +116,20 @@ export function Navbar() {
     logout.mutate();
   };
 
-  // Dashboard Navbar
-  const dashboardNavItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
-    { href: '/dashboard/profile', label: 'Profile', icon: User },
-    { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-  ];
-
   const dashboardAdminItems = [
-    { href: '/dashboard/products', label: 'Products', icon: Package },
+    { href: '/dashboard/admin/products', label: 'Products', icon: Package },
     {
-      href: '/dashboard/categories',
+      href: '/dashboard/admin/categories',
       label: 'Categories',
       icon: LayoutDashboard,
     },
     {
-      href: '/dashboard/subcategories',
+      href: '/dashboard/admin/subcategories',
       label: 'Subcategories',
       icon: LayoutDashboard,
     },
-    { href: '/dashboard/orders', label: 'Orders', icon: ShoppingBag },
-    { href: '/dashboard/users', label: 'Users', icon: User },
+    { href: '/dashboard/admin/orders', label: 'Orders', icon: ShoppingBag },
+    { href: '/dashboard/admin/users', label: 'Users', icon: User },
   ];
 
   const isAdmin = user?.role === 'admin' || user?.role === 'moderator';

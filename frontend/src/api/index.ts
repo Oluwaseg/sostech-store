@@ -46,7 +46,7 @@ export const ApiRoutes = {
     my: '/coupons/my',
     validate: (code: string) => `/coupons/validate/${code}`,
   },
-  referral: {
+  referrals: {
     stats: '/referrals/stats',
     get_referral_link: '/referrals/link',
     invite: '/referrals/invite',

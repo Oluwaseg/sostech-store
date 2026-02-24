@@ -1,17 +1,9 @@
-export type OrderStatus =
-  | 'pending'
-  | 'payment_pending'
-  | 'paid'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
-  | 'refunded';
+export type OrderStatus = 'pending' | 'paid' | 'cancelled';
 
 export type ShippingMethod = 'standard' | 'express' | 'pickup';
 
 export interface OrderItem {
-  product: string; // Product _id
+  product: string; // product ID (or populated object if you later allow it)
   name: string;
   price: number;
   quantity: number;
@@ -23,19 +15,12 @@ export interface ShippingInfo {
   state?: string;
   country: string;
   postalCode?: string;
-
   method: ShippingMethod;
-  carrier?: string;
-  trackingNumber?: string;
-
-  shippedAt?: string;
-  deliveredAt?: string;
 }
 
 export interface Order {
   _id: string;
-
-  user: string; // User _id
+  user: string;
 
   items: OrderItem[];
 
@@ -44,13 +29,10 @@ export interface Order {
   shippingFee: number;
   total: number;
 
-  coupon?: string; // Coupon _id
-
+  coupon?: string;
   status: OrderStatus;
 
   shipping: ShippingInfo;
-
-  paymentIntentId?: string;
 
   createdAt: string;
   updatedAt: string;

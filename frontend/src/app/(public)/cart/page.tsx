@@ -4,6 +4,8 @@ import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { useCartContext } from '@/contexts/cart-context';
+import { useCurrency } from '@/contexts/currency-context';
+import { formatPrice } from '@/lib/format-price';
 import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -11,16 +13,16 @@ export default function CartPage() {
   const { cartItems, removeFromCart, updateQuantity, clearCart } =
     useCartContext();
 
+  const { currency, convert } = useCurrency();
+
   const getTotalPrice = () => {
-    return cartItems
-      .reduce((total, item) => {
-        const price =
-          typeof item.price === 'number'
-            ? item.price
-            : parseFloat(String(item.price));
-        return total + price * item.quantity;
-      }, 0)
-      .toFixed(2);
+    return cartItems.reduce((total, item) => {
+      const price =
+        typeof item.price === 'number'
+          ? item.price
+          : parseFloat(String(item.price));
+      return total + price * item.quantity;
+    }, 0);
   };
 
   const getTotalItems = () => {
@@ -98,7 +100,7 @@ export default function CartPage() {
                         {item.name}
                       </h3>
                       <p className='text-accent font-bold text-lg'>
-                        ${item.price}
+                        {formatPrice(convert(item.price), currency)}
                       </p>
                     </div>
 
@@ -125,18 +127,20 @@ export default function CartPage() {
                         </button>
                       </div>
 
-                      <p className='w-20 text-right font-bold text-foreground'>
-                        $
-                        {(
-                          (typeof item.price === 'number'
-                            ? item.price
-                            : parseFloat(String(item.price))) * item.quantity
-                        ).toFixed(2)}
+                      <p className='w-20 m-2 text-right font-bold text-foreground'>
+                        {formatPrice(
+                          convert(
+                            (typeof item.price === 'number'
+                              ? item.price
+                              : parseFloat(String(item.price))) * item.quantity
+                          ),
+                          currency
+                        )}
                       </p>
 
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className='p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors'
+                        className='p-2 ml-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors'
                         aria-label='Remove from cart'
                       >
                         <Trash2 size={20} />
@@ -156,7 +160,9 @@ export default function CartPage() {
                   <div className='space-y-3'>
                     <div className='flex justify-between text-foreground/60'>
                       <span>Subtotal</span>
-                      <span>${getTotalPrice()}</span>
+                      <span>
+                        {formatPrice(convert(getTotalPrice()), currency)}
+                      </span>
                     </div>
                     <div className='flex justify-between text-foreground/60'>
                       <span>Items</span>
@@ -177,14 +183,16 @@ export default function CartPage() {
                     <div className='flex justify-between items-center mb-6'>
                       <span className='font-bold text-foreground'>Total</span>
                       <span className='font-bold text-2xl text-accent'>
-                        ${getTotalPrice()}
+                        {formatPrice(convert(getTotalPrice()), currency)}
                       </span>
                     </div>
                   </div>
 
-                  <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-base'>
-                    Proceed to Checkout
-                  </Button>
+                  <Link href='/checkout' className='block'>
+                    <Button className='w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 text-base'>
+                      Proceed to Checkout
+                    </Button>
+                  </Link>
 
                   <Link href='/shop'>
                     <Button

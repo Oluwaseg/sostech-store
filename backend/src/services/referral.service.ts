@@ -152,7 +152,7 @@ class ReferralService {
       expiresAt.setDate(expiresAt.getDate() + milestone.couponExpiryDays);
 
       // Create coupon
-      await Coupon.create({
+      const coupon = await Coupon.create({
         code: couponCode,
         discountPercent: milestone.discountPercent,
         maxUses: 1, // Single-use
@@ -166,6 +166,29 @@ class ReferralService {
       logger.info(
         `Referral coupon issued: ${couponCode} (${milestone.discountPercent}% off) to user ${userId}`
       );
+
+      // Send reward notification email
+      const user = await User.findById(userId);
+      if (user && user.email) {
+        try {
+          await emailService.sendReferralRewardEmail({
+            email: user.email,
+            name: user.name,
+            couponCode: coupon.code,
+            discountPercent: coupon.discountPercent,
+            expiresAt: coupon.expiresAt,
+            referralCount: await Referral.countDocuments({
+              referrer: userId,
+              status: 'completed',
+            }),
+          });
+        } catch (emailError) {
+          logger.error(
+            'Failed to send referral reward email:',
+            emailError instanceof Error ? emailError.message : emailError
+          );
+        }
+      }
     } catch (error) {
       logger.error(
         `Failed to generate referral coupon: ${error instanceof Error ? error.message : String(error)}`
@@ -222,6 +245,70 @@ class ReferralService {
         ? nextMilestone.count - referralCount
         : 0,
     };
+  }
+
+  /**
+   * Build the referral link for a user
+   */
+  async getReferralLink(userId: string): Promise<{
+    referralCode: string;
+    referralLink: string;
+  }> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const referralCode = user.referralCode;
+    if (!referralCode) {
+      throw new Error('Referral code not set for user');
+    }
+
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const referralLink = `${baseUrl}/register?ref=${encodeURIComponent(
+      referralCode
+    )}`;
+
+    return {
+      referralCode,
+      referralLink,
+    };
+  }
+
+  /**
+   * Send referral invites via email
+   */
+  async sendReferralInvites(userId: string, emails: string[]): Promise<void> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (!Array.isArray(emails) || emails.length === 0) {
+      throw new Error('At least one email is required');
+    }
+
+    const { referralCode, referralLink } = await this.getReferralLink(userId);
+
+    for (const rawEmail of emails) {
+      const to = String(rawEmail || '').trim();
+      if (!to) continue;
+
+      try {
+        await emailService.sendReferralInviteEmail({
+          to,
+          fromName: user.name,
+          referralLink,
+          referralCode,
+        });
+      } catch (error) {
+        logger.error(
+          `Failed to send referral invite to ${to}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+      }
+    }
   }
 }
 

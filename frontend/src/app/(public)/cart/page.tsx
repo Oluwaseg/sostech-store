@@ -8,7 +8,8 @@ import { ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity } = useCartContext();
+  const { cartItems, removeFromCart, updateQuantity, clearCart } =
+    useCartContext();
 
   const getTotalPrice = () => {
     return cartItems
@@ -24,6 +25,10 @@ export default function CartPage() {
 
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const handleClearCart = () => {
+    clearCart();
   };
 
   if (cartItems.length === 0) {
@@ -158,8 +163,13 @@ export default function CartPage() {
                       <span>{getTotalItems()}</span>
                     </div>
                     <div className='flex justify-between text-foreground/60'>
-                      <span>Shipping</span>
-                      <span>FREE</span>
+                      <span>Clear Cart</span>
+                      <button
+                        onClick={handleClearCart}
+                        className='text-destructive hover:text-destructive/80 font-semibold'
+                      >
+                        Clear
+                      </button>
                     </div>
                   </div>
 

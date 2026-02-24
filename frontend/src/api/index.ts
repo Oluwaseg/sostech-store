@@ -40,7 +40,16 @@ export const ApiRoutes = {
     merge: '/cart/merge',
   },
   checkout: {
-    createSession: '/checkout/create-session',
+    create: '/checkout',
+  },
+  coupon: {
+    my: '/coupons/my',
+    validate: (code: string) => `/coupons/validate/${code}`,
+  },
+  referral: {
+    stats: '/referrals/stats',
+    get_referral_link: '/referrals/link',
+    invite: '/referrals/invite',
   },
   orders: {
     list: '/orders',

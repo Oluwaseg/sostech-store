@@ -134,6 +134,59 @@ class EmailService {
       },
     });
   }
+
+  async sendReferralRewardEmail(options: {
+    email: string;
+    name: string;
+    couponCode: string;
+    discountPercent: number;
+    expiresAt: Date;
+    referralCount: number;
+  }): Promise<void> {
+    const {
+      email,
+      name,
+      couponCode,
+      discountPercent,
+      expiresAt,
+      referralCount,
+    } = options;
+
+    await this.sendEmail({
+      to: email,
+      subject: 'You earned a referral coupon',
+      template: 'referral-reward',
+      context: {
+        name,
+        couponCode,
+        discountPercent,
+        referralCount,
+        expiresAt: expiresAt.toDateString(),
+        currentYear: new Date().getFullYear(),
+      },
+    });
+  }
+
+  async sendReferralInviteEmail(options: {
+    to: string;
+    fromName: string;
+    referralLink: string;
+    referralCode: string;
+  }): Promise<void> {
+    const { to, fromName, referralLink, referralCode } = options;
+
+    await this.sendEmail({
+      to,
+      subject: `${fromName} invited you to SOSTECH Store`,
+      template: 'referral-invite',
+      context: {
+        fromName,
+        referralLink,
+        referralCode,
+        currentYear: new Date().getFullYear(),
+      },
+    });
+  }
 }
 
 export default new EmailService();

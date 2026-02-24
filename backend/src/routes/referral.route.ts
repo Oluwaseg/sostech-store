@@ -13,4 +13,20 @@ router.get(
   referralController.getStats
 );
 
+// Get referral link for authenticated user
+router.get(
+  '/link',
+  auth,
+  authorize('user', 'moderator', 'admin'),
+  referralController.getReferralLink
+);
+
+// Send referral invites via email
+router.post(
+  '/invite',
+  auth,
+  authorize('user', 'moderator', 'admin'),
+  referralController.sendInvites
+);
+
 export default router;

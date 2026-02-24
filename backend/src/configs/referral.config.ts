@@ -12,12 +12,12 @@ export interface ReferralMilestone {
 export const REFERRAL_MILESTONES: ReferralMilestone[] = [
   {
     count: 5,
-    discountPercent: 30,
+    discountPercent: 10,
     couponExpiryDays: 30,
   },
   {
     count: 10,
-    discountPercent: 35,
+    discountPercent: 20,
     couponExpiryDays: 30,
   },
   // Add more milestones as needed

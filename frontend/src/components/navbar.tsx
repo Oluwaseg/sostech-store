@@ -350,6 +350,11 @@ export function Navbar() {
                                   Checkout
                                 </Button>
                               </Link>
+                              <Link href='/cart' className='block'>
+                                <Button className='w-full bg-muted hover:bg-muted/80 text-foreground font-semibold py-2 rounded-lg text-xs'>
+                                  View Cart
+                                </Button>
+                              </Link>
                             </div>
                           </>
                         )}
@@ -418,6 +423,17 @@ export function Navbar() {
                                   </Button>
                                 </div>
                               ))}
+
+                              <Link
+                                href='/wishlist'
+                                onClick={() => setIsCartDropdownOpen(false)}
+                                className='block'
+                              >
+                                <Button className='cursor-pointer w-full bg-muted hover:bg-muted/80 text-foreground font-semibold py-2 rounded-lg text-xs'>
+                                  You Have {wishlistItems.length} Items in
+                                  Wishlist Click to View
+                                </Button>
+                              </Link>
                             </div>
                           </>
                         )}
@@ -578,6 +594,11 @@ export function Navbar() {
                                   >
                                     <Button className='w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold py-2 rounded-lg text-xs'>
                                       Checkout
+                                    </Button>
+                                  </Link>
+                                  <Link href='/cart' className='block'>
+                                    <Button className='w-full bg-muted hover:bg-muted/80 text-foreground font-semibold py-2 rounded-lg text-xs'>
+                                      View Cart
                                     </Button>
                                   </Link>
                                 </div>

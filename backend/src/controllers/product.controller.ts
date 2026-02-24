@@ -2,6 +2,34 @@ import { NextFunction, Request, Response } from 'express';
 import productService from '../services/product.service';
 
 class ProductController {
+  async getOtherProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { slug } = req.params;
+      if (Array.isArray(slug)) {
+        slug = slug[0];
+      }
+      // Find the main product by slug
+      const mainProduct = await productService.getProductBySlug(slug);
+      if (!mainProduct) {
+        return (res as any).error('Product not found', 'GET_OTHER_PRODUCTS_ERROR', 404);
+      }
+      // Find other products in the same category, excluding the main product
+      const otherProducts = await productService.getProducts({
+        category: mainProduct.category?._id?.toString() || mainProduct.category?.toString(),
+        isPublished: true,
+      }, { page: 1, limit: 8 });
+      // Filter out the main product
+      const filtered = otherProducts.products.filter(p => p.slug !== slug);
+      return (res as any).success(filtered, 'Other products retrieved successfully');
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to retrieve other products',
+        'GET_OTHER_PRODUCTS_ERROR',
+        500
+      );
+    }
+  }
+// ...existing code...
   async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
       const product = await productService.createProduct(req.body);

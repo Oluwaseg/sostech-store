@@ -80,3 +80,12 @@ export const deleteProduct = async (id: string): Promise<null> => {
 
   return unwrap(res);
 };
+
+// ---------------- GET OTHER PRODUCTS ----------------
+export const getOtherProducts = async (slug: string): Promise<Product[]> => {
+  const res = (await axiosInstance.get<ApiResponse<Product[]>>(
+    ApiRoutes.products.others(slug)
+  )) as unknown as ApiResponse<Product[]>;
+
+  return unwrap(res);
+};

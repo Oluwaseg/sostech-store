@@ -8,6 +8,8 @@ const router = Router();
 // Public - optional auth for visibility filtering
 router.get('/', productController.getProducts);
 router.get('/slug/:slug', productController.getProductBySlug);
+// Endpoint for other products (related by category)
+router.get('/slug/:slug/other', productController.getOtherProducts);
 router.get('/sku/:sku', productController.getProductBySku);
 router.get('/:id', productController.getProductById);
 

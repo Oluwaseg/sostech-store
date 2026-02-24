@@ -25,6 +25,7 @@ export const ApiRoutes = {
     details: (slug: string) => `/products/slug/${slug}`,
     bySku: (sku: string) => `/products/sku/${sku}`,
     byId: (id: string) => `/products/${id}`,
+    others: (slug: string) => `/products/slug/${slug}/other`,
   },
   reviews: {
     listByProduct: (productId: string) => `/reviews/product/${productId}`,

@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { useCartContext } from '@/contexts/cart-context';
 import { useCurrency } from '@/contexts/currency-context';
 import { useWishlist } from '@/contexts/wishlist-context';
-import { useProductBySlug } from '@/hooks/use-product';
+import { useOtherProducts, useProductBySlug } from '@/hooks/use-product';
 import { useCreateReview, useReviewsByProduct } from '@/hooks/use-review';
 import { formatPrice } from '@/lib/format-price';
 import {
@@ -23,6 +23,7 @@ import {
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ImageGallery } from './image-gallery';
+import { OtherProducts } from './other-products';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -51,6 +52,7 @@ export default function ProductDetailPage() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [hoverRating, setHoverRating] = useState(0);
+  const { data: otherProducts = [] } = useOtherProducts(slug || '');
 
   // Calculate flash sale discount
   const getDiscountedPrice = () => {
@@ -568,6 +570,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+      {/* Other Products Section - Only displayed if there are products */}
+      <OtherProducts products={otherProducts} currentProductId={product?._id} />
       <Footer />
     </main>
   );

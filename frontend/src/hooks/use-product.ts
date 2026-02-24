@@ -1,6 +1,7 @@
 import {
   createProduct,
   deleteProduct,
+  getOtherProducts,
   getProductById,
   getProductBySku,
   getProductBySlug,
@@ -150,5 +151,16 @@ export const useDeleteProduct = () => {
     onError: (error) => {
       toast.error(error.message || 'Failed to delete product');
     },
+  });
+};
+
+/* ===============================
+   GET OTHER PRODUCTS
+================================= */
+export const useOtherProducts = (slug: string) => {
+  return useQuery<Product[], Error>({
+    queryKey: [...PRODUCT_KEYS.detail(slug), 'others'],
+    queryFn: () => getOtherProducts(slug),
+    enabled: !!slug,
   });
 };

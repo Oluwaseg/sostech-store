@@ -3,9 +3,11 @@ import axiosInstance from '@/lib/axios';
 import { unwrap } from '@/lib/unwrap';
 import { ApiResponse } from '@/types/api-response';
 import {
+  CreateProduct,
   Product,
   ProductListPayload,
   ProductQueryParams,
+  UpdateProduct,
 } from '@/types/product';
 
 // ---------------- GET ALL PRODUCTS WITH PAGINATION ----------------
@@ -48,9 +50,7 @@ export const getProductById = async (id: string): Promise<Product> => {
 };
 
 // ---------------- CREATE PRODUCT (Moderator/Admin) ----------------
-export const createProduct = async (
-  data: Partial<Product>
-): Promise<Product> => {
+export const createProduct = async (data: CreateProduct): Promise<Product> => {
   const res = (await axiosInstance.post<ApiResponse<Product>>(
     ApiRoutes.products.list,
     data
@@ -62,7 +62,7 @@ export const createProduct = async (
 // ---------------- UPDATE PRODUCT (Moderator/Admin) ----------------
 export const updateProduct = async (
   id: string,
-  data: Partial<Product>
+  data: UpdateProduct
 ): Promise<Product> => {
   const res = (await axiosInstance.patch<ApiResponse<Product>>(
     ApiRoutes.products.byId(id),

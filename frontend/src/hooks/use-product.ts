@@ -9,9 +9,11 @@ import {
   updateProduct,
 } from '@/services/product.service';
 import {
+  CreateProduct,
   Product,
   ProductListPayload,
   ProductQueryParams,
+  UpdateProduct,
 } from '@/types/product';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -87,7 +89,7 @@ export const useProductById = (id: string) => {
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Product, Error, Partial<Product>>({
+  return useMutation<Product, Error, CreateProduct>({
     mutationFn: createProduct,
 
     onSuccess: () => {
@@ -111,7 +113,7 @@ export const useCreateProduct = () => {
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Product, Error, { id: string; data: Partial<Product> }>({
+  return useMutation<Product, Error, { id: string; data: UpdateProduct }>({
     mutationFn: ({ id, data }) => updateProduct(id, data),
 
     onSuccess: (data) => {

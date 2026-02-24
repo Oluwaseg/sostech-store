@@ -21,35 +21,25 @@ export interface FlashSale {
 
 export interface Product {
   _id: string;
-
   name: string;
   slug: string;
   description: string;
-
   sku: string;
-
   basePrice: number;
   stock: number;
-
   images: ProductImage[];
-
   category: Category;
   subcategory?: Subcategory;
   createdBy: string;
-
   brand?: string;
   tags: string[];
-
   isPublished: boolean;
   visibility: ProductVisibility;
-
   averageRating: number;
   ratingCount: number;
   reviewCount: number;
-
   flashSale?: FlashSale;
   isBestSeller: boolean;
-
   createdAt: string;
   updatedAt: string;
 }
@@ -70,4 +60,38 @@ export interface ProductListPayload {
   total: number;
   page: number;
   pages: number;
+}
+
+export interface CreateProduct {
+  name: string;
+  description: string;
+  sku: string;
+  basePrice: number;
+  stock: number;
+  category: string; // categoryId
+  subcategory?: string; // subcategoryId
+  brand?: string;
+  tags: string[];
+  isPublished: boolean;
+  visibility: ProductVisibility;
+  images: ProductImage[];
+  flashSale?: FlashSale;
+  isBestSeller: boolean;
+}
+
+export interface UpdateProduct {
+  name?: string;
+  description?: string;
+  sku?: string;
+  basePrice?: number;
+  stock?: number;
+  category?: string;
+  subcategory?: string;
+  brand?: string;
+  tags?: string[];
+  isPublished?: boolean;
+  visibility?: ProductVisibility;
+  images?: ProductImage[];
+  flashSale?: FlashSale | null;
+  isBestSeller?: boolean;
 }

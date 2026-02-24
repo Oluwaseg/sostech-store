@@ -11,16 +11,28 @@ class ProductController {
       // Find the main product by slug
       const mainProduct = await productService.getProductBySlug(slug);
       if (!mainProduct) {
-        return (res as any).error('Product not found', 'GET_OTHER_PRODUCTS_ERROR', 404);
+        return (res as any).error(
+          'Product not found',
+          'GET_OTHER_PRODUCTS_ERROR',
+          404
+        );
       }
       // Find other products in the same category, excluding the main product
-      const otherProducts = await productService.getProducts({
-        category: mainProduct.category?._id?.toString() || mainProduct.category?.toString(),
-        isPublished: true,
-      }, { page: 1, limit: 8 });
+      const otherProducts = await productService.getProducts(
+        {
+          category:
+            mainProduct.category?._id?.toString() ||
+            mainProduct.category?.toString(),
+          isPublished: true,
+        },
+        { page: 1, limit: 8 }
+      );
       // Filter out the main product
-      const filtered = otherProducts.products.filter(p => p.slug !== slug);
-      return (res as any).success(filtered, 'Other products retrieved successfully');
+      const filtered = otherProducts.products.filter((p) => p.slug !== slug);
+      return (res as any).success(
+        filtered,
+        'Other products retrieved successfully'
+      );
     } catch (error: any) {
       return (res as any).error(
         error.message || 'Failed to retrieve other products',
@@ -29,7 +41,7 @@ class ProductController {
       );
     }
   }
-// ...existing code...
+
   async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
       const product = await productService.createProduct(req.body);

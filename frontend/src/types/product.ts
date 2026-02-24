@@ -71,9 +71,3 @@ export interface ProductListPayload {
   page: number;
   pages: number;
 }
-
-/*
-Anonymous — filter by category + search + price: GET /products?category=Electronics&search=smartphone&minPrice=100&maxPrice=2000&page=1&limit=10
-Anonymous — filter by best sellers + flashSale active: GET /products?isBestSeller=true&flashSaleActive=true&page=1&limit=20
-Any user — fetch by subcategory + tags: GET /products?subcategory=Smartphones&tags=flagship,android&page=1&limit=15
-*/

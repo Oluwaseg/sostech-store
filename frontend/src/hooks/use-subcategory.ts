@@ -2,6 +2,7 @@ import {
   createSubcategory,
   deleteSubcategory,
   getSubcategories,
+  getSubcategoriesByCategory,
   getSubcategoryById,
   getSubcategoryBySlug,
   updateSubcategory,
@@ -17,6 +18,8 @@ const SUBCATEGORY_KEYS = {
   all: ['subcategories'] as const,
   detail: (identifier: string) =>
     [...SUBCATEGORY_KEYS.all, 'detail', identifier] as const,
+  byCategory: (categoryId: string) =>
+    ['subcategories', 'category', categoryId] as const,
 };
 
 /* ===============================
@@ -108,5 +111,14 @@ export const useDeleteSubcategory = () => {
     onError: (error) => {
       toast.error(error.message || 'Failed to delete subcategory');
     },
+  });
+};
+
+export const useSubcategoriesWithCategory = (categoryId: string) => {
+  return useQuery<Subcategory[], Error>({
+    queryKey: SUBCATEGORY_KEYS.byCategory(categoryId),
+    queryFn: () => getSubcategoriesByCategory(categoryId),
+    enabled: !!categoryId,
+    staleTime: 1000 * 60 * 5,
   });
 };

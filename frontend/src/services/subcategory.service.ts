@@ -66,3 +66,13 @@ export const deleteSubcategory = async (id: string): Promise<null> => {
 
   return unwrap(res);
 };
+
+// ---------------- GET SUBCATEGORIES BY CATEGORY ----------------
+export const getSubcategoriesByCategory = async (
+  categoryId: string
+): Promise<Subcategory[]> => {
+  const res = (await axiosInstance.get<ApiResponse<Subcategory[]>>(
+    ApiRoutes.subcategories.list + `?category=${categoryId}`
+  )) as unknown as ApiResponse<Subcategory[]>;
+  return unwrap(res);
+};

@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useCategories } from '@/hooks/use-category';
+import { useSubcategoriesWithCategory } from '@/hooks/use-subcategory';
 import {
   CreateProduct,
   FlashSale,
@@ -50,6 +52,10 @@ export function ProductForm(props: ProductFormProps) {
         }
       : {}
   );
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useCategories();
+  const { data: subcategories = [], isLoading: subcategoriesLoading } =
+    useSubcategoriesWithCategory(form.category || '');
 
   const [newTag, setNewTag] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
@@ -75,6 +81,11 @@ export function ProductForm(props: ProductFormProps) {
       });
     }
   }, [mode, props]);
+
+  // Subcategories are already filtered by backend
+  const filteredSubcategories = Array.isArray(subcategories)
+    ? subcategories
+    : [];
 
   const update = <K extends keyof ProductFormState>(
     key: K,
@@ -240,26 +251,58 @@ export function ProductForm(props: ProductFormProps) {
             <label className='block text-sm font-semibold text-foreground mb-2'>
               Category *
             </label>
-            <input
-              type='text'
-              className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
-              placeholder='Category ID'
+            <select
+              className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
               value={form.category ?? ''}
-              onChange={(e) => update('category', e.target.value)}
+              onChange={(e) => {
+                update('category', e.target.value);
+                update('subcategory', ''); // Reset subcategory when category changes
+              }}
               required={mode === 'create'}
-            />
+              disabled={categoriesLoading}
+            >
+              <option value=''>Select category</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {categoriesLoading && (
+              <div className='text-xs text-foreground/50 py-2'>
+                Loading categories...
+              </div>
+            )}
           </div>
           <div>
             <label className='block text-sm font-semibold text-foreground mb-2'>
               Subcategory
             </label>
-            <input
-              type='text'
-              className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground placeholder:text-foreground/40 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
-              placeholder='Subcategory ID'
+            <select
+              className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
               value={form.subcategory ?? ''}
               onChange={(e) => update('subcategory', e.target.value)}
-            />
+              disabled={!form.category || subcategoriesLoading}
+            >
+              <option value=''>Select subcategory</option>
+              {filteredSubcategories.map((sub) => (
+                <option key={sub._id} value={sub._id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+            {subcategoriesLoading && (
+              <div className='text-xs text-foreground/50 py-2'>
+                Loading subcategories...
+              </div>
+            )}
+            {!subcategoriesLoading &&
+              form.category &&
+              filteredSubcategories.length === 0 && (
+                <div className='text-xs text-foreground/50 py-2'>
+                  No subcategories for this category
+                </div>
+              )}
           </div>
         </div>
       </div>

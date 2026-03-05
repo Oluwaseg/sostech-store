@@ -216,7 +216,7 @@ export function ProductForm(props: ProductFormProps) {
         <div className='grid sm:grid-cols-2 gap-4'>
           <div>
             <label className='block text-sm font-semibold text-foreground mb-2'>
-              Base Price ($)
+              Base Price (₦)
             </label>
             <input
               type='number'

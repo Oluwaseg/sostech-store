@@ -11,7 +11,6 @@ import {
   Box,
   ChevronLeft,
   ChevronRight,
-  DollarSign,
   Edit2,
   Eye,
   EyeOff,
@@ -184,7 +183,7 @@ export default function AdminProductsPage() {
                       {/* Price */}
                       <td className='px-6 py-4 text-right'>
                         <div className='flex items-center justify-end gap-2'>
-                          <DollarSign size={16} className='text-accent' />
+                          <span className='text-accent font-bold'>₦</span>
                           <span className='font-bold text-foreground'>
                             {product.basePrice.toFixed(2)}
                           </span>

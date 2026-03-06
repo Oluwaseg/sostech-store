@@ -1,13 +1,14 @@
 import { Router } from 'express';
+import adminRoutes from './admin.route';
 import authRoutes from './auth.route';
 import cartRoutes from './cart.route';
 import categoryRoutes from './category.route';
+import checkoutRoutes from './checkout.route';
+import couponRoutes from './coupon.route';
 import productRoutes from './product.route';
 import referralRoutes from './referral.route';
 import reviewRoutes from './review.route';
 import subcategoryRoutes from './subcategory.route';
-import checkoutRoutes from './checkout.route';
-import couponRoutes from './coupon.route';
 
 const router = Router();
 
@@ -20,5 +21,7 @@ router.use('/cart', cartRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/checkout', checkoutRoutes);
 router.use('/coupons', couponRoutes);
+
+router.use('/admin', adminRoutes);
 
 export default router;

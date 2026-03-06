@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useCurrentUser } from '@/hooks/use-auth';
-import React, { createContext, useContext } from 'react';
+import { useCurrentUser } from "@/hooks/use-auth";
+import React, { createContext, useContext } from "react";
 
 interface AuthContextType {
   user: {
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 }

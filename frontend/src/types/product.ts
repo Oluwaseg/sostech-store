@@ -1,7 +1,7 @@
-import { Category } from './category';
-import { Subcategory } from './subcategory';
+import { Category } from "./category";
+import { Subcategory } from "./subcategory";
 
-export type ProductVisibility = 'public' | 'private' | 'archived';
+export type ProductVisibility = "public" | "private" | "archived";
 
 export interface ProductImage {
   url: string;
@@ -9,7 +9,7 @@ export interface ProductImage {
   isThumbnail: boolean;
 }
 
-export type FlashSaleDiscountType = 'percentage' | 'fixed';
+export type FlashSaleDiscountType = "percentage" | "fixed";
 
 export interface FlashSale {
   discountType: FlashSaleDiscountType;

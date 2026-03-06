@@ -3,7 +3,7 @@ export interface CheckoutRequest {
     addressLine: string;
     city: string;
     country: string;
-    method: 'standard' | 'express' | 'pickup';
+    method: "standard" | "express" | "pickup";
     state?: string;
     postalCode?: string;
   };

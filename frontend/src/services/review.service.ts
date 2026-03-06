@@ -1,15 +1,15 @@
-import { ApiRoutes } from '@/api';
-import axiosInstance from '@/lib/axios';
-import { unwrap } from '@/lib/unwrap';
-import { ApiResponse } from '@/types/api-response';
-import { Review, ReviewListResponse } from '@/types/review';
+import { ApiRoutes } from "@/api";
+import axiosInstance from "@/lib/axios";
+import { unwrap } from "@/lib/unwrap";
+import { ApiResponse } from "@/types/api-response";
+import { Review, ReviewListResponse } from "@/types/review";
 
 // ---------------- GET REVIEWS BY PRODUCT ----------------
 export const getReviewsByProduct = async (
-  productId: string
+  productId: string,
 ): Promise<ReviewListResponse> => {
   const res = (await axiosInstance.get<ApiResponse<ReviewListResponse>>(
-    ApiRoutes.reviews.listByProduct(productId)
+    ApiRoutes.reviews.listByProduct(productId),
   )) as unknown as ApiResponse<ReviewListResponse>;
 
   return unwrap(res);
@@ -18,7 +18,7 @@ export const getReviewsByProduct = async (
 // ---------------- GET REVIEW BY ID ----------------
 export const getReviewById = async (id: string): Promise<Review> => {
   const res = (await axiosInstance.get<ApiResponse<Review>>(
-    ApiRoutes.reviews.details(id)
+    ApiRoutes.reviews.details(id),
   )) as unknown as ApiResponse<Review>;
 
   return unwrap(res);
@@ -27,11 +27,11 @@ export const getReviewById = async (id: string): Promise<Review> => {
 // ---------------- CREATE REVIEW ----------------
 export const createReview = async (
   productId: string,
-  data: { rating: number; comment?: string }
+  data: { rating: number; comment?: string },
 ): Promise<Review> => {
   const res = (await axiosInstance.post<ApiResponse<Review>>(
     ApiRoutes.reviews.listByProduct(productId),
-    data
+    data,
   )) as unknown as ApiResponse<Review>;
 
   return unwrap(res);
@@ -40,7 +40,7 @@ export const createReview = async (
 // ---------------- DELETE REVIEW ----------------
 export const deleteReview = async (reviewId: string): Promise<null> => {
   const res = (await axiosInstance.delete<ApiResponse<null>>(
-    ApiRoutes.reviews.details(reviewId)
+    ApiRoutes.reviews.details(reviewId),
   )) as unknown as ApiResponse<null>;
 
   return unwrap(res);

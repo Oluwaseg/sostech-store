@@ -1,6 +1,6 @@
-export type OrderStatus = 'pending' | 'paid' | 'cancelled';
+export type OrderStatus = "pending" | "paid" | "cancelled";
 
-export type ShippingMethod = 'standard' | 'express' | 'pickup';
+export type ShippingMethod = "standard" | "express" | "pickup";
 
 export interface OrderItem {
   product: string; // product ID (or populated object if you later allow it)

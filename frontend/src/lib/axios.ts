@@ -1,8 +1,8 @@
-import type { ApiResponse } from '@/types/api-response';
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import type { ApiResponse } from "@/types/api-response";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3025/api';
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3025/api";
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -20,13 +20,13 @@ api.interceptors.response.use(
     }
 
     return Promise.reject({
-      status: 'error',
+      status: "error",
       statusCode: error.response?.status || 500,
-      message: error.message || 'Network error',
+      message: error.message || "Network error",
       code: null,
       errors: null,
     });
-  }
+  },
 );
 
 export default api;

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useLocalStorage } from '@/lib/use-local-storage';
-import React, { createContext, useContext } from 'react';
-import { useCartContext } from './cart-context';
+import { useLocalStorage } from "@/lib/use-local-storage";
+import React, { createContext, useContext } from "react";
+import { useCartContext } from "./cart-context";
 interface WishlistItem {
   id: string;
   name: string;
@@ -20,13 +20,13 @@ interface WishlistContextType {
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlistItems, setWishlistItems] = useLocalStorage<WishlistItem[]>(
-    'wishlist_items',
-    []
+    "wishlist_items",
+    [],
   );
 
   const { addToCart: addCartItem } = useCartContext();
@@ -77,7 +77,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 export function useWishlist() {
   const context = useContext(WishlistContext);
   if (!context) {
-    throw new Error('useWishlist must be used within WishlistProvider');
+    throw new Error("useWishlist must be used within WishlistProvider");
   }
   return context;
 }

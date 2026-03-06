@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 /**
  * Generic, type-safe localStorage state hook
  */
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T
+  initialValue: T,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [value, setValue] = useState<T>(() => {
-    if (typeof window === 'undefined') return initialValue;
+    if (typeof window === "undefined") return initialValue;
 
     try {
       const stored = localStorage.getItem(key);

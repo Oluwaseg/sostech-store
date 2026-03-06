@@ -1,4 +1,4 @@
-import { useCreateProduct, useUpdateProduct } from '@/hooks/use-product';
+import { useCreateProduct, useUpdateProduct } from "@/hooks/use-product";
 
 export const useProductActions = () => {
   const create = useCreateProduct();

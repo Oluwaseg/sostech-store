@@ -1,4 +1,4 @@
-export type CouponIssuedReason = 'referral' | 'admin' | 'promotion';
+export type CouponIssuedReason = "referral" | "admin" | "promotion";
 
 export interface Coupon {
   _id: string;

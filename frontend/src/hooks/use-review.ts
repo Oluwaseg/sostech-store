@@ -3,20 +3,20 @@ import {
   deleteReview,
   getReviewById,
   getReviewsByProduct,
-} from '@/services/review.service';
-import { Review, ReviewListResponse } from '@/types/review';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+} from "@/services/review.service";
+import { Review, ReviewListResponse } from "@/types/review";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /* ===============================
    Query Keys
 ================================= */
 
 const REVIEW_KEYS = {
-  all: ['reviews'] as const,
+  all: ["reviews"] as const,
   lists: (productId: string) =>
-    [...REVIEW_KEYS.all, 'list', productId] as const,
-  detail: (id: string) => [...REVIEW_KEYS.all, 'detail', id] as const,
+    [...REVIEW_KEYS.all, "list", productId] as const,
+  detail: (id: string) => [...REVIEW_KEYS.all, "detail", id] as const,
 };
 
 /* ===============================
@@ -66,19 +66,19 @@ export const useCreateReview = () => {
 
       // Refetch product detail (averageRating, reviewCount, etc.)
       queryClient.invalidateQueries({
-        queryKey: ['products', 'detail', variables.productId],
+        queryKey: ["products", "detail", variables.productId],
       });
 
       const msg =
         review.createdAt === review.updatedAt
-          ? 'Review created successfully'
-          : 'Review updated successfully';
+          ? "Review created successfully"
+          : "Review updated successfully";
 
       toast.success(msg);
     },
 
     onError: (error) => {
-      toast.error(error.message || 'Failed to submit review');
+      toast.error(error.message || "Failed to submit review");
     },
   });
 };
@@ -97,14 +97,14 @@ export const useDeleteReview = () => {
       // Remove from product review list cache
       queryClient.setQueryData<Review[]>(
         REVIEW_KEYS.lists(variables.productId),
-        (old = []) => old.filter((review) => review._id !== variables.reviewId)
+        (old = []) => old.filter((review) => review._id !== variables.reviewId),
       );
 
-      toast.success('Review deleted successfully');
+      toast.success("Review deleted successfully");
     },
 
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete review');
+      toast.error(error.message || "Failed to delete review");
     },
   });
 };

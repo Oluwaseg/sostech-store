@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from "@/contexts/auth-context";
 import {
   useCart as useCartQuery,
   useClearCart,
   useMergeCart,
   useUpdateCart,
-} from '@/hooks/use-cart';
-import { useLocalStorage } from '@/lib/use-local-storage';
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+} from "@/hooks/use-cart";
+import { useLocalStorage } from "@/lib/use-local-storage";
+import React, { createContext, useContext, useEffect, useRef } from "react";
 
 interface CartItem {
   id: string; // product id
@@ -34,8 +34,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Local (guest) cart - only used when NOT authenticated
   const [localCart, setLocalCart] = useLocalStorage<CartItem[]>(
-    'cart_items',
-    []
+    "cart_items",
+    [],
   );
 
   // Server cart (react-query) - only fetched when authenticated
@@ -52,11 +52,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     .filter((it) => it.product) // 🚨 IMPORTANT
     .map((it) => {
       const productId =
-        typeof it.product === 'string' ? it.product : it.product._id;
+        typeof it.product === "string" ? it.product : it.product._id;
 
       return {
         id: productId,
-        name: typeof it.product === 'string' ? undefined : it.product.name,
+        name: typeof it.product === "string" ? undefined : it.product.name,
         price: it.price,
         quantity: it.quantity,
       };
@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // Helper to map local CartItem[] -> Request payload for server
   const toServerItems = (
-    items: CartItem[]
+    items: CartItem[],
   ): { productId: string; quantity: number }[] => {
     return items.map((i) => ({
       productId: i.id,
@@ -102,9 +102,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         onError: (e) => {
           // Reset merge flag on error so we can retry
           hasMergedRef.current = false;
-          console.error('Cart merge failed', e);
+          console.error("Cart merge failed", e);
         },
-      }
+      },
     );
   }, [isAuthenticated, localCart.length, mergeCartMutation, setLocalCart]);
 
@@ -115,7 +115,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       await updateCartMutation.mutateAsync(serverItems);
     } catch (e) {
-      console.error('Failed to update server cart', e);
+      console.error("Failed to update server cart", e);
     }
   };
 
@@ -124,7 +124,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const updated = existing
       ? cartItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i,
         )
       : [...cartItems, { ...item }];
 
@@ -196,7 +196,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 export function useCartContext() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCartContext must be used within CartProvider');
+    throw new Error("useCartContext must be used within CartProvider");
   }
   return context;
 }

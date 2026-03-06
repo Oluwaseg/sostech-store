@@ -1,12 +1,12 @@
 export interface SuccessResponse<T = any> {
-  status: 'success';
+  status: "success";
   message: string;
   payload: T;
   meta: any | null;
 }
 
 export interface ErrorResponse {
-  status: 'error';
+  status: "error";
   statusCode: number;
   message: string;
   code: string | null;
@@ -16,13 +16,13 @@ export interface ErrorResponse {
 export type ApiResponse<T = any> = SuccessResponse<T> | ErrorResponse;
 
 export const isSuccessResponse = <T = any>(
-  response: ApiResponse<T>
+  response: ApiResponse<T>,
 ): response is SuccessResponse<T> => {
-  return response.status === 'success';
+  return response.status === "success";
 };
 
 export const isErrorResponse = (
-  response: ApiResponse
+  response: ApiResponse,
 ): response is ErrorResponse => {
-  return response.status === 'error';
+  return response.status === "error";
 };

@@ -1,6 +1,6 @@
 // cart.type.ts
 
-import { Product } from './product';
+import { Product } from "./product";
 
 export interface CartItem {
   _id?: string;

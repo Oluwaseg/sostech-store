@@ -1,4 +1,4 @@
-export type ReferralStatus = 'pending' | 'completed';
+export type ReferralStatus = "pending" | "completed";
 
 export interface Referral {
   _id: string;

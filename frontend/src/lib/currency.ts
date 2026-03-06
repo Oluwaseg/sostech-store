@@ -1,4 +1,4 @@
-export type SupportedCurrency = 'USD' | 'NGN';
+export type SupportedCurrency = "USD" | "NGN";
 
 export const CURRENCY_CONFIG: Record<
   SupportedCurrency,
@@ -8,13 +8,13 @@ export const CURRENCY_CONFIG: Record<
   }
 > = {
   USD: {
-    locale: 'en-US',
-    symbol: '$',
+    locale: "en-US",
+    symbol: "$",
   },
   NGN: {
-    locale: 'en-NG',
-    symbol: '₦',
+    locale: "en-NG",
+    symbol: "₦",
   },
 };
 
-export const DEFAULT_CURRENCY: SupportedCurrency = 'USD';
+export const DEFAULT_CURRENCY: SupportedCurrency = "USD";

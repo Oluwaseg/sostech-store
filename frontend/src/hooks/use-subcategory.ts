@@ -6,20 +6,20 @@ import {
   getSubcategoryById,
   getSubcategoryBySlug,
   updateSubcategory,
-} from '@/services/subcategory.service';
-import { Subcategory, SubcategoryInput } from '@/types/subcategory';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+} from "@/services/subcategory.service";
+import { Subcategory, SubcategoryInput } from "@/types/subcategory";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 /* ===============================
    Query Keys
 ================================= */
 const SUBCATEGORY_KEYS = {
-  all: ['subcategories'] as const,
+  all: ["subcategories"] as const,
   detail: (identifier: string) =>
-    [...SUBCATEGORY_KEYS.all, 'detail', identifier] as const,
+    [...SUBCATEGORY_KEYS.all, "detail", identifier] as const,
   byCategory: (categoryId: string) =>
-    ['subcategories', 'category', categoryId] as const,
+    ["subcategories", "category", categoryId] as const,
 };
 
 /* ===============================
@@ -65,10 +65,10 @@ export const useCreateSubcategory = () => {
     mutationFn: createSubcategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBCATEGORY_KEYS.all });
-      toast.success('Subcategory created successfully');
+      toast.success("Subcategory created successfully");
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to create subcategory');
+      toast.error(error.message || "Failed to create subcategory");
     },
   });
 };
@@ -88,10 +88,10 @@ export const useUpdateSubcategory = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(SUBCATEGORY_KEYS.detail(data._id), data);
       queryClient.invalidateQueries({ queryKey: SUBCATEGORY_KEYS.all });
-      toast.success('Subcategory updated successfully');
+      toast.success("Subcategory updated successfully");
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to update subcategory');
+      toast.error(error.message || "Failed to update subcategory");
     },
   });
 };
@@ -106,10 +106,10 @@ export const useDeleteSubcategory = () => {
     mutationFn: deleteSubcategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SUBCATEGORY_KEYS.all });
-      toast.success('Subcategory deleted successfully');
+      toast.success("Subcategory deleted successfully");
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to delete subcategory');
+      toast.error(error.message || "Failed to delete subcategory");
     },
   });
 };

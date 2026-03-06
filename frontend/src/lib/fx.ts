@@ -22,7 +22,7 @@ export async function getFxRates(): Promise<FxRates> {
 
   try {
     const res = await fetch(
-      'https://api.exchangerate.host/latest?base=USD&symbols=USD,NGN'
+      "https://api.exchangerate.host/latest?base=USD&symbols=USD,NGN",
     );
 
     const data = await res.json();

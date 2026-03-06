@@ -1,4 +1,4 @@
-export type UserRole = 'user' | 'admin' | 'moderator';
+export type UserRole = "user" | "admin" | "moderator";
 
 export interface UserAvatar {
   publicId: string;

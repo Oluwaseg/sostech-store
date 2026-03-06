@@ -1,13 +1,13 @@
-import { ApiRoutes } from '@/api';
-import axiosInstance from '@/lib/axios';
-import { unwrap } from '@/lib/unwrap';
-import { ApiResponse } from '@/types/api-response';
-import { Cart } from '@/types/cart';
+import { ApiRoutes } from "@/api";
+import axiosInstance from "@/lib/axios";
+import { unwrap } from "@/lib/unwrap";
+import { ApiResponse } from "@/types/api-response";
+import { Cart } from "@/types/cart";
 
 // ---------------- GET USER CART ----------------
 export const getCart = async (): Promise<Cart> => {
   const res = (await axiosInstance.get<ApiResponse<Cart>>(
-    ApiRoutes.cart.list
+    ApiRoutes.cart.list,
   )) as unknown as ApiResponse<Cart>;
 
   return unwrap(res);
@@ -16,11 +16,11 @@ export const getCart = async (): Promise<Cart> => {
 // ---------------- CREATE CART ----------------
 // Usually not needed manually, but keeping for completeness
 export const createCart = async (
-  items: { productId: string; quantity: number }[]
+  items: { productId: string; quantity: number }[],
 ): Promise<Cart> => {
   const res = (await axiosInstance.post<ApiResponse<Cart>>(
     ApiRoutes.cart.addItem,
-    { items }
+    { items },
   )) as unknown as ApiResponse<Cart>;
 
   return unwrap(res);
@@ -28,11 +28,11 @@ export const createCart = async (
 
 // ---------------- UPDATE CART ----------------
 export const updateCart = async (
-  items: { productId: string; quantity: number }[]
+  items: { productId: string; quantity: number }[],
 ): Promise<Cart> => {
   const res = (await axiosInstance.post<ApiResponse<Cart>>(
     ApiRoutes.cart.update,
-    { items }
+    { items },
   )) as unknown as ApiResponse<Cart>;
 
   return unwrap(res);
@@ -43,11 +43,11 @@ export const mergeCart = async (
   guestItems: {
     product: string;
     quantity: number;
-  }[]
+  }[],
 ): Promise<Cart> => {
   const res = (await axiosInstance.post<ApiResponse<Cart>>(
     ApiRoutes.cart.merge,
-    { items: guestItems }
+    { items: guestItems },
   )) as unknown as ApiResponse<Cart>;
 
   return unwrap(res);
@@ -56,7 +56,7 @@ export const mergeCart = async (
 // ---------------- REMOVE SINGLE ITEM ----------------
 export const removeCartItem = async (itemId: string): Promise<Cart> => {
   const res = (await axiosInstance.delete<ApiResponse<Cart>>(
-    ApiRoutes.cart.removeItem(itemId)
+    ApiRoutes.cart.removeItem(itemId),
   )) as unknown as ApiResponse<Cart>;
 
   return unwrap(res);
@@ -65,7 +65,7 @@ export const removeCartItem = async (itemId: string): Promise<Cart> => {
 // ---------------- CLEAR CART ----------------
 export const clearCart = async (): Promise<null> => {
   const res = (await axiosInstance.delete<ApiResponse<null>>(
-    ApiRoutes.cart.clear
+    ApiRoutes.cart.clear,
   )) as unknown as ApiResponse<null>;
 
   return unwrap(res);

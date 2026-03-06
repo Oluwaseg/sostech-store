@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { DEFAULT_CURRENCY, type SupportedCurrency } from '@/lib/currency';
-import { getFxRates } from '@/lib/fx';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { DEFAULT_CURRENCY, type SupportedCurrency } from "@/lib/currency";
+import { getFxRates } from "@/lib/fx";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface CurrencyContextValue {
   currency: SupportedCurrency;
@@ -22,10 +22,10 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    if (tz.includes('Africa')) {
-      setCurrency('NGN');
+    if (tz.includes("Africa")) {
+      setCurrency("NGN");
     } else {
-      setCurrency('USD');
+      setCurrency("USD");
     }
   }, []);
 
@@ -36,7 +36,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   // Always treat input as NGN
   const convert = (nairaAmount: number) => {
-    if (currency === 'NGN') return nairaAmount;
+    if (currency === "NGN") return nairaAmount;
     // Convert NGN to USD
     return nairaAmount / rates.NGN;
   };
@@ -51,7 +51,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 export function useCurrency() {
   const ctx = useContext(CurrencyContext);
   if (!ctx) {
-    throw new Error('useCurrency must be used inside CurrencyProvider');
+    throw new Error("useCurrency must be used inside CurrencyProvider");
   }
   return ctx;
 }

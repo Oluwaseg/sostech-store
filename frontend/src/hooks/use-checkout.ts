@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-import { checkout } from '@/services/checkout.service';
-import { CheckoutRequest } from '@/types/checkout';
-import { Order } from '@/types/order';
+import { checkout } from "@/services/checkout.service";
+import { CheckoutRequest } from "@/types/checkout";
+import { Order } from "@/types/order";
 
 /* ===============================
    CHECKOUT
@@ -17,19 +17,19 @@ export const useCheckout = () => {
 
     onSuccess: (order) => {
       // 🔄 Cart is now empty on backend
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
 
       // 🔄 Orders list (if you have one)
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
 
-      toast.success('Checkout completed successfully 🧾');
+      toast.success("Checkout completed successfully 🧾");
 
       // If you want navigation, do it in the component:
       // router.push(`/orders/${order._id}`)
     },
 
     onError: (error) => {
-      toast.error(error.message || 'Checkout failed');
+      toast.error(error.message || "Checkout failed");
     },
   });
 };

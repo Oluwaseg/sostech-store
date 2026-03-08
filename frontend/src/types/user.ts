@@ -1,4 +1,4 @@
-export type UserRole = "user" | "admin" | "moderator";
+export type UserRole = 'user' | 'admin' | 'moderator';
 
 export interface UserAvatar {
   publicId: string;
@@ -30,4 +30,21 @@ export interface User {
   referralCode?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EditUser {
+  name?: string;
+  email?: string;
+  role?: 'user' | 'admin' | 'moderator';
+  username?: string;
+  avatar?: {
+    publicId?: string;
+    url?: string;
+  };
+  bio?: string | null;
+  birthday?: string; // ISO string
+  phone?: string;
+  isEmailVerified?: boolean;
+  isActive?: boolean;
+  referralCode?: string;
 }

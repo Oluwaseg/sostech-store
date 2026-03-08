@@ -57,5 +57,7 @@ export const ApiRoutes = {
   },
   admin: {
     users: '/admin/users',
+    editUser: (id: string) => `/admin/users/${id}`,
+    deleteUser: (id: string) => `/admin/users/${id}`,
   },
 };

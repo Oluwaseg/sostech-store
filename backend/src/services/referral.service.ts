@@ -1,12 +1,12 @@
-import { Coupon } from '../models/Coupon';
-import { Referral } from '../models/Referral';
-import { User } from '../models/User';
 import {
   getMilestoneForCount,
   ReferralMilestone,
 } from '../configs/referral.config';
-import emailService from './email.service';
 import logger from '../libs/logger';
+import { Coupon } from '../models/Coupon';
+import { Referral } from '../models/Referral';
+import { User } from '../models/User';
+import emailService from './email.service';
 
 class ReferralService {
   /**
@@ -114,7 +114,7 @@ class ReferralService {
   ): Promise<void> {
     // Get all milestones that should have been reached
     const { REFERRAL_MILESTONES } = await import('../configs/referral.config');
-    
+
     // Check all milestones up to the current count
     for (const milestone of REFERRAL_MILESTONES) {
       // Skip if milestone not reached
@@ -127,6 +127,8 @@ class ReferralService {
         issuedTo: referrerId,
         issuedReason: 'referral',
         discountPercent: milestone.discountPercent,
+        isActive: true,
+        expiresAt: { $gt: new Date() },
       });
 
       // Issue coupon if not already rewarded
@@ -204,7 +206,10 @@ class ReferralService {
     let exists = true;
 
     while (exists) {
-      const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const randomStr = Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
       code = `REF-${randomStr}`;
       const existingCoupon = await Coupon.findOne({ code });
       exists = !!existingCoupon;

@@ -1,11 +1,12 @@
-import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import logger from '../src/libs/logger';
 import { Referral } from '../src/models/Referral';
 import { User } from '../src/models/User';
-
-dotenv.config();
+import referralService from '../src/services/referral.service';
 
 interface SeedUser {
   name: string;
@@ -14,7 +15,7 @@ interface SeedUser {
   username: string;
 }
 
-const REFERRAL_CODE = 'SAGEP-B151-OYYS4L';
+const REFERRAL_CODE = 'SAGEP-BDA0-0E8LZV';
 
 const seedUsers: SeedUser[] = [
   {
@@ -155,6 +156,17 @@ async function seedAccounts(): Promise<void> {
     logger.info(
       `\n========== SEED COMPLETE ==========\nCreated: ${createdCount} accounts\nSkipped: ${skippedCount} accounts\nReferral Code: ${REFERRAL_CODE}\n==================================`
     );
+
+    // Trigger referral milestone rewards for the referrer
+    try {
+      await referralService.checkAndIssueRewards(referrer._id.toString());
+      logger.info('Referral milestone rewards checked and issued if eligible.');
+    } catch (rewardError) {
+      logger.error(
+        'Failed to check/issue referral rewards:',
+        rewardError instanceof Error ? rewardError.message : rewardError
+      );
+    }
 
     await disconnectDB();
   } catch (error) {

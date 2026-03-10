@@ -20,12 +20,26 @@ export const REFERRAL_MILESTONES: ReferralMilestone[] = [
     discountPercent: 20,
     couponExpiryDays: 30,
   },
-  // Add more milestones as needed
-  // {
-  //   count: 20,
-  //   discountPercent: 40,
-  //   couponExpiryDays: 30,
-  // },
+  {
+    count: 20,
+    discountPercent: 30,
+    couponExpiryDays: 45,
+  },
+  {
+    count: 35,
+    discountPercent: 40,
+    couponExpiryDays: 60,
+  },
+  {
+    count: 50,
+    discountPercent: 50,
+    couponExpiryDays: 90,
+  },
+  {
+    count: 100,
+    discountPercent: 60,
+    couponExpiryDays: 120,
+  },
 ];
 
 // Get the highest milestone that has been reached
@@ -36,10 +50,7 @@ export const getMilestoneForCount = (
 
   for (const milestone of REFERRAL_MILESTONES) {
     if (referralCount >= milestone.count) {
-      if (
-        !highestMilestone ||
-        milestone.count > highestMilestone.count
-      ) {
+      if (!highestMilestone || milestone.count > highestMilestone.count) {
         highestMilestone = milestone;
       }
     }

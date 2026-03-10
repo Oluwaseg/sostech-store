@@ -44,7 +44,18 @@ class ProductController {
 
   async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
-      const product = await productService.createProduct(req.body);
+      const user = (req as any).user;
+      if (!user) {
+        return (res as any).error(
+          'Authentication required',
+          'AUTH_REQUIRED',
+          401
+        );
+      }
+      const product = await productService.createProduct({
+        ...req.body,
+        createdBy: user._id || user.userId,
+      });
       return (res as any).success(
         product,
         'Product created successfully',

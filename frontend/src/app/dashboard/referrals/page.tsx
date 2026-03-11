@@ -363,6 +363,143 @@ const ReferralPage = () => {
             </Card>
           </div>
 
+          {/* Milestone Rewards Section */}
+          <div className='mt-20 mb-20'>
+            <div className='text-center mb-12'>
+              <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-3'>
+                Reward Milestones
+              </h2>
+              <p className='text-muted-foreground/80 max-w-2xl mx-auto'>
+                Unlock increasingly amazing rewards as you reach each milestone
+              </p>
+            </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {[
+                { referrals: 5, discount: 10, days: 30 },
+                { referrals: 10, discount: 20, days: 30 },
+                { referrals: 20, discount: 30, days: 45 },
+                { referrals: 35, discount: 40, days: 60 },
+                { referrals: 50, discount: 50, days: 90 },
+                { referrals: 100, discount: 60, days: 120 },
+              ].map((milestone, index) => {
+                const isReached = totalReferrals >= milestone.referrals;
+                const isCurrent =
+                  totalReferrals < milestone.referrals &&
+                  (index === 0 ||
+                    totalReferrals >= [5, 10, 20, 35, 50, 100][index - 1]);
+
+                return (
+                  <div
+                    key={milestone.referrals}
+                    className={`group relative transition-all duration-300 ${
+                      isReached ? 'scale-105' : ''
+                    }`}
+                  >
+                    <div
+                      className={`absolute inset-0 rounded-2xl blur-xl transition-all duration-300 ${
+                        isReached
+                          ? 'bg-gradient-to-br from-primary/40 to-accent/20 group-hover:blur-2xl'
+                          : 'bg-gradient-to-br from-primary/10 to-accent/5 group-hover:blur-xl'
+                      }`}
+                    ></div>
+                    <div
+                      className={`relative p-8 rounded-2xl border transition-all duration-300 h-full backdrop-blur-sm ${
+                        isReached
+                          ? 'bg-gradient-to-br from-primary/15 to-accent/10 border-primary/60 shadow-lg shadow-primary/20'
+                          : isCurrent
+                            ? 'bg-gradient-to-br from-card to-card/50 border-primary/40 shadow-md shadow-primary/10'
+                            : 'bg-gradient-to-br from-card/30 to-card/10 border-primary/20'
+                      }`}
+                    >
+                      {/* Checkmark for reached milestones */}
+                      {isReached && (
+                        <div className='absolute -top-3 -right-3'>
+                          <div className='flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 border-4 border-background shadow-lg'>
+                            <CheckCircle2 className='w-5 h-5 text-primary-foreground' />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Badge for current milestone */}
+                      {isCurrent && (
+                        <div className='absolute -top-3 left-1/2 -translate-x-1/2'>
+                          <div className='px-3 py-1 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-bold rounded-full shadow-lg'>
+                            NEXT MILESTONE
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Referral Count */}
+                      <div className='mb-4'>
+                        <div className='text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2'>
+                          Referral Milestone
+                        </div>
+                        <div className='text-4xl md:text-3xl font-bold bg-gradient-to-br from-primary to-primary/70 text-transparent bg-clip-text'>
+                          {milestone.referrals}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className='w-full h-px bg-gradient-to-r from-primary/20 via-accent/20 to-transparent my-5'></div>
+
+                      {/* Reward Details */}
+                      <div className='space-y-4'>
+                        {/* Discount */}
+                        <div className='flex items-baseline justify-between'>
+                          <span className='text-sm text-muted-foreground/80 font-medium'>
+                            Discount
+                          </span>
+                          <div className='flex items-baseline gap-1'>
+                            <span className='text-2xl font-bold text-primary'>
+                              {milestone.discount}%
+                            </span>
+                            <span className='text-xs text-muted-foreground'>
+                              off
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Validity */}
+                        <div className='flex items-baseline justify-between'>
+                          <span className='text-sm text-muted-foreground/80 font-medium'>
+                            Valid For
+                          </span>
+                          <div className='flex items-baseline gap-1'>
+                            <span className='text-lg font-bold text-accent'>
+                              {milestone.days}
+                            </span>
+                            <span className='text-xs text-muted-foreground'>
+                              days
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status indicator */}
+                      <div className='mt-5 pt-4 border-t border-primary/10'>
+                        <p
+                          className={`text-xs font-semibold text-center uppercase tracking-wide ${
+                            isReached
+                              ? 'text-primary'
+                              : isCurrent
+                                ? 'text-primary/80'
+                                : 'text-muted-foreground/50'
+                          }`}
+                        >
+                          {isReached
+                            ? '🎉 Unlocked'
+                            : isCurrent
+                              ? `${milestone.referrals - totalReferrals} more to go`
+                              : 'Locked'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* How It Works Section */}
           <div className='mt-20'>
             <div className='text-center mb-12'>

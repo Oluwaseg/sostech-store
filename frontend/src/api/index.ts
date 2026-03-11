@@ -60,4 +60,8 @@ export const ApiRoutes = {
     editUser: (id: string) => `/admin/users/${id}`,
     deleteUser: (id: string) => `/admin/users/${id}`,
   },
+  payment: {
+    initialize: '/payment/initialize',
+    verify: '/payment/verify',
+  },
 };

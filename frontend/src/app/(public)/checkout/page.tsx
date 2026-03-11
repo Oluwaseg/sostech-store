@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/hooks/use-checkout";
+import { useInitializePayment } from "@/hooks/use-payment";
 import { CheckoutRequest } from "@/types/checkout";
 import {
   ArrowRight,
@@ -19,9 +20,12 @@ import { useState } from "react";
 import { useCartContext } from "@/contexts/cart-context";
 import { useCurrency } from "@/contexts/currency-context";
 import { formatPrice } from "@/lib/format-price";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
-  const { mutate: checkout, isPending } = useCheckout();
+  const { mutateAsync: checkout, isPending: isCheckoutPending } = useCheckout();
+  const { mutateAsync: initializePayment, isPending: isPaymentPending } =
+    useInitializePayment();
   const [form, setForm] = useState<CheckoutRequest>({
     shipping: {
       addressLine: "",
@@ -83,9 +87,24 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    checkout(form);
+
+    try {
+      const callbackUrl = `${window.location.origin}/payment-success`;
+
+      await checkout(form);
+      const init = await initializePayment({ callbackUrl });
+
+      const authorizationUrl = init?.paystack?.data?.authorization_url;
+      if (!authorizationUrl) {
+        throw new Error("Paystack authorization URL not returned");
+      }
+
+      window.location.href = authorizationUrl;
+    } catch (err: any) {
+      toast.error(err?.message || "Checkout/payment initialization failed");
+    }
   };
 
   const shippingMethods = [
@@ -318,13 +337,13 @@ export default function CheckoutPage() {
                 {/* Submit Button */}
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isCheckoutPending || isPaymentPending}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
                 >
-                  {isPending ? (
+                  {isCheckoutPending || isPaymentPending ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Processing Your Order...
+                      Redirecting to payment...
                     </>
                   ) : (
                     <>

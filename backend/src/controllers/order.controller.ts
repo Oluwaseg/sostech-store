@@ -102,26 +102,20 @@ class OrderController {
       id = Array.isArray(id) ? id[0] : id;
 
       const { status } = req.body as { status?: string };
-      const allowedStatuses = [
-        'pending',
-        'payment_pending',
-        'paid',
-        'processing',
-        'shipped',
-        'delivered',
-        'cancelled',
-        'refunded',
-      ];
+      const allowedStatuses = ['processing', 'shipped', 'delivered', 'cancelled'];
 
       if (!status || !allowedStatuses.includes(status)) {
         return (res as any).error(
-          'Invalid order status',
+          'Invalid shipping status',
           'ADMIN_ORDER_STATUS_INVALID',
           422
         );
       }
 
-      const order = await orderService.updateOrderStatus(id, status as any);
+      const order = await orderService.updateOrderShippingStatus(
+        id,
+        status as any
+      );
       if (!order) {
         return (res as any).error(
           'Order not found',

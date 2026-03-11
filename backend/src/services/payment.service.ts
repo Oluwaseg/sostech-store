@@ -16,7 +16,7 @@ class PaymentService {
     // Fetch latest payment_pending order for user
     const order = await Order.findOne({
       user: userId,
-      status: 'payment_pending',
+      paymentStatus: 'payment_pending',
     }).sort({ createdAt: -1 });
     if (!order)
       throw new Error('No pending order found. Please checkout first.');
@@ -73,12 +73,12 @@ class PaymentService {
     if (!order) return;
 
     if (status === 'success' || status === 'completed') {
-      order.status = 'paid';
+      order.paymentStatus = 'paid';
       order.paymentIntentId = reference;
       await order.save();
       // Optionally clear cart, send confirmation, etc.
     } else {
-      order.status = 'cancelled'; // Use allowed status value
+      order.paymentStatus = 'cancelled';
       order.paymentIntentId = reference;
       await order.save();
     }

@@ -2,7 +2,7 @@ import { ApiRoutes } from "@/api";
 import axiosInstance from "@/lib/axios";
 import { unwrap } from "@/lib/unwrap";
 import { ApiResponse } from "@/types/api-response";
-import { Order } from "@/types/order";
+import { Order, ShippingStatus } from "@/types/order";
 
 // -------- User orders --------
 
@@ -46,7 +46,7 @@ export const getOrderByIdAdmin = async (id: string): Promise<AdminOrder> => {
 
 export const updateOrderStatusAdmin = async (params: {
   id: string;
-  status: string;
+  status: ShippingStatus;
 }): Promise<AdminOrder> => {
   const res = (await axiosInstance.patch<ApiResponse<AdminOrder>>(
     ApiRoutes.admin.updateOrderStatus(params.id),

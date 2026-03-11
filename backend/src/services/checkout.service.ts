@@ -80,7 +80,8 @@ class CheckoutService {
       shippingFee,
       total,
       coupon: appliedCoupon ? appliedCoupon._id : undefined,
-      status: 'payment_pending',
+      paymentStatus: 'payment_pending',
+      shippingStatus: 'processing',
       shipping: payload.shipping,
     });
 

@@ -1,4 +1,11 @@
-export type OrderStatus = "pending" | "paid" | "cancelled";
+export type PaymentStatus =
+  | "pending"
+  | "payment_pending"
+  | "paid"
+  | "cancelled"
+  | "refunded";
+
+export type ShippingStatus = "processing" | "shipped" | "delivered" | "cancelled";
 
 export type ShippingMethod = "standard" | "express" | "pickup";
 
@@ -30,7 +37,8 @@ export interface Order {
   total: number;
 
   coupon?: string;
-  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  shippingStatus: ShippingStatus;
 
   shipping: ShippingInfo;
 

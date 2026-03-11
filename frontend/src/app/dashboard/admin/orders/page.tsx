@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAdminOrders, useUpdateOrderStatus } from "@/hooks/use-order";
-import { Order } from "@/types/order";
+import { Order, ShippingStatus } from "@/types/order";
 import { format } from "date-fns";
 import {
   AlertTriangle,
@@ -17,10 +17,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-const ORDER_STATUSES: Order["status"][] = [
-  "pending",
-  "payment_pending",
-  "paid",
+const SHIPPING_STATUSES: ShippingStatus[] = [
   "processing",
   "shipped",
   "delivered",
@@ -116,7 +113,10 @@ export default function AdminOrdersPage() {
                           Total
                         </th>
                         <th className="px-6 py-3 text-left text-foreground/60 font-semibold">
-                          Status
+                          Payment
+                        </th>
+                        <th className="px-6 py-3 text-left text-foreground/60 font-semibold">
+                          Shipping
                         </th>
                         <th className="px-6 py-3 text-right text-foreground/60 font-semibold">
                           Actions
@@ -151,17 +151,25 @@ export default function AdminOrdersPage() {
                               variant="outline"
                               className="capitalize whitespace-nowrap"
                             >
-                              {order.status.replace("_", " ")}
+                              {order.paymentStatus?.replace("_", " ")?? "Unknown"}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge
+                              variant="outline"
+                              className="capitalize whitespace-nowrap mr-2"
+                            >
+                              {order.shippingStatus?.replace("_", " ")?? "Unknown"}
                             </Badge>
                           </td>
                           <td className="px-6 py-4 text-right">
                             <select
                               className="border border-border bg-background text-xs rounded-md px-2 py-1"
-                              value={order.status}
+                              value={order.shippingStatus?? "Unknown"}
                               onChange={(e) =>
                                 updateStatus({
                                   id: order._id,
-                                  status: e.target.value,
+                                  status: e.target.value as ShippingStatus,
                                 })
                               }
                               disabled={
@@ -169,7 +177,7 @@ export default function AdminOrdersPage() {
                                 lastUpdateVars?.id === order._id
                               }
                             >
-                              {ORDER_STATUSES.map((status) => (
+                              {SHIPPING_STATUSES.map((status) => (
                                 <option key={status} value={status}>
                                   {status.replace("_", " ")}
                                 </option>

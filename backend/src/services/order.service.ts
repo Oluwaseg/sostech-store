@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Order, IOrder } from '../models/Order';
+import { Order, IOrder, ShippingStatus } from '../models/Order';
 
 class OrderService {
   async getUserOrders(userId: string) {
@@ -34,13 +34,13 @@ class OrderService {
     return order;
   }
 
-  async updateOrderStatus(orderId: string, status: IOrder['status']) {
+  async updateOrderShippingStatus(orderId: string, status: ShippingStatus) {
     const order = await Order.findById(orderId);
     if (!order) {
       return null;
     }
 
-    order.status = status;
+    order.shippingStatus = status;
     await order.save();
 
     return order;

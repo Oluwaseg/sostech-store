@@ -65,7 +65,10 @@ export default function UserOrdersPage() {
                         Total
                       </th>
                       <th className="px-6 py-3 text-left text-foreground/60 font-semibold">
-                        Status
+                        Payment
+                      </th>
+                      <th className="px-6 py-3 text-left text-foreground/60 font-semibold">
+                        Shipping
                       </th>
                     </tr>
                   </thead>
@@ -89,7 +92,12 @@ export default function UserOrdersPage() {
                         </td>
                         <td className="px-6 py-4">
                           <Badge variant="outline" className="capitalize">
-                            {order.status.replace("_", " ")}
+                            {order.paymentStatus?.replace("_", " ")?? "Unknown"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4">
+                          <Badge variant="outline" className="capitalize">
+                            {order.shippingStatus?.replace("_", " ")?? "Unknown"}
                           </Badge>
                         </td>
                       </tr>

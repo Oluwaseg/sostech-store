@@ -9,7 +9,7 @@ import {
   getOrderByIdAdmin,
   updateOrderStatusAdmin,
 } from "@/services/order.service";
-import { Order } from "@/types/order";
+import { Order, ShippingStatus } from "@/types/order";
 
 /* ===============================
    USER ORDERS
@@ -57,7 +57,7 @@ export const useUpdateOrderStatus = () => {
     Error,
     {
       id: string;
-      status: string;
+      status: ShippingStatus;
     }
   >({
     mutationFn: updateOrderStatusAdmin,

@@ -453,7 +453,9 @@ export default function AdminUsersPage() {
                 className='space-y-4 overflow-y-auto flex-1 pr-4'
               >
                 <div>
-                  <Label htmlFor='name'>Name</Label>
+                  <Label className='m-2' htmlFor='name'>
+                    Name
+                  </Label>
                   <Input
                     name='name'
                     value={editForm.name || ''}
@@ -461,7 +463,9 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor='email'>Email</Label>
+                  <Label className='m-2' htmlFor='email'>
+                    Email
+                  </Label>
                   <Input
                     name='email'
                     value={editForm.email || ''}
@@ -469,7 +473,9 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor='username'>Username</Label>
+                  <Label className='m-2' htmlFor='username'>
+                    Username
+                  </Label>
                   <Input
                     name='username'
                     value={editForm.username || ''}
@@ -477,7 +483,9 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor='role'>Role</Label>
+                  <Label className='m-2' htmlFor='role'>
+                    Role
+                  </Label>
                   <select
                     name='role'
                     value={editForm.role || ''}
@@ -490,7 +498,9 @@ export default function AdminUsersPage() {
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor='bio'>Bio</Label>
+                  <Label className='m-2' htmlFor='bio'>
+                    Bio
+                  </Label>
                   <Input
                     name='bio'
                     value={editForm.bio || ''}
@@ -498,7 +508,9 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor='phone'>Phone</Label>
+                  <Label className='m-2' htmlFor='phone'>
+                    Phone
+                  </Label>
                   <Input
                     name='phone'
                     value={editForm.phone || ''}
@@ -506,14 +518,18 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div className='flex items-center justify-between p-3 bg-muted rounded'>
-                  <Label htmlFor='isActive'>Active</Label>
+                  <Label className='m-2' htmlFor='isActive'>
+                    Active
+                  </Label>
                   <Switch
                     checked={!!editForm.isActive}
                     onCheckedChange={(val) => handleEditSwitch('isActive', val)}
                   />
                 </div>
                 <div className='flex items-center justify-between p-3 bg-muted rounded'>
-                  <Label htmlFor='isEmailVerified'>Email Verified</Label>
+                  <Label className='m-2' htmlFor='isEmailVerified'>
+                    Email Verified
+                  </Label>
                   <Switch
                     checked={!!editForm.isEmailVerified}
                     onCheckedChange={(val) =>

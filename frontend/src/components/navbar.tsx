@@ -59,8 +59,6 @@ export function Navbar() {
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const adminButtonRef = useRef<HTMLButtonElement>(null);
 
-  const isDashboard = pathname.startsWith('/dashboard');
-
   useEffect(() => {
     setIsOpen(false);
     setIsCartDropdownOpen(false);
@@ -739,14 +737,6 @@ export function Navbar() {
                             Orders
                           </Link>
                           <Link
-                            href='/dashboard/profile'
-                            onClick={() => setIsUserDropdownOpen(false)}
-                            className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                          >
-                            <User size={16} />
-                            Profile
-                          </Link>
-                          <Link
                             href='/dashboard/settings'
                             onClick={() => setIsUserDropdownOpen(false)}
                             className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
@@ -941,14 +931,6 @@ export function Navbar() {
                     >
                       <ShoppingBag size={16} />
                       Orders
-                    </Link>
-                    <Link
-                      href='/dashboard/profile'
-                      onClick={() => setIsOpen(false)}
-                      className='flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                    >
-                      <User size={16} />
-                      Profile
                     </Link>
                     <Link
                       href='/dashboard/settings'

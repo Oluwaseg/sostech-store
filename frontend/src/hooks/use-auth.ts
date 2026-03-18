@@ -32,12 +32,21 @@ export const useLogin = () => {
 
   return useMutation<LoginResponse, Error, LoginRequest>({
     mutationFn: login,
-    onSuccess: () => {
+    onSuccess: async (data) => {
       toast.success('Login successful!');
       // Refetch user/cart immediately so UI shows the real user without refresh
-      queryClient.invalidateQueries({ queryKey: ['current-user'] });
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      router.push('/dashboard'); // or dynamically based on role
+      await queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      await queryClient.invalidateQueries({ queryKey: ['cart'] });
+      // Get the current user to check role
+      const userData = await getCurrentUser();
+      if (
+        userData.user.role === 'admin' ||
+        userData.user.role === 'moderator'
+      ) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     },
     onError: (error) => {
       toast.error(error.message || 'Invalid credentials');
@@ -127,12 +136,21 @@ export const useGoogleAuth = () => {
 
   return useMutation<LoginResponse, Error, string>({
     mutationFn: googleAuth,
-    onSuccess: () => {
+    onSuccess: async (data) => {
       toast.success('Google login successful!');
       // Refetch user/cart immediately so UI shows the real user without refresh
-      queryClient.invalidateQueries({ queryKey: ['current-user'] });
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      router.push('/dashboard');
+      await queryClient.invalidateQueries({ queryKey: ['current-user'] });
+      await queryClient.invalidateQueries({ queryKey: ['cart'] });
+      // Get the current user to check role
+      const userData = await getCurrentUser();
+      if (
+        userData.user.role === 'admin' ||
+        userData.user.role === 'moderator'
+      ) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     },
     onError: (error) => {
       toast.error(error.message || 'Google login failed');

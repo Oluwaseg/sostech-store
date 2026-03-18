@@ -1,7 +1,5 @@
 'use client';
 
-import { Footer } from '@/components/footer';
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useVerifyPayment } from '@/hooks/use-payment';
@@ -44,7 +42,6 @@ export default function PaymentSuccessPage() {
 
   return (
     <main className='min-h-screen bg-background'>
-      <Navbar />
       <section className='pt-16 pb-24 px-4 sm:px-6 lg:px-8 bg-background min-h-[calc(100vh-80px)] flex items-center'>
         <div className='w-full max-w-2xl mx-auto'>
           {!reference ? (
@@ -213,7 +210,6 @@ export default function PaymentSuccessPage() {
           ) : null}
         </div>
       </section>
-      <Footer />
     </main>
   );
 }

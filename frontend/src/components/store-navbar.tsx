@@ -15,11 +15,9 @@ import {
   LogOut,
   Menu,
   Minus,
-  Package,
   Plus,
   Search,
   Settings,
-  Shield,
   ShoppingBag,
   ShoppingCart,
   User,
@@ -31,11 +29,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { CurrencySwitcher } from './currency-switcher';
 
-export function Navbar() {
+export function StoreNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'cart' | 'wishlist'>('cart');
   const [searchFocused, setSearchFocused] = useState(false);
   const pathname = usePathname();
@@ -56,14 +53,11 @@ export function Navbar() {
   const cartButtonRef = useRef<HTMLButtonElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const userButtonRef = useRef<HTMLButtonElement>(null);
-  const adminDropdownRef = useRef<HTMLDivElement>(null);
-  const adminButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setIsOpen(false);
     setIsCartDropdownOpen(false);
     setIsUserDropdownOpen(false);
-    setIsAdminDropdownOpen(false);
   }, [pathname]);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -82,14 +76,6 @@ export function Navbar() {
       !userButtonRef.current.contains(event.target as Node)
     ) {
       setIsUserDropdownOpen(false);
-    }
-    if (
-      adminDropdownRef.current &&
-      !adminDropdownRef.current.contains(event.target as Node) &&
-      adminButtonRef.current &&
-      !adminButtonRef.current.contains(event.target as Node)
-    ) {
-      setIsAdminDropdownOpen(false);
     }
   };
 
@@ -114,24 +100,6 @@ export function Navbar() {
   const handleLogout = () => {
     logout.mutate();
   };
-
-  const dashboardAdminItems = [
-    { href: '/dashboard/admin/products', label: 'Products', icon: Package },
-    {
-      href: '/dashboard/admin/categories',
-      label: 'Categories',
-      icon: LayoutDashboard,
-    },
-    {
-      href: '/dashboard/admin/subcategories',
-      label: 'Subcategories',
-      icon: LayoutDashboard,
-    },
-    { href: '/dashboard/admin/orders', label: 'Orders', icon: ShoppingBag },
-    { href: '/dashboard/admin/users', label: 'Users', icon: User },
-  ];
-
-  const isAdmin = user?.role === 'admin' || user?.role === 'moderator';
 
   // Store Navbar
   return (
@@ -779,48 +747,6 @@ export function Navbar() {
                       Sign In
                     </Button>
                   </Link>
-                )}
-
-                {/* Admin Dropdown */}
-                {isAuthenticated && isAdmin && (
-                  <div className='relative' ref={adminDropdownRef}>
-                    <button
-                      ref={adminButtonRef}
-                      onClick={() => setIsAdminDropdownOpen((prev) => !prev)}
-                      className='p-2 text-foreground/70 hover:text-foreground hover:bg-muted rounded-lg transition-colors'
-                      aria-label='Admin panel'
-                      title='Admin Panel'
-                    >
-                      <Shield size={18} />
-                    </button>
-
-                    {isAdminDropdownOpen && (
-                      <div className='absolute top-full right-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-lg z-50'>
-                        <div className='px-4 py-3 border-b border-border flex items-center gap-2'>
-                          <Shield size={16} className='text-primary' />
-                          <p className='text-sm font-bold text-foreground'>
-                            Admin Panel
-                          </p>
-                        </div>
-                        <div className='py-2'>
-                          {dashboardAdminItems.map((item) => {
-                            const Icon = item.icon;
-                            return (
-                              <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={() => setIsAdminDropdownOpen(false)}
-                                className='flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/70 hover:text-foreground hover:bg-muted transition-colors'
-                              >
-                                <Icon size={16} />
-                                {item.label}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 )}
 
                 {/* Mobile Menu */}

@@ -5,6 +5,14 @@ import authorize from '../middlewares/authorize.middleware';
 
 const router = Router();
 
+// Get checkout info (addresses, default address)
+router.get(
+  '/',
+  auth,
+  authorize('user', 'moderator', 'admin'),
+  checkoutController.getCheckoutInfo
+);
+
 // Perform checkout for authenticated users
 router.post(
   '/',
@@ -14,4 +22,3 @@ router.post(
 );
 
 export default router;
-

@@ -1,7 +1,43 @@
 import { NextFunction, Request, Response } from 'express';
 import checkoutService from '../services/checkout.service';
 
+import { UserAddress } from '../models/UserAddress';
+
 class CheckoutController {
+  // GET /checkout - return user addresses and default address
+  async getCheckoutInfo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = (req as any).user;
+      if (!user) {
+        return (res as any).error(
+          'Authentication required',
+          'AUTH_REQUIRED',
+          401
+        );
+      }
+
+      // Find all addresses for the user
+      const addresses = await UserAddress.find({ user: user.userId }).lean();
+      let defaultAddressId = null;
+      const defaultAddress = addresses.find((addr) => addr.isDefault);
+      if (defaultAddress) {
+        defaultAddressId = defaultAddress._id;
+      }
+
+      return (res as any).success(
+        { addresses, defaultAddressId },
+        'Checkout info loaded',
+        null,
+        200
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to load checkout info',
+        'CHECKOUT_INFO_ERROR',
+        400
+      );
+    }
+  }
   async checkout(req: Request, res: Response, next: NextFunction) {
     try {
       const user = (req as any).user;
@@ -13,9 +49,40 @@ class CheckoutController {
         );
       }
 
-      const { shipping, couponCode } = req.body || {};
+      const { addressId, shipping, couponCode } = req.body || {};
+      let shippingInfo = shipping;
 
-      if (!shipping) {
+      if (addressId) {
+        // Use saved address
+        const address =
+          await require('../models/UserAddress').UserAddress.findById(
+            addressId
+          );
+        if (!address || String(address.user) !== String(user.userId)) {
+          return (res as any).error(
+            'Address not found or not yours',
+            'ADDRESS_NOT_FOUND',
+            404
+          );
+        }
+        if (!shipping || !shipping.method) {
+          return (res as any).error(
+            'Shipping method required with addressId',
+            'CHECKOUT_VALIDATION_ERROR',
+            400
+          );
+        }
+        shippingInfo = {
+          addressLine: address.addressLine,
+          city: address.city,
+          state: address.state,
+          country: address.country,
+          postalCode: address.postalCode,
+          method: shipping.method,
+        };
+      }
+
+      if (!shippingInfo) {
         return (res as any).error(
           'Shipping information is required',
           'CHECKOUT_VALIDATION_ERROR',
@@ -23,7 +90,7 @@ class CheckoutController {
         );
       }
 
-      const { addressLine, city, country, method } = shipping;
+      const { addressLine, city, country, method } = shippingInfo;
       if (!addressLine || !city || !country || !method) {
         return (res as any).error(
           'Missing required shipping fields',
@@ -42,11 +109,16 @@ class CheckoutController {
       }
 
       const order = await checkoutService.checkout(user.userId, {
-        shipping,
+        shipping: shippingInfo,
         couponCode,
       });
 
-      return (res as any).success(order, 'Checkout completed successfully', null, 201);
+      return (res as any).success(
+        order,
+        'Checkout completed successfully',
+        null,
+        201
+      );
     } catch (error: any) {
       return (res as any).error(
         error.message || 'Checkout failed',
@@ -58,4 +130,3 @@ class CheckoutController {
 }
 
 export default new CheckoutController();
-

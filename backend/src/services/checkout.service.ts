@@ -80,12 +80,15 @@ class CheckoutService {
     const shippingFee = this.computeShippingFee(payload.shipping);
     const total = Math.max(0, subtotal - discount + shippingFee);
 
-    const orderItems = cart.items.map((item) => ({
-      product: item.product as any,
-      name: (item as any).product?.name ?? '',
-      price: item.price,
-      quantity: item.quantity,
-    }));
+    const orderItems = cart.items.map((item) => {
+      const product = item.product as any;
+      return {
+        product: item.product,
+        name: product?.name || 'Unknown Product',
+        price: item.price,
+        quantity: item.quantity,
+      };
+    });
 
     const order = await Order.create({
       user: userObjectId,

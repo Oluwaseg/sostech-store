@@ -91,6 +91,13 @@ class OrderService {
     const user = order.user as any as { email?: string; name?: string };
     if (!user?.email) return;
 
+    // Ensure items have product names (in case they weren't set correctly during order creation)
+    const itemsWithNames = order.items.map((item) => ({
+      name: item.name || 'Unknown Product',
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
     await emailService.sendEmail({
       to: user.email,
       subject: 'Your SOSTECH Store order is confirmed',
@@ -101,9 +108,10 @@ class OrderService {
         total: order.total,
         paymentStatus: order.paymentStatus,
         shippingStatus: order.shippingStatus,
-        items: order.items,
+        items: itemsWithNames,
         shipping: order.shipping,
         createdAt: order.createdAt,
+        currentYear: new Date().getFullYear(),
       },
     });
   }

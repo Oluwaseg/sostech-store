@@ -4,12 +4,18 @@ const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_BASE_URL =
   process.env.PAYSTACK_BASE_URL || 'https://api.paystack.co';
 
+import { Cart } from '../models/Cart';
 import { Order } from '../models/Order';
+import { Product } from '../models/Product';
 import { User } from '../models/User';
 import orderService from './order.service';
 
 class PaymentService {
-  async initializeTransaction(userId: string, callbackUrl: string, orderId?: string) {
+  async initializeTransaction(
+    userId: string,
+    callbackUrl: string,
+    orderId?: string
+  ) {
     // Fetch user
     const user = await User.findById(userId);
     if (!user) throw new Error('User not found');
@@ -22,7 +28,8 @@ class PaymentService {
         user: userId,
         paymentStatus: 'payment_pending',
       });
-      if (!order) throw new Error('Specific pending order not found or unauthorized.');
+      if (!order)
+        throw new Error('Specific pending order not found or unauthorized.');
     } else {
       // Fetch latest payment_pending order for user
       order = await Order.findOne({
@@ -84,10 +91,37 @@ class PaymentService {
     const order = await Order.findById(metadata.orderId);
     if (!order) return;
 
+    // Idempotency check
+    if (order.paymentStatus === 'paid') return;
+
     if (status === 'success' || status === 'completed') {
+      // Verify transaction again
+      try {
+        const verification = await this.verifyTransaction(reference);
+        if (verification.data.status !== 'success') {
+          // Log error but don't fail
+          console.error(
+            'Webhook verification failed for reference:',
+            reference
+          );
+          return;
+        }
+      } catch (error) {
+        console.error('Error verifying transaction in webhook:', error);
+        return;
+      }
+
       order.paymentStatus = 'paid';
       order.paymentIntentId = reference;
       await order.save();
+
+      // Clear cart after successful payment
+      const cart = await Cart.findOne({ user: order.user });
+      if (cart) {
+        cart.items = [];
+        cart.total = 0;
+        await cart.save();
+      }
 
       // Send order confirmation email after successful payment
       await orderService.sendOrderConfirmationEmail(order._id.toString());
@@ -95,6 +129,14 @@ class PaymentService {
       order.paymentStatus = 'cancelled';
       order.paymentIntentId = reference;
       await order.save();
+
+      // Restore stock if payment cancelled
+      for (const item of order.items) {
+        await Product.updateOne(
+          { _id: item.product },
+          { $inc: { stock: item.quantity } }
+        );
+      }
     }
   }
 }

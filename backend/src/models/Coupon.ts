@@ -12,6 +12,9 @@ export interface ICoupon extends Document {
   issuedReason?: 'referral' | 'admin' | 'promotion';
 
   createdAt: Date;
+
+  // Methods
+  isUsable(): boolean;
 }
 
 const couponSchema = new Schema<ICoupon>(

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Cart } from '../models/Cart';
 import { Coupon } from '../models/Coupon';
 import { IShippingInfo, Order } from '../models/Order';
+import { Product } from '../models/Product';
 
 export interface CheckoutPayload {
   shipping: Pick<
@@ -41,6 +42,16 @@ class CheckoutService {
       throw new Error('Cart total must be greater than zero');
     }
 
+    // Stock validation
+    for (const item of cart.items) {
+      const product = item.product as any;
+      if (product.stock < item.quantity) {
+        throw new Error(
+          `Insufficient stock for ${product.name}. Available: ${product.stock}`
+        );
+      }
+    }
+
     let appliedCoupon: any = null;
     let discount = 0;
 
@@ -56,7 +67,7 @@ class CheckoutService {
         throw new Error('Invalid or inactive coupon');
       }
 
-      if (!(coupon as any).isUsable || !(coupon as any).isUsable()) {
+      if (!coupon.isUsable()) {
         throw new Error('Coupon is no longer usable');
       }
 
@@ -89,19 +100,42 @@ class CheckoutService {
       shipping: payload.shipping,
     });
 
-    // Mark coupon used (single-use semantics enforced by maxUses/usedCount)
-    if (appliedCoupon) {
-      appliedCoupon.usedCount += 1;
-      if (appliedCoupon.usedCount >= appliedCoupon.maxUses) {
-        appliedCoupon.isActive = false;
+    // Decrement stock atomically (without transaction)
+    for (const item of cart.items) {
+      const product = item.product as any;
+      const result = await Product.updateOne(
+        { _id: product._id, stock: { $gte: item.quantity } }, // Ensure sufficient stock
+        { $inc: { stock: -item.quantity } }
+      );
+      if (result.modifiedCount === 0) {
+        // Stock was insufficient or changed concurrently
+        throw new Error(
+          `Stock update failed for ${product.name}. Please try again.`
+        );
       }
-      await appliedCoupon.save();
     }
 
-    // Clear cart after successful order creation
-    cart.items = [];
-    cart.total = 0;
-    await cart.save();
+    // Mark coupon used atomically
+    if (appliedCoupon) {
+      const couponResult = await Coupon.updateOne(
+        { _id: appliedCoupon._id, usedCount: appliedCoupon.usedCount }, // Optimistic locking
+        {
+          $inc: { usedCount: 1 },
+          $set: {
+            isActive:
+              appliedCoupon.usedCount + 1 >= appliedCoupon.maxUses
+                ? false
+                : appliedCoupon.isActive,
+          },
+        }
+      );
+      if (couponResult.modifiedCount === 0) {
+        // Coupon was modified concurrently
+        throw new Error('Coupon update failed. Please try again.');
+      }
+    }
+
+    // Do NOT clear cart here - wait for payment success
 
     return order;
   }

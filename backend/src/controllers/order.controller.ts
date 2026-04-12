@@ -61,29 +61,29 @@ class OrderController {
     }
   }
 
-  async downloadInvoice(req: Request, res: Response, next: NextFunction) {
+  downloadInvoice = async (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user;
+    if (!user) {
+      return (res as any).error(
+        'Authentication required',
+        'ORDER_INVOICE_AUTH_ERROR',
+        401
+      );
+    }
+
+    let { id } = req.params;
+    id = Array.isArray(id) ? id[0] : id;
+
+    const order = await orderService.getUserOrderById(user._id, id);
+    if (!order) {
+      return (res as any).error(
+        'Order not found',
+        'ORDER_INVOICE_NOT_FOUND',
+        404
+      );
+    }
+
     try {
-      const user = (req as any).user;
-      if (!user) {
-        return (res as any).error(
-          'Authentication required',
-          'ORDER_INVOICE_AUTH_ERROR',
-          401
-        );
-      }
-
-      let { id } = req.params;
-      id = Array.isArray(id) ? id[0] : id;
-
-      const order = await orderService.getUserOrderById(user._id, id);
-      if (!order) {
-        return (res as any).error(
-          'Order not found',
-          'ORDER_INVOICE_NOT_FOUND',
-          404
-        );
-      }
-
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader(
         'Content-Disposition',
@@ -91,22 +91,39 @@ class OrderController {
       );
 
       const doc = new PDFDocument({ size: 'A4', margin: 40 });
-      doc.pipe(res);
 
+      doc.on('error', () => {
+        res.destroy();
+      });
+
+      res.on('error', () => {
+        if (typeof (doc as any).destroy === 'function') {
+          (doc as any).destroy();
+        }
+      });
+
+      doc.pipe(res);
       this.generateInvoicePdf(doc, order);
       doc.end();
     } catch (error: any) {
-      return (res as any).error(
-        error.message || 'Failed to generate invoice',
-        'ORDER_INVOICE_ERROR',
-        400
-      );
+      console.error('Invoice generation error:', error);
+      if (!res.headersSent) {
+        return (res as any).error(
+          error.message || 'Failed to generate invoice',
+          'ORDER_INVOICE_ERROR',
+          400
+        );
+      }
+      res.destroy();
     }
-  }
+  };
 
   private generateInvoicePdf(doc: typeof PDFDocument, order: any) {
-    const formatCurrency = (value: number) => `₦${value.toFixed(2)}`;
+    const margins = { top: 40, bottom: 40, left: 40, right: 40 };
+    const pageWidth = 595.28;
+    const contentWidth = pageWidth - margins.left - margins.right;
 
+    const formatCurrency = (value: number) => `₦${value.toFixed(2)}`;
     const formatDate = (date: Date) =>
       new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
@@ -119,115 +136,285 @@ class OrderController {
       order.total - order.subtotal - order.shippingFee + (order.discount || 0)
     );
 
-    doc.fontSize(20).text('SOSTECH Store', { align: 'left' });
-    doc.fontSize(10).text('Invoice', { align: 'right' });
-    doc.moveDown();
+    const getStatusLabel = () => {
+      if (order.paymentStatus === 'paid') return 'PAID';
+      if (order.paymentStatus === 'payment_pending') return 'PAYMENT PENDING';
+      if (order.paymentStatus === 'cancelled') return 'CANCELLED';
+      if (order.paymentStatus === 'refunded') return 'REFUNDED';
+      return order.shippingStatus?.toUpperCase() || 'PENDING';
+    };
+
+    const getStatusColor = () => {
+      if (order.paymentStatus === 'paid') return '#16a34a';
+      if (order.paymentStatus === 'payment_pending') return '#f59e0b';
+      if (order.paymentStatus === 'cancelled') return '#ef4444';
+      if (order.paymentStatus === 'refunded') return '#6366f1';
+      return '#2563eb';
+    };
+
+    // Header Section
+    doc
+      .fontSize(28)
+      .font('Helvetica-Bold')
+      .fillColor('#111827')
+      .text('SOSTECH Store', margins.left, margins.top);
 
     doc
-      .fontSize(10)
-      .text(`Order ID: ${order._id}`, 40, 110)
-      .text(`Date: ${formatDate(order.createdAt)}`, 40, 125)
-      .text(`Status: ${order.shippingStatus}`, 40, 140);
+      .fontSize(9)
+      .font('Helvetica')
+      .fillColor('#6b7280')
+      .text('Modern ecommerce orders & invoice history', margins.left);
 
+    doc.moveDown(0.5);
+
+    // Invoice Details Box
+    const boxY = doc.y;
     doc
-      .fontSize(10)
-      .text('Bill To:', 300, 110)
-      .text(order.shipping?.addressLine || '', 300, 125)
-      .text(
-        `${order.shipping?.city || ''}, ${order.shipping?.state || ''}`.trim(),
-        300,
-        140
-      )
-      .text(order.shipping?.country || '', 300, 155);
-
-    doc.moveTo(40, 180).lineTo(555, 180).stroke();
-
-    doc.fontSize(12).text('Items', 40, 190);
-    let y = 215;
-
-    doc
-      .fontSize(10)
-      .text('Product', 40, y)
-      .text('Qty', 280, y, { width: 60, align: 'right' })
-      .text('Price', 340, y, { width: 90, align: 'right' })
-      .text('Total', 450, y, { width: 90, align: 'right' });
-
-    y += 20;
-    doc
-      .moveTo(40, y - 5)
-      .lineTo(555, y - 5)
+      .lineWidth(1)
+      .strokeColor('#e5e7eb')
+      .rect(margins.left, boxY, contentWidth, 85)
       .stroke();
 
-    order.items.forEach((item: any) => {
+    doc
+      .fontSize(11)
+      .font('Helvetica-Bold')
+      .fillColor('#111827')
+      .text('Invoice Details', margins.left + 12, boxY + 10);
+
+    doc
+      .fontSize(9)
+      .font('Helvetica')
+      .fillColor('#6b7280')
+      .text(
+        `Order #${order._id.toString().slice(-8).toUpperCase()}`,
+        margins.left + 12,
+        boxY + 28
+      )
+      .text(`Date: ${formatDate(order.createdAt)}`, margins.left + 12)
+      .text(`Shipping Status: ${order.shippingStatus}`, margins.left + 12);
+
+    // Status Badge
+    const badgeText = getStatusLabel();
+    const badgeColor = getStatusColor();
+    const badgeX = margins.left + contentWidth - 80;
+    const badgeY = boxY + 12;
+
+    doc.fillColor(badgeColor).rect(badgeX, badgeY, 70, 22).fill();
+
+    doc
+      .fontSize(10)
+      .font('Helvetica-Bold')
+      .fillColor('#ffffff')
+      .text(badgeText, badgeX, badgeY + 6, { width: 70, align: 'center' });
+
+    doc.moveTo(margins.left, boxY + 85);
+    doc.y = boxY + 90;
+    doc.moveDown(0.5);
+
+    // Bill To Section
+    doc
+      .fontSize(11)
+      .font('Helvetica-Bold')
+      .fillColor('#111827')
+      .text('Bill To');
+
+    doc
+      .fontSize(9)
+      .font('Helvetica')
+      .fillColor('#374151')
+      .text(order.shipping?.addressLine || '', margins.left)
+      .text(
+        [order.shipping?.city, order.shipping?.state, order.shipping?.country]
+          .filter(Boolean)
+          .join(', '),
+        margins.left
+      );
+
+    doc.moveDown(0.5);
+
+    // Items Table
+    doc.fontSize(11).font('Helvetica-Bold').fillColor('#111827').text('Items');
+
+    doc.moveDown(0.3);
+
+    const tableStartY = doc.y;
+    const colWidths = { product: 200, qty: 60, price: 80, total: 90 };
+
+    // Table Header
+    doc.fillColor('#f3f4f6').rect(margins.left, doc.y, contentWidth, 24).fill();
+
+    doc
+      .fontSize(9)
+      .font('Helvetica-Bold')
+      .fillColor('#6b7280')
+      .text('Product', margins.left + 8, tableStartY + 6, {
+        width: colWidths.product,
+      })
+      .text('Qty', margins.left + colWidths.product + 8, tableStartY + 6, {
+        width: colWidths.qty,
+        align: 'right',
+      })
+      .text(
+        'Price',
+        margins.left + colWidths.product + colWidths.qty + 8,
+        tableStartY + 6,
+        {
+          width: colWidths.price,
+          align: 'right',
+        }
+      )
+      .text(
+        'Total',
+        margins.left + colWidths.product + colWidths.qty + colWidths.price + 8,
+        tableStartY + 6,
+        { width: colWidths.total, align: 'right' }
+      );
+
+    doc.y = tableStartY + 28;
+
+    // Table Rows
+    order.items.forEach((item: any, index: number) => {
       const itemTotal = item.price * item.quantity;
+      const rowY = doc.y;
+
+      // Alternating row background
+      if (index % 2 === 0) {
+        doc
+          .fillColor('#f9fafb')
+          .rect(margins.left, rowY - 2, contentWidth, 24)
+          .fill();
+      }
+
       doc
-        .fontSize(10)
-        .text(item.name, 40, y)
-        .text(item.quantity.toString(), 280, y, { width: 60, align: 'right' })
-        .text(formatCurrency(item.price), 340, y, { width: 90, align: 'right' })
-        .text(formatCurrency(itemTotal), 450, y, { width: 90, align: 'right' });
-      y += 20;
+        .fontSize(9)
+        .font('Helvetica')
+        .fillColor('#111827')
+        .text(item.name, margins.left + 8, rowY, {
+          width: colWidths.product - 8,
+        })
+        .text(
+          item.quantity.toString(),
+          margins.left + colWidths.product + 8,
+          rowY,
+          {
+            width: colWidths.qty,
+            align: 'right',
+          }
+        )
+        .text(
+          formatCurrency(item.price),
+          margins.left + colWidths.product + colWidths.qty + 8,
+          rowY,
+          {
+            width: colWidths.price,
+            align: 'right',
+          }
+        )
+        .text(
+          formatCurrency(itemTotal),
+          margins.left +
+            colWidths.product +
+            colWidths.qty +
+            colWidths.price +
+            8,
+          rowY,
+          { width: colWidths.total, align: 'right' }
+        );
+
+      doc.y = rowY + 24;
     });
 
-    y += 10;
-    doc.moveTo(40, y).lineTo(555, y).stroke();
-    y += 10;
+    doc.moveDown(0.5);
 
+    // Summary Section
+    const summaryX = margins.left + 280;
+    const summaryWidth = contentWidth - 280;
+
+    doc.fillColor('#f3f4f6').rect(summaryX, doc.y, summaryWidth, 120).fill();
+
+    const summaryY = doc.y;
     doc
       .fontSize(10)
-      .text('Subtotal', 350, y, { width: 150, align: 'right' })
-      .text(formatCurrency(order.subtotal), 500, y, {
-        width: 90,
-        align: 'right',
-      });
-    y += 15;
-
-    if (order.shippingFee) {
-      doc
-        .text('Shipping', 350, y, { width: 150, align: 'right' })
-        .text(formatCurrency(order.shippingFee), 500, y, {
-          width: 90,
-          align: 'right',
-        });
-      y += 15;
-    }
-
-    if (order.discount) {
-      doc
-        .text('Discount', 350, y, { width: 150, align: 'right' })
-        .text(`- ${formatCurrency(order.discount)}`, 500, y, {
-          width: 90,
-          align: 'right',
-        });
-      y += 15;
-    }
-
-    if (tax > 0) {
-      doc
-        .text('Tax', 350, y, { width: 150, align: 'right' })
-        .text(formatCurrency(tax), 500, y, { width: 90, align: 'right' });
-      y += 15;
-    }
-
-    doc
-      .fontSize(12)
       .font('Helvetica-Bold')
-      .text('Total', 350, y, { width: 150, align: 'right' })
-      .text(formatCurrency(order.total), 500, y, {
-        width: 90,
-        align: 'right',
-      });
+      .fillColor('#111827')
+      .text('Summary', summaryX + 12, summaryY + 10);
 
-    doc.font('Helvetica').fontSize(10);
+    let summaryLineY = summaryY + 30;
+
+    const drawSummaryLine = (label: string, value: string) => {
+      doc
+        .fontSize(9)
+        .font('Helvetica')
+        .fillColor('#6b7280')
+        .text(label, summaryX + 12, summaryLineY, {
+          width: summaryWidth / 2 - 12,
+        });
+
+      doc
+        .font('Helvetica-Bold')
+        .fillColor('#111827')
+        .text(value, summaryX + summaryWidth / 2, summaryLineY, {
+          width: summaryWidth / 2 - 12,
+          align: 'right',
+        });
+
+      summaryLineY += 16;
+    };
+
+    drawSummaryLine('Subtotal', formatCurrency(order.subtotal));
+    if (order.shippingFee > 0) {
+      drawSummaryLine('Shipping', formatCurrency(order.shippingFee));
+    }
+    if (order.discount > 0) {
+      drawSummaryLine('Discount', `- ${formatCurrency(order.discount)}`);
+    }
+    if (tax > 0) {
+      drawSummaryLine('Tax', formatCurrency(tax));
+    }
+
+    summaryLineY += 5;
     doc
-      .moveTo(40, y + 30)
-      .lineTo(555, y + 30)
+      .lineWidth(0.5)
+      .strokeColor('#e5e7eb')
+      .moveTo(summaryX + 12, summaryLineY)
+      .lineTo(summaryX + summaryWidth - 12, summaryLineY)
       .stroke();
 
+    summaryLineY += 12;
+    doc
+      .fontSize(11)
+      .font('Helvetica-Bold')
+      .fillColor('#111827')
+      .text('Total', summaryX + 12, summaryLineY);
+
+    doc.text(
+      formatCurrency(order.total),
+      summaryX + summaryWidth / 2,
+      summaryLineY,
+      {
+        width: summaryWidth / 2 - 12,
+        align: 'right',
+      }
+    );
+
+    doc.y = summaryY + 125;
+    doc.moveDown(1);
+
+    // Footer Section
+    doc.fillColor('#111827').rect(margins.left, doc.y, contentWidth, 60).fill();
+
     doc
       .fontSize(10)
-      .text('Thank you for your purchase!', 40, y + 50)
-      .text('Contact us at support@sostechstore.com', 40, y + 65);
+      .font('Helvetica-Bold')
+      .fillColor('#ffffff')
+      .text('Thank you for your purchase!', margins.left + 12, doc.y + 10);
+
+    doc
+      .fontSize(9)
+      .font('Helvetica')
+      .fillColor('#d1d5db')
+      .text('Need help? Contact us:', margins.left + 12, doc.y + 28)
+      .text('support@sostechstore.com | sostechstore.com', margins.left + 12);
   }
 
   // ----- Admin-side -----

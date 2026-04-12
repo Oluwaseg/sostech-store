@@ -56,6 +56,7 @@ export const ApiRoutes = {
   orders: {
     list: '/orders',
     details: (id: string) => `/orders/${id}`,
+    invoice: (id: string) => `/orders/${id}/invoice`,
   },
   admin: {
     users: '/admin/users',

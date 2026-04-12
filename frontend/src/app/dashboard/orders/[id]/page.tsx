@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useMyOrder } from '@/hooks/use-order';
+import { useDownloadInvoice, useMyOrder } from '@/hooks/use-order';
 import { format } from 'date-fns';
 import {
   AlertCircle,
@@ -162,6 +162,8 @@ export default function OrderDetailPage() {
   const params = useParams();
   const orderId = params.id as string;
   const { data, isLoading, error } = useMyOrder(orderId);
+  const { mutate: downloadInvoice, isPending: isDownloading } =
+    useDownloadInvoice();
   const order = data;
 
   return (
@@ -415,9 +417,18 @@ export default function OrderDetailPage() {
 
                 {/* Action Buttons */}
                 <div className='space-y-2 pt-2'>
-                  <Button className='w-full gap-2' variant='outline'>
-                    <Download className='w-4 h-4' />
-                    Download Invoice
+                  <Button
+                    className='w-full gap-2'
+                    variant='outline'
+                    onClick={() => downloadInvoice(orderId)}
+                    disabled={isDownloading}
+                  >
+                    {isDownloading ? (
+                      <Loader2 className='w-4 h-4 animate-spin' />
+                    ) : (
+                      <Download className='w-4 h-4' />
+                    )}
+                    {isDownloading ? 'Downloading...' : 'Download Invoice'}
                   </Button>
                   <Button className='w-full gap-2' variant='outline'>
                     <Navigation className='w-4 h-4' />

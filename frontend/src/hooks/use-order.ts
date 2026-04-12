@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import {
+  downloadMyOrderInvoice,
   getAllOrdersAdmin,
   getMyOrderById,
   getMyOrders,
@@ -72,6 +73,30 @@ export const useUpdateOrderStatus = () => {
     },
     onError: (error) => {
       toast.error(error.message || 'Failed to update order status');
+    },
+  });
+};
+
+export const useDownloadInvoice = () => {
+  return useMutation<Blob, Error, string>({
+    mutationFn: downloadMyOrderInvoice,
+    onSuccess: (blob) => {
+      if (!blob || !(blob instanceof Blob)) {
+        toast.error('Invalid invoice data received');
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success('Invoice downloaded');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to download invoice');
     },
   });
 };

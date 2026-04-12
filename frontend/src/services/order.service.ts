@@ -27,6 +27,14 @@ export const getMyOrderById = async (id: string): Promise<Order> => {
   return unwrap(res);
 };
 
+export const downloadMyOrderInvoice = async (id: string): Promise<Blob> => {
+  const response = await axiosInstance.get(ApiRoutes.orders.invoice(id), {
+    responseType: 'blob' as const,
+  });
+  // The interceptor already unwraps response.data, so for blob it IS the Blob
+  return response as unknown as Blob;
+};
+
 export const getAllOrdersAdmin = async (): Promise<AdminOrdersWithStats> => {
   const res = (await axiosInstance.get<ApiResponse<AdminOrdersWithStats>>(
     ApiRoutes.admin.orders

@@ -1,7 +1,5 @@
 'use client';
 
-import { Footer } from '@/components/footer';
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { useCartContext } from '@/contexts/cart-context';
 import { useCurrency } from '@/contexts/currency-context';
@@ -36,7 +34,6 @@ export default function CartPage() {
   if (cartItems.length === 0) {
     return (
       <main>
-        \
         <section className='pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-background min-h-screen'>
           <div className='max-w-4xl mx-auto'>
             <div className='text-center space-y-8'>
@@ -61,14 +58,12 @@ export default function CartPage() {
             </div>
           </div>
         </section>
-        <Footer />
       </main>
     );
   }
 
   return (
     <main>
-      <Navbar />
       <section className='pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-background min-h-screen'>
         <div className='max-w-4xl mx-auto'>
           <div className='space-y-8'>

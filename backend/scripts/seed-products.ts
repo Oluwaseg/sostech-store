@@ -44,7 +44,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Latest Apple flagship smartphone with A17 Pro chip, titanium design, and advanced camera system',
     sku: 'APPLE-IP15PM-001',
-    basePrice: 1499,
+    basePrice: 1950000,
     stock: 25,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -63,7 +63,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1592286927505-1def25115558?w=500',
+        url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/iphone-15-1',
         isThumbnail: true,
       },
@@ -74,7 +74,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium Android smartphone with Snapdragon 8 Gen 3, 200MP camera, and dynamic AMOLED display',
     sku: 'SAMSUNG-S24U-001',
-    basePrice: 1399,
+    basePrice: 1850000,
     stock: 30,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -84,7 +84,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1511707267537-b85faf00021e?w=500',
+        url: 'https://images.unsplash.com/photo-1707028148873-104c8f537dbd?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/galaxy-s24-1',
         isThumbnail: true,
       },
@@ -95,7 +95,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Google flagship with Tensor G3, advanced AI features, and exceptional computational photography',
     sku: 'GOOGLE-P8P-001',
-    basePrice: 1199,
+    basePrice: 1300000,
     stock: 20,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -105,7 +105,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1527430253220-4f2b9719f55e?w=500',
+        url: 'https://images.unsplash.com/photo-1696446702105-02fce270eb59?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/google-pixel-8-pro',
         isThumbnail: true,
       },
@@ -116,7 +116,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Fast and smooth Android experience with Snapdragon 8 Gen 3, 120Hz AMOLED display, and 100W charging',
     sku: 'ONEPLUS-12-001',
-    basePrice: 649,
+    basePrice: 1100000,
     stock: 40,
     category: 'Electronics',
     subcategory: 'Smartphones',
@@ -126,7 +126,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=500',
+        url: 'https://images.unsplash.com/photo-1707297920786-81cf137d6e7f?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/oneplus-12',
         isThumbnail: true,
       },
@@ -139,7 +139,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Powerful laptop for professionals with M3 Max chip, 16" Liquid Retina XDR display, and exceptional battery life',
     sku: 'APPLE-MBP16M3-001',
-    basePrice: 2499,
+    basePrice: 5600000,
     stock: 15,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -149,7 +149,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
+        url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/macbook-pro-16-m3-max',
         isThumbnail: true,
       },
@@ -160,7 +160,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium Windows laptop with Intel Core i9, RTX 4090, 15.6" OLED display, and sleek design',
     sku: 'DELL-XPS15-001',
-    basePrice: 1899,
+    basePrice: 2500000,
     stock: 18,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -170,7 +170,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1518110799669-ecf926333c3a?w=500',
+        url: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/dell-xps-15',
         isThumbnail: true,
       },
@@ -181,7 +181,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Business laptop with Intel vPro, 14" IPS display, excellent keyboard, and portability',
     sku: 'LENOVO-X1C-001',
-    basePrice: 1399,
+    basePrice: 1950000,
     stock: 22,
     category: 'Electronics',
     subcategory: 'Laptops & Computers',
@@ -191,7 +191,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=500',
+        url: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/lenovo-thinkpad-x1-carbon',
         isThumbnail: true,
       },
@@ -204,7 +204,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium noise-cancelling headphones with 30-hour battery life, industry-leading ANC, and premium sound',
     sku: 'SONY-WH1000XM5-001',
-    basePrice: 299,
+    basePrice: 480000,
     stock: 35,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -214,7 +214,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=500',
+        url: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/sony-wh-1000xm5',
         isThumbnail: true,
       },
@@ -225,7 +225,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium in-ear headphones with ANC, spatial audio, seamless Apple integration, and 6-hour battery',
     sku: 'APPLE-AIRPODS2-001',
-    basePrice: 249,
+    basePrice: 350000,
     stock: 50,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -235,7 +235,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500',
+        url: 'https://images.unsplash.com/photo-1628202926206-c63a34b1618f?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/apple-airpods-pro-2nd-gen',
         isThumbnail: true,
       },
@@ -246,7 +246,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Bose premium headphones with industry-leading noise cancellation and immersive sound quality',
     sku: 'BOSE-QCU-001',
-    basePrice: 349,
+    basePrice: 550000,
     stock: 25,
     category: 'Electronics',
     subcategory: 'Headphones & Audio',
@@ -256,7 +256,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500',
+        url: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/bose-quietcomfort-ultra',
         isThumbnail: true,
       },
@@ -269,7 +269,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Classic mens t-shirt made from 100% premium cotton with comfortable fit and durability',
     sku: 'FASHION-TSHIRT-001',
-    basePrice: 149,
+    basePrice: 15000,
     stock: 100,
     category: 'Fashion',
     subcategory: "Men's Clothing",
@@ -279,7 +279,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=500',
+        url: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/premium-cotton-tshirt',
         isThumbnail: true,
       },
@@ -290,7 +290,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Professional formal shirt in white and blue, perfect for office and business meetings',
     sku: 'FASHION-FORMAL-001',
-    basePrice: 349,
+    basePrice: 25000,
     stock: 60,
     category: 'Fashion',
     subcategory: "Men's Clothing",
@@ -300,7 +300,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1562158070-1f7a8f6247db?w=500',
+        url: 'https://images.unsplash.com/photo-1596755094514-f87e32f85e2c?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/formal-business-shirt',
         isThumbnail: true,
       },
@@ -313,7 +313,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Lightweight running shoes with cushioned sole, breathable mesh, and excellent support',
     sku: 'FASHION-RUNNING-001',
-    basePrice: 499,
+    basePrice: 55000,
     stock: 80,
     category: 'Fashion',
     subcategory: 'Shoes',
@@ -323,7 +323,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1515548219659-65efc9a268f6?w=500',
+        url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/running-athletic-shoes',
         isThumbnail: true,
       },
@@ -334,7 +334,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Trendy casual sneakers in multiple colors with comfortable padding and stylish design',
     sku: 'FASHION-SNEAKER-001',
-    basePrice: 399,
+    basePrice: 45000,
     stock: 90,
     category: 'Fashion',
     subcategory: 'Shoes',
@@ -344,7 +344,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1528701800484-41b1d44f983c?w=500',
+        url: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/casual-sneakers',
         isThumbnail: true,
       },
@@ -357,7 +357,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Elegant dining table made from solid wood, seats 6 people, with beautiful finish',
     sku: 'HOME-DINING-001',
-    basePrice: 2499,
+    basePrice: 350000,
     stock: 12,
     category: 'Home & Garden',
     subcategory: 'Furniture',
@@ -367,7 +367,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1493666438817-866a91353ca9?w=500',
+        url: 'https://images.unsplash.com/photo-1580974511812-4b71eceb14ba?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/wooden-dining-table',
         isThumbnail: true,
       },
@@ -378,7 +378,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Ergonomic office chair with lumbar support, adjustable height, and breathable mesh back',
     sku: 'HOME-CHAIR-001',
-    basePrice: 899,
+    basePrice: 120000,
     stock: 40,
     category: 'Home & Garden',
     subcategory: 'Furniture',
@@ -388,7 +388,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1581180696654-6c0fdc74b6cd?w=500',
+        url: 'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/comfortable-office-chair',
         isThumbnail: true,
       },
@@ -401,7 +401,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium non-slip yoga mat with extra cushioning for comfort during exercise',
     sku: 'SPORTS-YOGA-001',
-    basePrice: 199,
+    basePrice: 20000,
     stock: 150,
     category: 'Sports & Outdoors',
     subcategory: 'Fitness Equipment',
@@ -411,7 +411,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1571019613572-2b0c1a9d1278?w=500',
+        url: 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/yoga-mat',
         isThumbnail: true,
       },
@@ -422,7 +422,7 @@ const seedProducts: SeedProduct[] = [
     description:
       '4-person camping tent with waterproof material and easy setup for outdoor adventures',
     sku: 'SPORTS-TENT-001',
-    basePrice: 599,
+    basePrice: 85000,
     stock: 30,
     category: 'Sports & Outdoors',
     subcategory: 'Outdoor Gear',
@@ -432,7 +432,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1501426026826-31c667bdf23d?w=500',
+        url: 'https://images.unsplash.com/photo-1504280390224-ddc78d067cc3?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/camping-tent',
         isThumbnail: true,
       },
@@ -445,7 +445,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Comprehensive guide to programming concepts and best practices for developers',
     sku: 'BOOKS-PROG-001',
-    basePrice: 129,
+    basePrice: 18000,
     stock: 50,
     category: 'Books & Media',
     subcategory: 'Non-Fiction Books',
@@ -455,7 +455,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500',
+        url: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/the-art-of-programming',
         isThumbnail: true,
       },
@@ -466,7 +466,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Thrilling adventure novel with engaging characters and unexpected plot twists',
     sku: 'BOOKS-FICTION-001',
-    basePrice: 59,
+    basePrice: 10000,
     stock: 80,
     category: 'Books & Media',
     subcategory: 'Fiction Books',
@@ -476,7 +476,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=500',
+        url: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/fiction-adventure-novel',
         isThumbnail: true,
       },
@@ -489,7 +489,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Hydrating face cream with natural ingredients for soft and glowing skin',
     sku: 'BEAUTY-CREAM-001',
-    basePrice: 99,
+    basePrice: 12000,
     stock: 200,
     category: 'Beauty & Personal Care',
     subcategory: 'Skincare',
@@ -499,7 +499,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1580894732444-54f84b913e52?w=500',
+        url: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/moisturizing-face-cream',
         isThumbnail: true,
       },
@@ -510,7 +510,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Complete makeup set with foundation, lipstick, eyeshadow, and brushes',
     sku: 'BEAUTY-MAKEUP-001',
-    basePrice: 249,
+    basePrice: 45000,
     stock: 75,
     category: 'Beauty & Personal Care',
     subcategory: 'Makeup',
@@ -520,7 +520,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1586034676321-e5d15f1abe9d?w=500',
+        url: 'https://images.unsplash.com/photo-1596462502278-27bf85033e5a?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/premium-makeup-set',
         isThumbnail: true,
       },
@@ -533,7 +533,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Set of 5 detailed action figures with articulated joints and accessories',
     sku: 'TOYS-ACTION-001',
-    basePrice: 149,
+    basePrice: 35000,
     stock: 60,
     category: 'Toys & Games',
     subcategory: 'Action Figures',
@@ -543,7 +543,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1561353359-87bcfbad2411?w=500',
+        url: 'https://images.unsplash.com/photo-1608248593842-8021c6a8b13c?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/action-figure-collection',
         isThumbnail: true,
       },
@@ -554,7 +554,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Epic adventure video game for PS5/Xbox Series X with stunning graphics and immersive gameplay',
     sku: 'GAMES-AAA-001',
-    basePrice: 499,
+    basePrice: 95000,
     stock: 45,
     category: 'Toys & Games',
     subcategory: 'Video Games',
@@ -564,7 +564,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1587202372775-454b563a4806?w=500',
+        url: 'https://images.unsplash.com/photo-1605901309584-818e25960b8f?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/latest-aaa-video-game',
         isThumbnail: true,
       },
@@ -577,7 +577,7 @@ const seedProducts: SeedProduct[] = [
     description:
       'Premium car seat covers with cushioning for comfort and protection',
     sku: 'AUTO-SEAT-001',
-    basePrice: 349,
+    basePrice: 40000,
     stock: 55,
     category: 'Automotive',
     subcategory: 'Car Accessories',
@@ -587,7 +587,7 @@ const seedProducts: SeedProduct[] = [
     visibility: 'public',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=500',
+        url: 'https://images.unsplash.com/photo-1605335520979-11ba10dd06a2?auto=format&fit=crop&w=500&q=80',
         publicId: 'sostech/products/car-seat-covers-set',
         isThumbnail: true,
       },

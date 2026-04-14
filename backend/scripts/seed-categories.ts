@@ -16,13 +16,15 @@ const seedCategories: SeedCategory[] = [
   {
     name: 'Electronics',
     slug: 'electronics',
-    description: 'Electronic devices and gadgets including smartphones, laptops, and accessories',
+    description:
+      'Electronic devices and gadgets including smartphones, laptops, and accessories',
     isPublished: true,
   },
   {
     name: 'Fashion',
     slug: 'fashion',
-    description: 'Clothing, shoes, and fashion accessories for men, women, and kids',
+    description:
+      'Clothing, shoes, and fashion accessories for men, women, and kids',
     isPublished: true,
   },
   {

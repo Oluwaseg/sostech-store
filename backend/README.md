@@ -18,7 +18,6 @@ The system is API-first and frontend-agnostic, making it suitable for web, mobil
 - JWT-based authentication
 - Password reset and email flows
 - Role-based access control:
-
   - User
   - Admin
   - Moderator

@@ -1,7 +1,6 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset='UTF-8' />
     <title>Invitation to VendorEase</title>
     <style>
       body {
@@ -41,8 +40,9 @@
         margin: 16px 0;
       }
       .code {
-        font-family: 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
-          'Courier New', monospace;
+        font-family:
+          'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+          monospace;
         background: #111827;
         color: #f9fafb;
         padding: 8px 12px;
@@ -60,13 +60,14 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="badge">Invitation</div>
+    <div class='container'>
+      <div class='badge'>Invitation</div>
       <h2>{{fromName}} invited you to VendorEase</h2>
 
       <p>
-        Join VendorEase using {{fromName}}&apos;s referral link and help them
-        unlock exclusive discount coupons.
+        Join VendorEase using
+        {{fromName}}&apos;s referral link and help them unlock exclusive
+        discount coupons.
       </p>
 
       <p>
@@ -74,30 +75,36 @@
       </p>
 
       <p>
-        <a class="button" href="{{referralLink}}" target="_blank" rel="noopener"
-          >Join VendorEase</a
-        >
+        <a
+          class='button'
+          href='{{referralLink}}'
+          target='_blank'
+          rel='noopener'
+        >Join VendorEase</a>
       </p>
 
       <p>
         Or copy this link and paste it into your browser:
         <br />
-        <a href="{{referralLink}}" target="_blank" rel="noopener"
-          >{{referralLink}}</a
-        >
+        <a
+          href='{{referralLink}}'
+          target='_blank'
+          rel='noopener'
+        >{{referralLink}}</a>
       </p>
 
       <p>
         Referral code:
-        <span class="code">{{referralCode}}</span>
+        <span class='code'>{{referralCode}}</span>
       </p>
 
-      <p class="footer">
+      <p class='footer'>
         If you weren&apos;t expecting this invitation, you can safely ignore
         this email.<br />
-        &copy; {{currentYear}} VendorEase. All rights reserved.
+        &copy;
+        {{currentYear}}
+        VendorEase. All rights reserved.
       </p>
     </div>
   </body>
-  </html>
-
+</html>

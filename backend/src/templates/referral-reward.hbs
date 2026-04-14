@@ -1,7 +1,6 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset='UTF-8' />
     <title>Your Referral Reward</title>
     <style>
       body {
@@ -31,8 +30,9 @@
         margin-bottom: 12px;
       }
       .code {
-        font-family: 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
-          'Courier New', monospace;
+        font-family:
+          'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+          monospace;
         background: #111827;
         color: #f9fafb;
         padding: 12px 16px;
@@ -50,37 +50,41 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="badge">Referral Reward</div>
+    <div class='container'>
+      <div class='badge'>Referral Reward</div>
       <h2>Hi {{name}}, you earned a coupon! 🎉</h2>
       <p>
         Thanks for inviting your friends to VendorEase. You&apos;ve reached a
-        referral milestone with <strong>{{referralCount}}</strong> completed
-        referral(s).
+        referral milestone with
+        <strong>{{referralCount}}</strong>
+        completed referral(s).
       </p>
 
       <p>
         Here is your reward coupon worth
-        <strong>{{discountPercent}}% off</strong> on your next order:
+        <strong>{{discountPercent}}% off</strong>
+        on your next order:
       </p>
 
-      <div class="code">{{couponCode}}</div>
+      <div class='code'>{{couponCode}}</div>
 
       <p>
-        This coupon is <strong>single-use</strong>, linked to your account, and
-        valid until <strong>{{expiresAt}}</strong>.
+        This coupon is
+        <strong>single-use</strong>, linked to your account, and valid until
+        <strong>{{expiresAt}}</strong>.
       </p>
 
       <p>
-        Just apply this code at checkout on your next purchase. No need to
-        claim anything else.
+        Just apply this code at checkout on your next purchase. No need to claim
+        anything else.
       </p>
 
-      <p class="footer">
+      <p class='footer'>
         If you didn&apos;t expect this email, you can safely ignore it.<br />
-        &copy; {{currentYear}} VendorEase. All rights reserved.
+        &copy;
+        {{currentYear}}
+        VendorEase. All rights reserved.
       </p>
     </div>
   </body>
-  </html>
-
+</html>

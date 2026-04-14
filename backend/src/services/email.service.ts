@@ -1,9 +1,9 @@
 import fs from 'fs';
-import path from 'path';
 import handlebars from 'handlebars';
 import nodemailer, { Transporter } from 'nodemailer';
-import logger from '../libs/logger';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import path from 'path';
+import logger from '../libs/logger';
 
 interface EmailOptions {
   to: string;
@@ -21,14 +21,11 @@ class EmailService {
 
     if (isDevelopment) {
       // MailHog configuration for development
-      this.transporter = nodemailer.createTransport(
-        {
-          host: process.env.MAILHOG_HOST || 'localhost',
-          port: Number(process.env.MAILHOG_PORT || 1025),
-          secure: false,
-        } as SMTPTransport.Options
-      );
-      
+      this.transporter = nodemailer.createTransport({
+        host: process.env.MAILHOG_HOST || 'localhost',
+        port: Number(process.env.MAILHOG_PORT || 1025),
+        secure: false,
+      } as SMTPTransport.Options);
     } else {
       // Production SMTP configuration
       this.transporter = nodemailer.createTransport({
@@ -90,7 +87,9 @@ class EmailService {
       const info = await this.transporter.sendMail(mailOptions);
       logger.info(`Email sent to ${to}: ${info.messageId}`);
     } catch (error) {
-      logger.error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        `Failed to send email: ${error instanceof Error ? error.message : String(error)}`
+      );
       throw error;
     }
   }

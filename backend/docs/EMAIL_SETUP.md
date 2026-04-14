@@ -1,15 +1,17 @@
 # Email Service Setup
 
 ## Overview
+
 The email service uses Nodemailer with Handlebars templates. In development, it's configured to use MailHog for testing emails locally.
 
 ## Development Setup (MailHog)
 
 1. **Install MailHog** (if not already installed):
+
    ```bash
    # macOS
    brew install mailhog
-   
+
    # Linux
    # Download from https://github.com/mailhog/MailHog/releases
    # Or use Docker:
@@ -17,6 +19,7 @@ The email service uses Nodemailer with Handlebars templates. In development, it'
    ```
 
 2. **Start MailHog**:
+
    ```bash
    mailhog
    # Or if using Docker:
@@ -52,6 +55,7 @@ FRONTEND_URL=https://yourdomain.com
 ## Email Templates
 
 Templates are located in `src/templates/`:
+
 - `email-verification.hbs` - Email verification template
 - `password-reset.hbs` - Password reset template
 
@@ -60,6 +64,7 @@ Templates use Handlebars syntax and support variables like `{{name}}`, `{{verifi
 ## Usage
 
 The email service is automatically used by the auth service:
+
 - Registration: Sends verification email
 - Password Reset: Sends reset link email
 

@@ -40,6 +40,14 @@ export const ApiRoutes = {
     clear: '/cart/clear',
     merge: '/cart/merge',
   },
+  chat: {
+    support: '/chat/support',
+    conversations: '/chat/conversations',
+    conversation: (chatId: string) => `/chat/conversations/${chatId}`,
+    messages: (chatId: string) => `/chat/conversations/${chatId}/messages`,
+    markAsRead: (chatId: string) => `/chat/conversations/${chatId}/read`,
+    adminChats: '/chat/admin/chats',
+  },
   checkout: {
     getInfo: '/checkout',
     create: '/checkout',

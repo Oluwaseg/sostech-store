@@ -44,6 +44,7 @@ export function AdminNavbar() {
       icon: LayoutDashboard,
     },
     { href: '/admin/orders', label: 'Orders', icon: ShoppingBag },
+    { href: '/admin/support', label: 'Support', icon: Bell },
     { href: '/admin/users', label: 'Users', icon: User },
   ];
 

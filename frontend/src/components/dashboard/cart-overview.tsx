@@ -61,7 +61,7 @@ export function CartOverview({ cartStats }: CartOverviewProps) {
           Quick Actions
         </h3>
         <div className='space-y-3'>
-          <Link href='/orders'>
+          <Link href='/dashboard/orders'>
             <div className='flex items-center gap-4 p-4 rounded-lg border border-border/50 hover:border-border bg-muted/50 hover:bg-muted transition-all group cursor-pointer'>
               <div className='p-3 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors'>
                 <Truck size={20} className='text-blue-600 dark:text-blue-400' />

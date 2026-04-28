@@ -105,9 +105,9 @@ export function StoreNavbar() {
   return (
     <div>
       {/* Announcement Banner */}
-      <div className='bg-accent text-accent-foreground py-2 px-4 text-center text-xs font-semibold tracking-wide'>
+      {/* <div className='bg-accent text-accent-foreground py-2 px-4 text-center text-xs font-semibold tracking-wide'>
         ✨ Premium Shopping Experience • Fast Shipping on All Orders
-      </div>
+      </div> */}
 
       <nav className='sticky top-0 z-50 bg-card border-b border-border'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>

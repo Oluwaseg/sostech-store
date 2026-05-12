@@ -56,6 +56,22 @@ class PaymentController {
       );
     }
   }
+
+  async reconcile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const summary = await paymentService.reconcilePendingOrders();
+      return (res as any).success(
+        summary,
+        'Pending payments reconciled successfully'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to reconcile payments',
+        'PAYMENT_RECONCILE_ERROR',
+        500
+      );
+    }
+  }
 }
 
 export default new PaymentController();

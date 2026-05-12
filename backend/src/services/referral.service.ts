@@ -2,7 +2,7 @@ import {
   getMilestoneForCount,
   ReferralMilestone,
 } from '../configs/referral.config';
-import logger from '../libs/logger';
+import logger, { logAudit } from '../libs/logger';
 import { Coupon } from '../models/Coupon';
 import { Referral } from '../models/Referral';
 import { User } from '../models/User';
@@ -163,6 +163,16 @@ class ReferralService {
         isActive: true,
         issuedTo: userId,
         issuedReason: 'referral',
+      });
+
+      // Audit log
+      logAudit('COUPON_ISSUED', 'system', {
+        couponId: coupon._id,
+        userId,
+        code: couponCode,
+        discountPercent: milestone.discountPercent,
+        reason: 'referral',
+        milestone: milestone.count,
       });
 
       logger.info(

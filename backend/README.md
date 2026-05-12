@@ -165,7 +165,25 @@ Required keys include:
 - `PAYSTACK_PUBLIC_KEY`
 - `PAYSTACK_SECRET_KEY`
 
+Optional keys:
+
+- `REDIS_URL` - For email queueing (if not set, emails sent synchronously)
+
 This backend expects cookies for auth flows as well as optional `Authorization: Bearer <token>` support for API clients.
+
+## API Documentation
+
+API documentation is available at `/api-docs` when the server is running. It includes all routes, request/response schemas, and authentication requirements.
+
+## Health Check
+
+A health check endpoint is available at `/health` for monitoring and load balancer checks.
+
+## Observability
+
+- Request IDs are logged for tracing requests across services
+- Audit logs are written to `logs/audit.log` for admin actions, coupon issuance, and order status changes
+- Email sending is queued asynchronously using Redis/Bull for better performance (optional - falls back to synchronous sending if Redis not configured)
 
 ---
 

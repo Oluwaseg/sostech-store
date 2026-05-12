@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { logAudit } from '../libs/logger';
 import adminService from '../services/admin.service';
 import { editUserSchema } from '../validations/user.validation';
 
@@ -129,6 +130,11 @@ class AdminController {
           404
         );
       }
+
+      // Audit log
+      const adminId = (req as any).user?.userId;
+      logAudit('USER_EDIT', adminId, { targetUserId: id, changes: value });
+
       return (res as any).success(user, 'User updated successfully');
     } catch (error: any) {
       return (res as any).error(
@@ -151,6 +157,11 @@ class AdminController {
           404
         );
       }
+
+      // Audit log
+      const adminId = (req as any).user?.userId;
+      logAudit('USER_DELETE', adminId, { targetUserId: id, deletedUser: user });
+
       return (res as any).success(null, 'User deleted successfully');
     } catch (error: any) {
       return (res as any).error(

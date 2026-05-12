@@ -317,6 +317,16 @@ class ProductService {
     await product.save();
   }
 
+  async getLowStockProducts(threshold = 10): Promise<IProduct[]> {
+    return Product.find({
+      stock: { $lte: threshold },
+      visibility: { $ne: 'archived' },
+    })
+      .sort({ stock: 1, updatedAt: -1 })
+      .limit(50)
+      .populate(['category', 'subcategory', 'createdBy']);
+  }
+
   async decrementStock(id: string, quantity: number): Promise<void> {
     const product = await Product.findById(id);
     if (!product) {

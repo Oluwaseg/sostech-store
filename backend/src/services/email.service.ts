@@ -1,3 +1,4 @@
+import Queue from 'bull';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import nodemailer, { Transporter } from 'nodemailer';
@@ -14,6 +15,8 @@ interface EmailOptions {
 
 class EmailService {
   private transporter: Transporter;
+  private emailQueue: Queue.Queue | null = null;
+  private useQueue = false;
 
   constructor() {
     // Configure transporter based on environment
@@ -39,6 +42,36 @@ class EmailService {
       });
     }
 
+    // Initialize email queue only if Redis is configured
+    const redisUrl = process.env.REDIS_URL;
+    if (redisUrl) {
+      try {
+        this.emailQueue = new Queue('email', { redis: redisUrl });
+        this.useQueue = true;
+
+        // Process email jobs
+        this.emailQueue.process(async (job) => {
+          const { to, subject, html } = job.data;
+          await this.sendEmailDirect(to, subject, html);
+        });
+
+        // Handle job failures
+        this.emailQueue.on('failed', (job, err) => {
+          logger.error(`Email job failed: ${err.message}`, { jobId: job.id });
+        });
+
+        logger.info('Email queueing enabled with Redis');
+      } catch (error) {
+        logger.warn(
+          'Failed to initialize Redis queue, falling back to synchronous sending',
+          error
+        );
+        this.useQueue = false;
+      }
+    } else {
+      logger.info('Redis not configured, emails will be sent synchronously');
+    }
+
     // Verify connection
     this.transporter.verify((error) => {
       if (error) {
@@ -49,6 +82,25 @@ class EmailService {
         );
       }
     });
+  }
+
+  private async sendEmailDirect(
+    to: string,
+    subject: string,
+    html: string
+  ): Promise<void> {
+    try {
+      await this.transporter.sendMail({
+        from: process.env.EMAIL_FROM || 'VendorEase <noreply@yourdomain.com>',
+        to,
+        subject,
+        html,
+      });
+      logger.info(`Email sent to ${to}`);
+    } catch (error: any) {
+      logger.error(`Failed to send email to ${to}: ${error.message}`);
+      throw error;
+    }
   }
 
   private loadTemplate(templateName: string): string {
@@ -75,21 +127,30 @@ class EmailService {
       const compiledTemplate = handlebars.compile(templateContent);
       const html = compiledTemplate(context);
 
-      // Email options
-      const mailOptions = {
-        from: process.env.EMAIL_FROM || 'VendorEase <noreply@yourdomain.com>',
-        to,
-        subject,
-        html,
-      };
+      if (this.useQueue && this.emailQueue) {
+        // Add to queue instead of sending directly
+        await this.emailQueue.add(
+          {
+            to,
+            subject,
+            html,
+          },
+          {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 5000,
+            },
+          }
+        );
 
-      // Send email
-      const info = await this.transporter.sendMail(mailOptions);
-      logger.info(`Email sent to ${to}: ${info.messageId}`);
-    } catch (error) {
-      logger.error(
-        `Failed to send email: ${error instanceof Error ? error.message : String(error)}`
-      );
+        logger.info(`Email queued for ${to}`);
+      } else {
+        // Send synchronously as fallback
+        await this.sendEmailDirect(to, subject, html);
+      }
+    } catch (error: any) {
+      logger.error(`Failed to send email: ${error.message}`);
       throw error;
     }
   }
@@ -185,6 +246,12 @@ class EmailService {
         currentYear: new Date().getFullYear(),
       },
     });
+  }
+
+  async close(): Promise<void> {
+    if (this.emailQueue) {
+      await this.emailQueue.close();
+    }
   }
 }
 

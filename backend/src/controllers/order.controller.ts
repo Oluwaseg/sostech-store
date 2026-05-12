@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import PDFDocument from 'pdfkit';
+import { logAudit } from '../libs/logger';
 import orderService from '../services/order.service';
 import { InvoiceBuilder } from '../utils/pdf-invoice-builder';
 
@@ -263,6 +264,14 @@ class OrderController {
           404
         );
       }
+
+      // Audit log
+      const adminId = (req as any).user?.userId;
+      logAudit('ORDER_STATUS_UPDATE', adminId, {
+        orderId: id,
+        oldStatus: order.shippingStatus,
+        newStatus: status,
+      });
 
       // Send email notification for shipping status change
       await orderService.sendOrderStatusEmail(id);

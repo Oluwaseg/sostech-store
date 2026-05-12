@@ -184,6 +184,22 @@ class ProductController {
     }
   }
 
+  async getLowStockProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const threshold = req.query.threshold
+        ? parseInt(req.query.threshold as string, 10)
+        : 10;
+      const products = await productService.getLowStockProducts(threshold);
+      return (res as any).success(products, 'Low stock products retrieved');
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to retrieve low stock products',
+        'GET_LOW_STOCK_PRODUCTS_ERROR',
+        500
+      );
+    }
+  }
+
   async updateProduct(req: Request, res: Response, next: NextFunction) {
     try {
       let { id } = req.params;

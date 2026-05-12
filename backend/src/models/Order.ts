@@ -29,7 +29,11 @@ export type PaymentStatus =
   | 'cancelled'
   | 'refunded';
 
-export type ShippingStatus = 'processing' | 'shipped' | 'delivered' | 'cancelled';
+export type ShippingStatus =
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled';
 
 export interface IOrder extends Document {
   user: mongoose.Types.ObjectId;

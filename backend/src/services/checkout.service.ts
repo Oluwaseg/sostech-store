@@ -103,39 +103,55 @@ class CheckoutService {
       shipping: payload.shipping,
     });
 
-    // Decrement stock atomically (without transaction)
-    for (const item of cart.items) {
-      const product = item.product as any;
-      const result = await Product.updateOne(
-        { _id: product._id, stock: { $gte: item.quantity } }, // Ensure sufficient stock
-        { $inc: { stock: -item.quantity } }
-      );
-      if (result.modifiedCount === 0) {
-        // Stock was insufficient or changed concurrently
-        throw new Error(
-          `Stock update failed for ${product.name}. Please try again.`
+    const stockChanges: Array<{ id: string; quantity: number }> = [];
+
+    try {
+      // Decrement stock atomically (without transaction)
+      for (const item of cart.items) {
+        const product = item.product as any;
+        const result = await Product.updateOne(
+          { _id: product._id, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } }
+        );
+        if (result.modifiedCount === 0) {
+          throw new Error(
+            `Stock update failed for ${product.name}. Please try again.`
+          );
+        }
+        stockChanges.push({
+          id: product._id.toString(),
+          quantity: item.quantity,
+        });
+      }
+
+      // Mark coupon used atomically
+      if (appliedCoupon) {
+        const couponResult = await Coupon.updateOne(
+          { _id: appliedCoupon._id, usedCount: appliedCoupon.usedCount },
+          {
+            $inc: { usedCount: 1 },
+            $set: {
+              isActive:
+                appliedCoupon.usedCount + 1 >= appliedCoupon.maxUses
+                  ? false
+                  : appliedCoupon.isActive,
+            },
+          }
+        );
+        if (couponResult.modifiedCount === 0) {
+          throw new Error('Coupon update failed. Please try again.');
+        }
+      }
+    } catch (error: any) {
+      // Rollback product stock and delete the order if checkout fails after order creation
+      for (const change of stockChanges) {
+        await Product.updateOne(
+          { _id: change.id },
+          { $inc: { stock: change.quantity } }
         );
       }
-    }
-
-    // Mark coupon used atomically
-    if (appliedCoupon) {
-      const couponResult = await Coupon.updateOne(
-        { _id: appliedCoupon._id, usedCount: appliedCoupon.usedCount }, // Optimistic locking
-        {
-          $inc: { usedCount: 1 },
-          $set: {
-            isActive:
-              appliedCoupon.usedCount + 1 >= appliedCoupon.maxUses
-                ? false
-                : appliedCoupon.isActive,
-          },
-        }
-      );
-      if (couponResult.modifiedCount === 0) {
-        // Coupon was modified concurrently
-        throw new Error('Coupon update failed. Please try again.');
-      }
+      await Order.findByIdAndDelete(order._id);
+      throw error;
     }
 
     // Do NOT clear cart here - wait for payment success

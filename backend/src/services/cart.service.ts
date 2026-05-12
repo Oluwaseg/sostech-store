@@ -90,6 +90,31 @@ class CartService {
     return cart;
   }
 
+  async getAbandonedCarts(days = 7) {
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    return Cart.find({
+      updatedAt: { $lt: cutoff },
+      items: { $exists: true, $ne: [] },
+    })
+      .populate('items.product')
+      .lean();
+  }
+
+  async cleanupStaleCarts(days = 7) {
+    const abandonedCarts = await this.getAbandonedCarts(days);
+    if (abandonedCarts.length === 0) {
+      return { cleared: 0 };
+    }
+
+    const cartIds = abandonedCarts.map((cart) => cart._id);
+    const result = await Cart.updateMany(
+      { _id: { $in: cartIds } },
+      { $set: { items: [], total: 0 } }
+    );
+
+    return { cleared: result.modifiedCount || 0 };
+  }
+
   /**
    * Merge a client-side cart (local storage) into the user's server-side cart.
    * Accepts items in the shape produced by the frontend and attempts to

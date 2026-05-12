@@ -2,6 +2,7 @@ import { Router } from 'express';
 import checkoutController from '../controllers/checkout.controller';
 import auth from '../middlewares/auth.middleware';
 import authorize from '../middlewares/authorize.middleware';
+import { checkoutRateLimiter } from '../middlewares/rateLimiter';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.post(
   '/',
   auth,
   authorize('user', 'moderator', 'admin'),
+  checkoutRateLimiter,
   checkoutController.checkout
 );
 

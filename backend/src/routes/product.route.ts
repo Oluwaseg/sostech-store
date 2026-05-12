@@ -11,6 +11,12 @@ router.get('/slug/:slug', productController.getProductBySlug);
 // Endpoint for other products (related by category)
 router.get('/slug/:slug/other', productController.getOtherProducts);
 router.get('/sku/:sku', productController.getProductBySku);
+router.get(
+  '/low-stock',
+  auth,
+  authorize('admin'),
+  productController.getLowStockProducts
+);
 router.get('/:id', productController.getProductById);
 
 // Protected: create/update by moderator or admin

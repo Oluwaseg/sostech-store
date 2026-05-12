@@ -30,15 +30,17 @@ export const errorHandler = (
     return next(err);
   }
 
-  logger.error(err.stack || err.message || String(err));
+  const requestId = (res as any).requestId || 'unknown';
+  logger.error(`[${requestId}] ${err.stack || err.message || String(err)}`);
 
   const statusCode = err.statusCode || 500;
   const response = {
     status: 'error',
     statusCode,
     message: err.message || 'Internal server error',
-    code: err.code || null,
+    code: err.code || 'INTERNAL_ERROR',
     errors: err.errors || null,
+    requestId,
   };
 
   return res.status(statusCode).json(response);

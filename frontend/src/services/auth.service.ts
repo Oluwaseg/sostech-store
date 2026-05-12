@@ -99,6 +99,13 @@ export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
   return unwrap(res);
 };
 
+export const verifyAuthToken = async (): Promise<CurrentUserResponse> => {
+  const res = (await axiosInstance.get<ApiResponse<CurrentUserResponse>>(
+    ApiRoutes.auth.verifyToken
+  )) as unknown as ApiResponse<CurrentUserResponse>;
+  return unwrap(res);
+};
+
 // ---------------- USER DASHBOARD ----------------
 export const getUserDashboard = async (): Promise<UserDashboardPayload> => {
   const res = (await axiosInstance.get<ApiResponse<UserDashboardPayload>>(

@@ -3,7 +3,39 @@ import { Cart } from '../models/Cart';
 import { Order } from '../models/Order';
 import { Review } from '../models/Review';
 import authService from '../services/auth.service';
-import { generateToken, TokenPayload } from '../utils/jwt';
+import { generateToken, TokenPayload, verifyToken } from '../utils/jwt';
+
+const extractTokenFromRequest = (req: Request): string | undefined => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && typeof authHeader === 'string') {
+    const matches = authHeader.match(/^Bearer\s+(.+)$/i);
+    if (matches) {
+      return matches[1];
+    }
+  }
+
+  if (
+    (req as any).cookies &&
+    (req as any).cookies[process.env.JWT_COOKIE_NAME || 'token']
+  ) {
+    return (req as any).cookies[process.env.JWT_COOKIE_NAME || 'token'];
+  }
+
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader || typeof cookieHeader !== 'string') {
+    return undefined;
+  }
+
+  const cookies = cookieHeader.split(';').map((c) => c.trim());
+  for (const c of cookies) {
+    const [name, ...valParts] = c.split('=');
+    if (name === process.env.JWT_COOKIE_NAME || 'token') {
+      return decodeURIComponent(valParts.join('='));
+    }
+  }
+
+  return undefined;
+};
 
 class AuthController {
   // User Dashboard: stats and metrics
@@ -201,6 +233,38 @@ class AuthController {
         error.message || 'Failed to fetch current user',
         'GET_CURRENT_USER_ERROR',
         400
+      );
+    }
+  }
+
+  async verifyToken(req: Request, res: Response, next: NextFunction) {
+    const cookieName = process.env.JWT_COOKIE_NAME || 'token';
+    const isProd = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? ('none' as const) : ('lax' as const),
+    };
+
+    try {
+      const token = extractTokenFromRequest(req);
+      if (!token) {
+        return (res as any).error(
+          'Authentication token missing',
+          'AUTH_REQUIRED',
+          401
+        );
+      }
+
+      const payload = verifyToken(token);
+      const result = await authService.getCurrentUser(payload.userId);
+      return (res as any).success({ user: result.user }, 'Token is valid');
+    } catch (error: any) {
+      res.clearCookie(cookieName, cookieOptions);
+      return (res as any).error(
+        error.message || 'Invalid or expired token',
+        'AUTH_INVALID',
+        401
       );
     }
   }

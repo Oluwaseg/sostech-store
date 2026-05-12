@@ -198,6 +198,9 @@ router.post(
   authController.resendVerification
 );
 
+// User dashboard
+router.get('/dashboard', authMiddleware, authController.getDashboard);
+
 /**
  * @swagger
  * /api/auth/me:
@@ -213,6 +216,20 @@ router.post(
  */
 // Current authenticated user
 router.get('/me', authMiddleware, authController.getCurrentUser);
+
+/**
+ * @swagger
+ * /api/auth/verify-token:
+ *   get:
+ *     summary: Verify authentication token
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *       401:
+ *         description: Token is invalid or expired
+ */
+router.get('/verify-token', authController.verifyToken);
 
 /**
  * @swagger

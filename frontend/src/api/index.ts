@@ -9,6 +9,7 @@ export const ApiRoutes = {
     resetPassword: '/auth/reset-password',
     googleAuth: '/auth/google',
     me: '/auth/me',
+    verifyToken: '/auth/verify-token',
     dashboard: '/auth/dashboard',
   },
   categories: {

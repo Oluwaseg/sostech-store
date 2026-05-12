@@ -8,6 +8,7 @@ import {
   register,
   resendVerification,
   resetPassword,
+  verifyAuthToken,
   verifyEmail,
 } from '@/services/auth.service';
 import {
@@ -175,6 +176,29 @@ export const useCurrentUser = () => {
     queryFn: getCurrentUser,
     retry: false,
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+// ---------------- VERIFY AUTH TOKEN ----------------
+export const useVerifyAuthToken = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation<CurrentUserResponse, Error>({
+    mutationFn: verifyAuthToken,
+
+    onSuccess: async () => {
+      await queryClient.fetchQuery({
+        queryKey: ['current-user'],
+        queryFn: getCurrentUser,
+      });
+    },
+
+    onError: () => {
+      queryClient.removeQueries({ queryKey: ['current-user'] });
+      queryClient.removeQueries({ queryKey: ['cart'] });
+      router.replace('/login');
+    },
   });
 };
 

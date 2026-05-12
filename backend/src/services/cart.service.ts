@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { Cart, ICartItem } from '../models/Cart';
 import { Product } from '../models/Product';
+import { User } from '../models/User';
+import emailService from './email.service';
 
 class CartService {
   async getCart(userId: string) {
@@ -113,6 +115,53 @@ class CartService {
     );
 
     return { cleared: result.modifiedCount || 0 };
+  }
+
+  async sendAbandonedCartReminders(days = 7) {
+    const abandonedCarts = await this.getAbandonedCarts(days);
+    let sent = 0;
+    let skipped = 0;
+    let errors = 0;
+
+    for (const cart of abandonedCarts) {
+      try {
+        const user = await User.findById(cart.user).lean();
+        if (!user || !user.email) {
+          skipped += 1;
+          continue;
+        }
+
+        const items = (cart.items || []).map((item: any) => ({
+          name: item.product?.name || 'Unknown Product',
+          quantity: item.quantity,
+          price: item.price,
+        }));
+
+        await emailService.sendEmail({
+          to: user.email,
+          subject: 'You have items waiting in your VendorEase cart',
+          template: 'abandoned-cart-reminder',
+          context: {
+            name: user.name || 'Customer',
+            items,
+            total: cart.total,
+            cartUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/cart`,
+            currentYear: new Date().getFullYear(),
+          },
+        });
+
+        sent += 1;
+      } catch (error: any) {
+        errors += 1;
+      }
+    }
+
+    return {
+      checked: abandonedCarts.length,
+      sent,
+      skipped,
+      errors,
+    };
   }
 
   /**

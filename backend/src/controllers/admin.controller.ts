@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { logAudit } from '../libs/logger';
 import adminService from '../services/admin.service';
+import cartService from '../services/cart.service';
 import { editUserSchema } from '../validations/user.validation';
 
 class AdminController {
@@ -104,6 +105,54 @@ class AdminController {
         error.message || 'Failed to fetch users',
         'ADMIN_USER_LIST_ERROR',
         400
+      );
+    }
+  }
+
+  async getAbandonedCarts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const days = req.query.days ? parseInt(req.query.days as string, 10) : 7;
+      const abandonedCarts = await cartService.getAbandonedCarts(days);
+      return (res as any).success(
+        abandonedCarts,
+        'Abandoned carts retrieved successfully'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to retrieve abandoned carts',
+        'ADMIN_ABANDONED_CARTS_ERROR',
+        500
+      );
+    }
+  }
+
+  async sendAbandonedCartReminders(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const days =
+        req.body.days || req.query.days
+          ? parseInt(req.body.days || (req.query.days as string), 10)
+          : 7;
+      const result = await cartService.sendAbandonedCartReminders(days);
+
+      const adminId = (req as any).user?.userId;
+      logAudit('ABANDONED_CART_REMINDERS_SENT', adminId, {
+        days,
+        result,
+      });
+
+      return (res as any).success(
+        result,
+        'Abandoned cart reminders sent successfully'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to send abandoned cart reminders',
+        'ADMIN_ABANDONED_CART_REMINDERS_ERROR',
+        500
       );
     }
   }

@@ -1,22 +1,22 @@
-import { ApiRoutes } from "@/api";
-import axiosInstance from "@/lib/axios";
-import { unwrap } from "@/lib/unwrap";
-import { ApiResponse } from "@/types/api-response";
+import { ApiRoutes } from '@/api';
+import axiosInstance from '@/lib/axios';
+import { unwrap } from '@/lib/unwrap';
+import { ApiResponse } from '@/types/api-response';
 import {
   CreateProduct,
   Product,
   ProductListPayload,
   ProductQueryParams,
   UpdateProduct,
-} from "@/types/product";
+} from '@/types/product';
 
 // ---------------- GET ALL PRODUCTS WITH PAGINATION ----------------
 export const getProducts = async (
-  params?: ProductQueryParams,
+  params?: ProductQueryParams
 ): Promise<ProductListPayload> => {
   const res = (await axiosInstance.get<ApiResponse<ProductListPayload>>(
     ApiRoutes.products.list,
-    { params },
+    { params }
   )) as unknown as ApiResponse<ProductListPayload>;
 
   return unwrap(res);
@@ -25,7 +25,7 @@ export const getProducts = async (
 // ---------------- GET PRODUCT BY SLUG ----------------
 export const getProductBySlug = async (slug: string): Promise<Product> => {
   const res = (await axiosInstance.get<ApiResponse<Product>>(
-    ApiRoutes.products.details(slug),
+    ApiRoutes.products.details(slug)
   )) as unknown as ApiResponse<Product>;
 
   return unwrap(res);
@@ -34,8 +34,19 @@ export const getProductBySlug = async (slug: string): Promise<Product> => {
 // ---------------- GET PRODUCT BY SKU ----------------
 export const getProductBySku = async (sku: string): Promise<Product> => {
   const res = (await axiosInstance.get<ApiResponse<Product>>(
-    ApiRoutes.products.bySku(sku),
+    ApiRoutes.products.bySku(sku)
   )) as unknown as ApiResponse<Product>;
+
+  return unwrap(res);
+};
+
+export const getLowStockProducts = async (
+  threshold = 10
+): Promise<Product[]> => {
+  const res = (await axiosInstance.get<ApiResponse<Product[]>>(
+    ApiRoutes.products.lowStock,
+    { params: { threshold } }
+  )) as unknown as ApiResponse<Product[]>;
 
   return unwrap(res);
 };
@@ -43,7 +54,7 @@ export const getProductBySku = async (sku: string): Promise<Product> => {
 // ---------------- GET PRODUCT BY ID ----------------
 export const getProductById = async (id: string): Promise<Product> => {
   const res = (await axiosInstance.get<ApiResponse<Product>>(
-    ApiRoutes.products.byId(id),
+    ApiRoutes.products.byId(id)
   )) as unknown as ApiResponse<Product>;
 
   return unwrap(res);
@@ -53,7 +64,7 @@ export const getProductById = async (id: string): Promise<Product> => {
 export const createProduct = async (data: CreateProduct): Promise<Product> => {
   const res = (await axiosInstance.post<ApiResponse<Product>>(
     ApiRoutes.products.list,
-    data,
+    data
   )) as unknown as ApiResponse<Product>;
 
   return unwrap(res);
@@ -62,11 +73,11 @@ export const createProduct = async (data: CreateProduct): Promise<Product> => {
 // ---------------- UPDATE PRODUCT (Moderator/Admin) ----------------
 export const updateProduct = async (
   id: string,
-  data: UpdateProduct,
+  data: UpdateProduct
 ): Promise<Product> => {
   const res = (await axiosInstance.patch<ApiResponse<Product>>(
     ApiRoutes.products.byId(id),
-    data,
+    data
   )) as unknown as ApiResponse<Product>;
 
   return unwrap(res);
@@ -75,7 +86,7 @@ export const updateProduct = async (
 // ---------------- DELETE PRODUCT (Admin Only) ----------------
 export const deleteProduct = async (id: string): Promise<null> => {
   const res = (await axiosInstance.delete<ApiResponse<null>>(
-    ApiRoutes.products.byId(id),
+    ApiRoutes.products.byId(id)
   )) as unknown as ApiResponse<null>;
 
   return unwrap(res);
@@ -84,7 +95,7 @@ export const deleteProduct = async (id: string): Promise<null> => {
 // ---------------- GET OTHER PRODUCTS ----------------
 export const getOtherProducts = async (slug: string): Promise<Product[]> => {
   const res = (await axiosInstance.get<ApiResponse<Product[]>>(
-    ApiRoutes.products.others(slug),
+    ApiRoutes.products.others(slug)
   )) as unknown as ApiResponse<Product[]>;
 
   return unwrap(res);

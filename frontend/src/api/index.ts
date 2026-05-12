@@ -27,6 +27,7 @@ export const ApiRoutes = {
     details: (slug: string) => `/products/slug/${slug}`,
     bySku: (sku: string) => `/products/sku/${sku}`,
     byId: (id: string) => `/products/${id}`,
+    lowStock: '/products/low-stock',
     others: (slug: string) => `/products/slug/${slug}/other`,
   },
   reviews: {
@@ -80,9 +81,12 @@ export const ApiRoutes = {
     orderDetails: (orderId: string) => `/admin/orders/${orderId}`,
     updateOrderStatus: (orderId: string) => `/admin/orders/${orderId}/status`,
     dashboard: '/admin/dashboard',
+    abandonedCarts: '/admin/abandoned-carts',
+    abandonedCartReminders: '/admin/abandoned-carts/reminders',
   },
   payment: {
     initialize: '/payment/initialize',
     verify: '/payment/verify',
+    reconcile: '/payment/reconcile',
   },
 };

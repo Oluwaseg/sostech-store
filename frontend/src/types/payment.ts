@@ -40,3 +40,11 @@ export interface PaystackVerifyResponse {
     metadata?: Record<string, unknown>;
   };
 }
+
+export interface PaymentReconcileSummary {
+  checked: number;
+  paid: number;
+  cancelled: number;
+  untouched: number;
+  errors: number;
+}

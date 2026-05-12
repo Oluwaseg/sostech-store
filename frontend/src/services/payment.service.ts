@@ -5,6 +5,7 @@ import { ApiResponse } from '@/types/api-response';
 import {
   InitializePaymentRequest,
   InitializePaymentResponse,
+  PaymentReconcileSummary,
   PaystackVerifyResponse,
 } from '@/types/payment';
 
@@ -27,6 +28,17 @@ export const verifyPayment = async (
     ApiRoutes.payment.verify,
     { params: { reference } }
   )) as unknown as ApiResponse<PaystackVerifyResponse>;
+
+  return unwrap(res);
+};
+
+export const reconcilePayments = async (
+  ageHours?: number
+): Promise<PaymentReconcileSummary> => {
+  const res = (await axiosInstance.post<ApiResponse<PaymentReconcileSummary>>(
+    ApiRoutes.payment.reconcile,
+    { ageHours }
+  )) as unknown as ApiResponse<PaymentReconcileSummary>;
 
   return unwrap(res);
 };

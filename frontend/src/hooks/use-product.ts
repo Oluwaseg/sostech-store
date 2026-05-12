@@ -1,6 +1,7 @@
 import {
   createProduct,
   deleteProduct,
+  getLowStockProducts,
   getOtherProducts,
   getProductById,
   getProductBySku,
@@ -67,6 +68,19 @@ export const useProductBySku = (sku: string) => {
     queryKey: PRODUCT_KEYS.detail(sku),
     queryFn: () => getProductBySku(sku),
     enabled: !!sku,
+  });
+};
+
+/* ===============================
+   GET LOW STOCK PRODUCTS
+================================= */
+
+export const useLowStockProducts = (threshold = 10) => {
+  return useQuery<Product[], Error>({
+    queryKey: [...PRODUCT_KEYS.all, 'low-stock', String(threshold)],
+    queryFn: () => getLowStockProducts(threshold),
+    staleTime: 1000 * 60 * 5,
+    enabled: threshold > 0,
   });
 };
 

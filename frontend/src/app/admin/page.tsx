@@ -110,6 +110,60 @@ export default function AdminDashboardPage() {
 
         {/* Main Grid */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12'>
+          {/* Quick Links */}
+          <div className='lg:col-span-3'>
+            <div className='bg-card border border-border rounded-xl p-6 mb-6'>
+              <div className='flex items-center justify-between mb-6'>
+                <div>
+                  <h2 className='text-xl font-bold text-foreground'>
+                    Quick Links
+                  </h2>
+                  <p className='text-sm text-foreground/60 mt-1'>
+                    Access admin management pages
+                  </p>
+                </div>
+              </div>
+
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                <Link
+                  href='/admin/carts'
+                  className='rounded-lg border border-border/50 bg-muted/30 p-5 hover:border-primary/50 hover:bg-muted/50 transition-all'
+                >
+                  <p className='text-sm font-semibold text-foreground mb-2'>
+                    Abandoned Carts
+                  </p>
+                  <p className='text-xs text-foreground/60'>
+                    Manage abandoned shopping carts and send reminders
+                  </p>
+                </Link>
+
+                <Link
+                  href='/admin/payments'
+                  className='rounded-lg border border-border/50 bg-muted/30 p-5 hover:border-primary/50 hover:bg-muted/50 transition-all'
+                >
+                  <p className='text-sm font-semibold text-foreground mb-2'>
+                    Payment Reconciliation
+                  </p>
+                  <p className='text-xs text-foreground/60'>
+                    Reconcile pending Paystack payments
+                  </p>
+                </Link>
+
+                <Link
+                  href='/admin/products'
+                  className='rounded-lg border border-border/50 bg-muted/30 p-5 hover:border-primary/50 hover:bg-muted/50 transition-all'
+                >
+                  <p className='text-sm font-semibold text-foreground mb-2'>
+                    Low Stock Products
+                  </p>
+                  <p className='text-xs text-foreground/60'>
+                    View and manage low inventory items
+                  </p>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* Recent Orders */}
           <div className='lg:col-span-2'>
             <div className='bg-card border border-border rounded-xl p-6'>

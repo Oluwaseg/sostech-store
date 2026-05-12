@@ -3,9 +3,14 @@
 import { ProductForm } from '@/components/admin/product/product-form';
 import { useProductActions } from '@/components/admin/product/use-product-actions';
 import { Button } from '@/components/ui/button';
-import { useDeleteProduct, useProducts } from '@/hooks/use-product';
+import {
+  useDeleteProduct,
+  useLowStockProducts,
+  useProducts,
+} from '@/hooks/use-product';
 import { Product } from '@/types/product';
 import {
+  AlertTriangle,
   Box,
   ChevronLeft,
   ChevronRight,
@@ -24,8 +29,11 @@ import { useState } from 'react';
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   const limit = 10;
   const { data, isLoading, error } = useProducts({ page, limit });
+  const { data: lowStockData, isLoading: isLowStockLoading } =
+    useLowStockProducts(10);
   const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -38,12 +46,18 @@ export default function AdminProductsPage() {
     return <div className='p-8 text-red-500'>Error: {error.message}</div>;
 
   const totalPages = data?.pages ?? 1;
-  const filteredProducts =
+  let filteredProducts =
     data?.products.filter(
       (p) =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.sku.toLowerCase().includes(searchTerm.toLowerCase())
     ) ?? [];
+
+  // Filter to low stock only if toggle is on
+  if (showLowStockOnly && lowStockData) {
+    const lowStockIds = new Set(lowStockData.map((p) => p._id));
+    filteredProducts = filteredProducts.filter((p) => lowStockIds.has(p._id));
+  }
 
   return (
     <main className='min-h-screen bg-background'>
@@ -72,6 +86,32 @@ export default function AdminProductsPage() {
 
       {/* Main Content */}
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+        {/* Low Stock Alert */}
+        {lowStockData && lowStockData.length > 0 && (
+          <div className='mb-8 p-4 rounded-lg bg-yellow-950/20 border border-yellow-800/30 flex items-start gap-4'>
+            <AlertTriangle
+              size={24}
+              className='text-yellow-600 flex-shrink-0 mt-0.5'
+            />
+            <div className='flex-1'>
+              <p className='font-semibold text-yellow-700'>
+                {lowStockData.length} product(s) with low inventory
+              </p>
+              <p className='text-sm text-yellow-700/70 mt-1'>
+                {lowStockData.length} item(s) have stock levels at or below 10
+                units.
+              </p>
+            </div>
+            <Button
+              onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+              variant='outline'
+              className='flex-shrink-0 border-yellow-700 text-yellow-700 hover:bg-yellow-950/20'
+            >
+              {showLowStockOnly ? 'Show All' : 'Filter Low Stock'}
+            </Button>
+          </div>
+        )}
+
         {/* Search Bar */}
         <div className='mb-8'>
           <div className='relative'>

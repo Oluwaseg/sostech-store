@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import http from 'http';
 import { Socket, Server as SocketIOServer } from 'socket.io';
-import { connectDB } from './configs/db';
+import { connectDB, disconnectDB } from './configs/db';
 import app from './index';
 import logger from './libs/logger';
 import { verifyToken } from './utils/jwt';
@@ -158,6 +158,24 @@ io.on('connection', (socket: Socket) => {
     socket.disconnect();
   }
 });
+
+const shutdown = async (signal: string) => {
+  logger.info(`Received ${signal}. Shutting down gracefully...`);
+
+  server.close(async (error) => {
+    if (error) {
+      logger.error(`Error closing server: ${error.message}`);
+      process.exit(1);
+    }
+
+    await disconnectDB();
+    logger.info('Shutdown complete');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 // Connect to MongoDB and start server
 const startServer = async () => {

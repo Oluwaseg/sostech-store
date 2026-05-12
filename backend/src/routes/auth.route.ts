@@ -2,6 +2,7 @@ import { Router } from 'express';
 import passport from '../configs/passport';
 import authController from '../controllers/auth.controller';
 import authMiddleware from '../middlewares/auth.middleware';
+import { authRateLimiter } from '../middlewares/rateLimiter';
 import { validate } from '../middlewares/validation';
 import {
   forgetPasswordSchema,
@@ -13,20 +14,33 @@ import {
 
 const router = Router();
 
-router.post('/register', validate(registerSchema), authController.register);
-router.post('/login', validate(loginSchema), authController.login);
+router.post(
+  '/register',
+  authRateLimiter,
+  validate(registerSchema),
+  authController.register
+);
+router.post(
+  '/login',
+  authRateLimiter,
+  validate(loginSchema),
+  authController.login
+);
 router.post(
   '/forget-password',
+  authRateLimiter,
   validate(forgetPasswordSchema),
   authController.forgetPassword
 );
 router.post(
   '/verify-email',
+  authRateLimiter,
   validate(verifyEmailSchema),
   authController.verifyEmail
 );
 router.post(
   '/reset-password',
+  authRateLimiter,
   validate(resetPasswordSchema),
   authController.resetPassword
 );

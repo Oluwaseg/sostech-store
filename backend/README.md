@@ -141,6 +141,32 @@ Notifications are triggered via internal domain events for clean separation of c
 - Config-driven behavior for shipping and promotions
 - Tenant-ready data modeling (single-store by default)
 
+## Environment Setup
+
+Create a copy of `.env.example` as `.env` and fill in the required values before running the backend.
+
+Required keys include:
+
+- `MONGODB_URI`
+- `PORT`
+- `NODE_ENV`
+- `FRONTEND_URL`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
+- `JWT_COOKIE_NAME`
+- `CORS_ORIGIN`
+- `EMAIL_FROM`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `PAYSTACK_PUBLIC_KEY`
+- `PAYSTACK_SECRET_KEY`
+
+This backend expects cookies for auth flows as well as optional `Authorization: Bearer <token>` support for API clients.
+
 ---
 
 ## Project Structure (High Level)

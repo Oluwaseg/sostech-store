@@ -3,15 +3,19 @@ import { verifyToken } from '../utils/jwt';
 
 const COOKIE_NAME = process.env.JWT_COOKIE_NAME || 'token';
 
-/**
- * Auth middleware
- * - reads token from `Authorization: Bearer <token>` header OR from a cookie
- * - verifies the token using `verifyToken` and attaches payload to `req.user`
- */
-// Only read the JWT from the cookie.  We prefer a cookie-based
-// approach for frontend clients and avoid having to send an
-// Authorization header (makes CSR requests simpler).
-const extractTokenFromCookie = (req: Request): string | undefined => {
+const extractToken = (req: Request): string | undefined => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && typeof authHeader === 'string') {
+    const matches = authHeader.match(/^Bearer\s+(.+)$/i);
+    if (matches) {
+      return matches[1];
+    }
+  }
+
+  if ((req as any).cookies && (req as any).cookies[COOKIE_NAME]) {
+    return (req as any).cookies[COOKIE_NAME];
+  }
+
   const cookieHeader = req.headers.cookie;
   if (!cookieHeader || typeof cookieHeader !== 'string') {
     return undefined;
@@ -30,7 +34,7 @@ const extractTokenFromCookie = (req: Request): string | undefined => {
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = extractTokenFromCookie(req);
+    const token = extractToken(req);
 
     if (!token) {
       return (res as any).error(
@@ -63,7 +67,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
  */
 const authOptional = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = extractTokenFromCookie(req);
+    const token = extractToken(req);
     if (!token) return next();
 
     const payload = verifyToken(token);

@@ -1,4 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { Cart } from '../models/Cart';
+import { Order } from '../models/Order';
+import { Review } from '../models/Review';
 import authService from '../services/auth.service';
 import { generateToken, TokenPayload } from '../utils/jwt';
 
@@ -18,7 +21,6 @@ class AuthController {
       const [orderStats, reviewCount, cartStats, recentOrders, recentReviews] =
         await Promise.all([
           (async () => {
-            const Order = require('../models/Order').Order;
             const orders = await Order.find({ user: userId }).lean();
             const totalOrders = orders.length;
             const totalSpent = orders
@@ -26,22 +28,19 @@ class AuthController {
               .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
             return { totalOrders, totalSpent };
           })(),
-          require('../models/Review').Review.countDocuments({ user: userId }),
+          Review.countDocuments({ user: userId }),
           (async () => {
-            const Cart = require('../models/Cart').Cart;
             const cart = await Cart.findOne({ user: userId }).lean();
             return cart
               ? { itemCount: cart.items.length, total: cart.total }
               : { itemCount: 0, total: 0 };
           })(),
-          require('../models/Order')
-            .Order.find({ user: userId })
+          Order.find({ user: userId })
             .sort({ createdAt: -1 })
             .limit(5)
             .select('total paymentStatus shippingStatus createdAt')
             .lean(),
-          require('../models/Review')
-            .Review.find({ user: userId })
+          Review.find({ user: userId })
             .sort({ createdAt: -1 })
             .limit(5)
             .select('product rating comment createdAt')

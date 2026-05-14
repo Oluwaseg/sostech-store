@@ -5,6 +5,24 @@ import { Review } from '../models/Review';
 import authService from '../services/auth.service';
 import { generateToken, TokenPayload, verifyToken } from '../utils/jwt';
 
+const isSecureRequest = (req: Request) =>
+  req.secure || req.headers['x-forwarded-proto'] === 'https';
+
+const getCookieOptions = (req: Request, includeMaxAge = false) => {
+  const cookieDays = parseInt(process.env.JWT_COOKIE_EXPIRES_DAYS || '7', 10);
+  const secure = isSecureRequest(req);
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite: secure ? ('none' as const) : ('lax' as const),
+    path: '/',
+    ...(includeMaxAge && {
+      maxAge: cookieDays * 24 * 60 * 60 * 1000,
+    }),
+  };
+};
+
 const extractTokenFromRequest = (req: Request): string | undefined => {
   const authHeader = req.headers.authorization;
   if (authHeader && typeof authHeader === 'string') {
@@ -26,10 +44,11 @@ const extractTokenFromRequest = (req: Request): string | undefined => {
     return undefined;
   }
 
+  const cookieName = process.env.JWT_COOKIE_NAME || 'token';
   const cookies = cookieHeader.split(';').map((c) => c.trim());
   for (const c of cookies) {
     const [name, ...valParts] = c.split('=');
-    if (name === process.env.JWT_COOKIE_NAME || 'token') {
+    if (name === cookieName) {
       return decodeURIComponent(valParts.join('='));
     }
   }
@@ -122,17 +141,7 @@ class AuthController {
 
       // Set token in secure HTTP-only cookie
       const cookieName = process.env.JWT_COOKIE_NAME || 'token';
-      const cookieDays = parseInt(
-        process.env.JWT_COOKIE_EXPIRES_DAYS || '7',
-        10
-      );
-      const isProd = process.env.NODE_ENV === 'production';
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? ('none' as const) : ('lax' as const),
-        maxAge: cookieDays * 24 * 60 * 60 * 1000, // days -> ms
-      };
+      const cookieOptions = getCookieOptions(req, true);
 
       // Create token from returned user and set cookie
       const tokenPayload: TokenPayload = {
@@ -240,11 +249,7 @@ class AuthController {
   async verifyToken(req: Request, res: Response, next: NextFunction) {
     const cookieName = process.env.JWT_COOKIE_NAME || 'token';
     const isProd = process.env.NODE_ENV === 'production';
-    const cookieOptions = {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? ('none' as const) : ('lax' as const),
-    };
+    const cookieOptions = getCookieOptions(req);
 
     try {
       const token = extractTokenFromRequest(req);
@@ -283,17 +288,7 @@ class AuthController {
       const result = await authService.handleGoogleOAuth(user);
       // Set token in secure HTTP-only cookie then redirect to frontend
       const cookieName = process.env.JWT_COOKIE_NAME || 'token';
-      const cookieDays = parseInt(
-        process.env.JWT_COOKIE_EXPIRES_DAYS || '7',
-        10
-      );
-      const isProd = process.env.NODE_ENV === 'production';
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? ('none' as const) : ('lax' as const),
-        maxAge: cookieDays * 24 * 60 * 60 * 1000, // days -> ms
-      };
+      const cookieOptions = getCookieOptions(req, true);
 
       // Create token from returned user and set cookie
       const tokenPayload: TokenPayload = {
@@ -326,12 +321,7 @@ class AuthController {
 
       // Clear cookie on logout
       const cookieName = process.env.JWT_COOKIE_NAME || 'token';
-      const isProd = process.env.NODE_ENV === 'production';
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? ('none' as const) : ('lax' as const),
-      };
+      const cookieOptions = getCookieOptions(req);
 
       res.clearCookie(cookieName, cookieOptions);
 

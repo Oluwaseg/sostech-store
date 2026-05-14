@@ -3,14 +3,10 @@ import { Providers } from '@/providers';
 import { CartProvider } from '@/contexts/cart-context';
 import { CurrencyProvider } from '@/contexts/currency-context';
 import { WishlistProvider } from '@/contexts/wishlist-context';
-import { Fredoka, Manrope } from 'next/font/google';
+import { clashDisplay } from '@/lib/fonts';
+import { Manrope } from 'next/font/google';
 import { Toaster } from 'sonner';
 import './globals.css';
-
-const fredoka = Fredoka({
-  variable: '--font-fredoka',
-  subsets: ['latin'],
-});
 
 const manrope = Manrope({
   variable: '--font-manrope',
@@ -29,7 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${fredoka.variable} ${manrope.variable} antialiased`}>
+      <body
+        className={`${clashDisplay.variable} ${manrope.variable} antialiased`}
+      >
         <Providers>
           <CartProvider>
             <WishlistProvider>

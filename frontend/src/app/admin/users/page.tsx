@@ -80,7 +80,17 @@ export default function AdminUsersPage() {
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
-    editUserMutation.mutate({ id: editingUser._id, data: editForm });
+
+    // Only send fields that have been modified (filter out empty strings and unchanged values)
+    const dataToSend: Record<string, any> = {};
+    Object.entries(editForm).forEach(([key, value]) => {
+      // Include the field if it has a value and it's not an empty string
+      if (value !== '' && value !== null && value !== undefined) {
+        dataToSend[key] = value;
+      }
+    });
+
+    editUserMutation.mutate({ id: editingUser._id, data: dataToSend });
     setEditOpen(false);
   };
 

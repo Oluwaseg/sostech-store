@@ -1,4 +1,5 @@
 import { Category, ICategory } from '../models/Category';
+import productService from './product.service';
 
 export interface CreateCategoryData {
   name: string;
@@ -66,6 +67,32 @@ class CategoryService {
     }
 
     return category;
+  }
+
+  async getProductsByCategorySlug(
+    slug: string,
+    filters?: {
+      subcategory?: string;
+      brand?: string;
+      tags?: string[];
+      search?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      flashSaleActive?: boolean;
+      isBestSeller?: boolean;
+      isPublished?: boolean;
+      visibility?: string;
+    },
+    pagination?: { page: number; limit: number }
+  ) {
+    const category = await this.getCategoryBySlug(slug);
+    return productService.getProducts(
+      {
+        ...filters,
+        category: category._id.toString(),
+      },
+      pagination
+    );
   }
 
   async updateCategory(

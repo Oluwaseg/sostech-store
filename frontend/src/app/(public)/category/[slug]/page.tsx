@@ -1,6 +1,9 @@
 'use client';
 
-import { useCategoryBySlug } from '@/hooks/use-category';
+import {
+  useCategoryBySlug,
+  useCategoryProductsBySlug,
+} from '@/hooks/use-category';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -8,6 +11,8 @@ export default function CategoryDetailPage() {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const { data: category, isLoading, isError } = useCategoryBySlug(slug ?? '');
+  const { data: categoryProducts, isLoading: categoryProductsLoading } =
+    useCategoryProductsBySlug(slug ?? '', { page: 1, limit: 12 });
 
   if (!slug) {
     return (
@@ -104,6 +109,39 @@ export default function CategoryDetailPage() {
                 View products
               </Link>
             </div>
+          </div>
+
+          <div className='rounded-3xl border border-border bg-card p-6'>
+            <h2 className='text-lg font-semibold mb-4'>
+              Products in {category.name}
+            </h2>
+            {categoryProductsLoading ? (
+              <div className='space-y-3'>
+                <div className='h-4 w-3/4 rounded-full bg-muted animate-pulse' />
+                <div className='h-4 w-full rounded-full bg-muted animate-pulse' />
+              </div>
+            ) : categoryProducts?.products.length ? (
+              <div className='grid gap-4 md:grid-cols-2'>
+                {categoryProducts.products.map((product) => (
+                  <Link
+                    key={product._id}
+                    href={`/shop/${product.slug}`}
+                    className='block rounded-2xl border border-border bg-background p-4 transition-shadow hover:shadow-lg'
+                  >
+                    <h3 className='font-semibold text-foreground'>
+                      {product.name}
+                    </h3>
+                    <p className='mt-2 text-sm text-foreground/70 line-clamp-2'>
+                      {product.description}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className='text-sm text-foreground/70'>
+                No products found for this category.
+              </p>
+            )}
           </div>
 
           <Link

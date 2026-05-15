@@ -7,6 +7,7 @@ const router = Router();
 
 // Public
 router.get('/', categoryController.getCategories);
+router.get('/slug/:slug/products', categoryController.getProductsBySlug);
 router.get('/slug/:slug', categoryController.getCategoryBySlug);
 router.get('/:id', categoryController.getCategoryById);
 

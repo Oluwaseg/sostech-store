@@ -78,6 +78,75 @@ class CategoryController {
     }
   }
 
+  async getProductsBySlug(req: Request, res: Response, next: NextFunction) {
+    try {
+      let { slug } = req.params;
+      if (Array.isArray(slug)) {
+        slug = slug[0];
+      }
+
+      const {
+        subcategory,
+        brand,
+        tags,
+        search,
+        minPrice,
+        maxPrice,
+        flashSaleActive,
+        isBestSeller,
+        isPublished,
+        visibility,
+        page,
+        limit,
+      } = req.query;
+
+      const filters: any = {};
+      if (subcategory) filters.subcategory = subcategory;
+      if (brand) filters.brand = brand;
+      if (tags)
+        filters.tags = Array.isArray(tags) ? tags : (tags as string).split(',');
+      if (search) filters.search = search;
+      if (minPrice) filters.minPrice = parseFloat(minPrice as string);
+      if (maxPrice) filters.maxPrice = parseFloat(maxPrice as string);
+      if (flashSaleActive !== undefined)
+        filters.flashSaleActive = flashSaleActive === 'true';
+      if (isBestSeller !== undefined)
+        filters.isBestSeller = isBestSeller === 'true';
+      if (isPublished !== undefined)
+        filters.isPublished = isPublished === 'true';
+
+      const user = (req as any).user;
+      const isAdmin = user && user.role === 'admin';
+      if (visibility && isAdmin) {
+        filters.visibility = visibility;
+      } else {
+        filters.visibility = 'public';
+      }
+
+      const pagination = {
+        page: page ? parseInt(page as string, 10) : 1,
+        limit: limit ? parseInt(limit as string, 10) : 10,
+      };
+
+      const result = await categoryService.getProductsByCategorySlug(
+        slug,
+        filters,
+        pagination
+      );
+
+      return (res as any).success(
+        result,
+        'Category products retrieved successfully'
+      );
+    } catch (error: any) {
+      return (res as any).error(
+        error.message || 'Failed to retrieve category products',
+        'GET_CATEGORY_PRODUCTS_ERROR',
+        500
+      );
+    }
+  }
+
   async updateCategory(req: Request, res: Response, next: NextFunction) {
     try {
       let { id } = req.params;

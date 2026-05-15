@@ -15,6 +15,7 @@ export const ApiRoutes = {
   categories: {
     list: '/categories',
     details: (slug: string) => `/categories/slug/${slug}`,
+    productsBySlug: (slug: string) => `/categories/slug/${slug}/products`,
     byId: (id: string) => `/categories/${id}`,
   },
   subcategories: {

@@ -4,19 +4,27 @@ import {
   getCategories,
   getCategoryById,
   getCategoryBySlug,
+  getProductsByCategorySlug,
   updateCategory,
-} from "@/services/category.service";
-import { Category } from "@/types/category";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@/services/category.service';
+import { Category } from '@/types/category';
+import { ProductListPayload, ProductQueryParams } from '@/types/product';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 /* ===============================
    Query Keys
 ================================= */
 const CATEGORY_KEYS = {
-  all: ["categories"] as const,
+  all: ['categories'] as const,
   detail: (identifier: string) =>
-    [...CATEGORY_KEYS.all, "detail", identifier] as const,
+    [...CATEGORY_KEYS.all, 'detail', identifier] as const,
+  products: (slug: string, params?: ProductQueryParams) =>
+    [
+      ...CATEGORY_KEYS.detail(slug),
+      'products',
+      JSON.stringify(params ?? {}),
+    ] as const,
 };
 
 /* ===============================
@@ -41,6 +49,18 @@ export const useCategoryBySlug = (slug: string) => {
   });
 };
 
+export const useCategoryProductsBySlug = (
+  slug: string,
+  params?: ProductQueryParams
+) => {
+  return useQuery<ProductListPayload, Error>({
+    queryKey: CATEGORY_KEYS.products(slug, params),
+    queryFn: () => getProductsByCategorySlug(slug, params),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 /* ===============================
    GET CATEGORY BY ID
 ================================= */
@@ -62,10 +82,10 @@ export const useCreateCategory = () => {
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
-      toast.success("Category created successfully");
+      toast.success('Category created successfully');
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to create category");
+      toast.error(error.message || 'Failed to create category');
     },
   });
 };
@@ -81,10 +101,10 @@ export const useUpdateCategory = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(CATEGORY_KEYS.detail(data._id), data);
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
-      toast.success("Category updated successfully");
+      toast.success('Category updated successfully');
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to update category");
+      toast.error(error.message || 'Failed to update category');
     },
   });
 };
@@ -99,10 +119,10 @@ export const useDeleteCategory = () => {
     mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
-      toast.success("Category deleted successfully");
+      toast.success('Category deleted successfully');
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to delete category");
+      toast.error(error.message || 'Failed to delete category');
     },
   });
 };

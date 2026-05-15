@@ -1,12 +1,21 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from '@/components/ui/carousel';
 import { useCurrency } from '@/contexts/currency-context';
 import { useProducts } from '@/hooks/use-product';
 import { formatPrice } from '@/lib/format-price';
 import type { Product } from '@/types/product';
+import Autoplay from 'embla-carousel-autoplay';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRef, useState } from 'react';
 
 interface FeaturedProductsSectionProps {
   title: string;
@@ -27,52 +36,83 @@ function ProductCard({ product }: { product: Product }) {
       : product.basePrice - product.flashSale!.discountValue
     : product.basePrice;
 
+  const discountPercent =
+    hasFlashSale && product.flashSale!.discountType === 'percentage'
+      ? Math.round(product.flashSale!.discountValue)
+      : null;
+
+  const flashSaleEndDate = hasFlashSale
+    ? new Date(product.flashSale!.endsAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      })
+    : null;
+
   return (
     <Link
       href={`/shop/${product.slug}`}
-      className='group block overflow-hidden rounded-3xl border border-border bg-white transition-shadow duration-300 hover:shadow-xl'
+      className='group p-1 flex flex-col overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-300 hover:shadow-xl hover:border-brand/50 h-full'
     >
-      <div className='relative h-64 bg-muted'>
+      {/* Image Container */}
+      <div className='relative h-56 overflow-hidden bg-gradient-to-br from-surface-2 to-surface-2/80 flex-shrink-0'>
         <Image
           src={product.images?.[0]?.url ?? '/placeholder.png'}
           alt={product.name}
           fill
           className='object-cover transition-transform duration-500 group-hover:scale-105'
         />
-        {hasFlashSale && (
-          <span className='absolute top-4 left-4 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground'>
-            Flash Sale
-          </span>
-        )}
-        {!hasFlashSale && product.isBestSeller && (
-          <span className='absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground'>
-            Best Seller
-          </span>
-        )}
+        {/* Overlay Gradient on Hover */}
+        <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
+        {/* Badges Container */}
+        <div className='absolute inset-0 flex items-start justify-between p-3 pointer-events-none'>
+          {hasFlashSale && (
+            <div className='flex gap-2 items-start'>
+              <span className='rounded-md bg-red-500/95 px-2 py-1 text-xs font-bold text-white backdrop-blur-sm shadow-sm'>
+                -{discountPercent}%
+              </span>
+              <span className='rounded-md bg-orange-500/95 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm shadow-sm'>
+                {flashSaleEndDate}
+              </span>
+            </div>
+          )}
+          {!hasFlashSale && product.isBestSeller && (
+            <span className='rounded-md bg-amber-400/95 px-2.5 py-1 text-xs font-bold text-foreground backdrop-blur-sm shadow-sm'>
+              ★ Best Seller
+            </span>
+          )}
+        </div>
       </div>
-      <div className='p-5 space-y-3'>
-        <div>
-          <h3 className='text-lg font-semibold text-foreground line-clamp-2'>
-            {product.name}
-          </h3>
-          <p className='mt-2 text-sm text-foreground/70 line-clamp-2'>
+
+      {/* Content Container */}
+      <div className='flex flex-col flex-grow p-4 gap-2.5'>
+        {/* Title */}
+        <h3 className='text-sm font-semibold text-foreground line-clamp-2 leading-snug'>
+          {product.name}
+        </h3>
+
+        {/* Description */}
+        {product.description && (
+          <p className='text-xs text-foreground/50 line-clamp-1 leading-relaxed'>
             {product.description}
           </p>
-        </div>
-        <div className='flex items-center justify-between gap-3'>
-          <div className='space-y-1'>
-            <p className='text-xl font-bold text-foreground'>
+        )}
+
+        {/* Spacer */}
+        <div className='flex-grow' />
+
+        {/* Pricing Section */}
+        <div className='pt-3 border-t border-border/40'>
+          <div className='flex items-baseline gap-2'>
+            <p className='text-base font-bold text-foreground'>
               {formatPrice(convert(salePrice), currency)}
             </p>
             {hasFlashSale && (
-              <p className='text-sm text-foreground/50 line-through'>
+              <p className='text-xs text-foreground/40 line-through font-medium'>
                 {formatPrice(convert(product.basePrice), currency)}
               </p>
             )}
           </div>
-          <Button size='sm' variant='secondary'>
-            View
-          </Button>
         </div>
       </div>
     </Link>
@@ -81,52 +121,80 @@ function ProductCard({ product }: { product: Product }) {
 
 function FeaturedProductsSection({
   title,
-  subtitle,
   viewAllHref,
   filter,
 }: FeaturedProductsSectionProps) {
   const { data, isLoading } = useProducts({
     page: 1,
-    limit: 4,
+    limit: 8,
     ...filter,
   });
 
   const products = data?.products ?? [];
+  const [api, setApi] = useState<CarouselApi>();
+  const pluginRef = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
 
   return (
-    <section className='py-16'>
+    <section className='py-12 md:py-16 bg-surface'>
       <div className='container mx-auto px-4'>
-        <div className='mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+        {/* Header */}
+        <div className='mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div>
-            <h2 className='text-4xl font-bold'>{title}</h2>
-            <p className='mt-3 max-w-2xl text-foreground/70'>{subtitle}</p>
+            <h2 className='text-3xl md:text-4xl font-bold text-foreground'>
+              {title}
+            </h2>
           </div>
           <Link
             href={viewAllHref}
-            className='inline-flex rounded-full border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted transition-colors'
+            className='inline-flex items-center text-sm font-semibold text-brand hover:text-brand/80 transition-colors group'
           >
-            View all
+            VIEW ALL
+            <span className='ml-2 group-hover:translate-x-1 transition-transform'>
+              →
+            </span>
           </Link>
         </div>
 
         {isLoading ? (
-          <div className='grid gap-6 md:grid-cols-2 xl:grid-cols-4'>
-            {[...Array(4)].map((_, index) => (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+            {[...Array(4)].map((_, i) => (
               <div
-                key={index}
-                className='h-96 rounded-3xl bg-card/50 animate-pulse'
+                key={i}
+                className='rounded-2xl bg-card/50 animate-pulse h-96'
               />
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className='grid gap-6 md:grid-cols-2 xl:grid-cols-4'>
-            {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          <Carousel
+            opts={{
+              align: 'start',
+              loop: true,
+            }}
+            plugins={[pluginRef.current]}
+            setApi={setApi}
+            className='w-full'
+          >
+            <CarouselContent className='-ml-4'>
+              {products.map((product) => (
+                <CarouselItem
+                  key={product._id}
+                  className='pl-4 basis-full sm:basis-1/2 lg:basis-1/4'
+                >
+                  <ProductCard product={product} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {/* Navigation Buttons */}
+            <div className='flex justify-end gap-2 mt-8'>
+              <CarouselPrevious className='relative static w-10 h-10 border border-border hover:bg-accent/10' />
+              <CarouselNext className='relative static w-10 h-10 border border-border hover:bg-accent/10' />
+            </div>
+          </Carousel>
         ) : (
-          <div className='rounded-3xl border border-border bg-card p-10 text-center text-foreground/70'>
-            No products available right now.
+          <div className='rounded-2xl border border-border bg-card p-12 text-center'>
+            <p className='text-foreground/60'>
+              No products available right now.
+            </p>
           </div>
         )}
       </div>

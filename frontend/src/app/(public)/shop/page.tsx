@@ -11,6 +11,7 @@ import type { Product } from '@/types/product';
 import { ArrowRight, Heart, ShoppingCart, Star, Zap } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function ShopPage() {
@@ -20,14 +21,25 @@ export default function ShopPage() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(12);
   const { currency, convert } = useCurrency();
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    category: '',
-    subcategory: '',
-    minPrice: 0,
-    maxPrice: 10000,
-    isBestSeller: false,
-    flashSaleActive: false,
+  const searchParams = useSearchParams();
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const flashSaleActive = searchParams.get('flashSaleActive') === 'true';
+    const isBestSeller = searchParams.get('isBestSeller') === 'true';
+    const search = searchParams.get('search') || '';
+    const category = searchParams.get('category') || '';
+    const subcategory = searchParams.get('subcategory') || '';
+    const minPrice = parseFloat(searchParams.get('minPrice') || '0');
+    const maxPrice = parseFloat(searchParams.get('maxPrice') || '10000');
+
+    return {
+      search,
+      category,
+      subcategory,
+      minPrice,
+      maxPrice,
+      isBestSeller,
+      flashSaleActive,
+    };
   });
 
   const { data, isLoading, isError } = useProducts({
@@ -260,9 +272,11 @@ export default function ShopPage() {
           <div className='flex flex-col lg:flex-row gap-8'>
             {/* Sidebar Filters */}
             <div className='lg:w-64 flex-shrink-0'>
-              <ProductFilters onFilterChange={handleFilterChange} />
+              <ProductFilters
+                initialFilters={filters}
+                onFilterChange={handleFilterChange}
+              />
             </div>
-
             {/* Products Grid */}
             <div className='flex-1'>
               {/* Products Grid */}

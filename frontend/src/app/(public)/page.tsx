@@ -1,5 +1,9 @@
 import { AnimatedShowcase } from '@/components/animated-showcase';
 import { FaqSection } from '@/components/faq-section';
+import {
+  BestSellerProducts,
+  FlashSaleProducts,
+} from '@/components/featured-products';
 import { Hero, type CarouselSlide } from '@/components/hero';
 import { NotifySection } from '@/components/notify-section';
 import { ParallaxGallery } from '@/components/parallax-gallery';
@@ -44,6 +48,8 @@ export default function Page() {
     <main className='min-h-screen'>
       <Hero slides={heroSlides} />
       <ShopByCategory />
+      <FlashSaleProducts />
+      <BestSellerProducts />
       <ParallaxGallery />
       <AnimatedShowcase />
       <NotifySection />

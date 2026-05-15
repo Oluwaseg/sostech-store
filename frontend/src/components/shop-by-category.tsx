@@ -96,7 +96,7 @@ interface CategoryCardProps {
 
 function CategoryCard({ category, colorClass }: CategoryCardProps) {
   return (
-    <Link href={`/shop?category=${category.slug}`}>
+    <Link href={`/category/${category.slug}`}>
       <div className='group overflow-hidden rounded-2xl bg-white transition-shadow duration-300 cursor-pointer h-full flex flex-col'>
         {/* Image Section */}
         <div className='h-56 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center overflow-hidden'>

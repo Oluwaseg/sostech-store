@@ -1,10 +1,9 @@
 import { AnimatedShowcase } from '@/components/animated-showcase';
-import { DifferenceSection } from '@/components/difference-section';
 import { FaqSection } from '@/components/faq-section';
 import { Hero, type CarouselSlide } from '@/components/hero';
 import { NotifySection } from '@/components/notify-section';
 import { ParallaxGallery } from '@/components/parallax-gallery';
-import { WhySection } from '@/components/why-section';
+import { ShopByCategory } from '@/components/shop-by-category';
 
 const heroSlides: CarouselSlide[] = [
   {
@@ -44,8 +43,7 @@ export default function Page() {
   return (
     <main className='min-h-screen'>
       <Hero slides={heroSlides} />
-      <WhySection />
-      <DifferenceSection />
+      <ShopByCategory />
       <ParallaxGallery />
       <AnimatedShowcase />
       <NotifySection />

@@ -18,6 +18,12 @@ export const ApiRoutes = {
     productsBySlug: (slug: string) => `/categories/slug/${slug}/products`,
     byId: (id: string) => `/categories/${id}`,
   },
+  collections: {
+    list: '/collections',
+    details: (slug: string) => `/collections/slug/${slug}`,
+    byId: (id: string) => `/collections/${id}`,
+    products: (id: string) => `/collections/${id}/products`,
+  },
   subcategories: {
     list: '/subcategories',
     details: (slug: string) => `/subcategories/slug/${slug}`,

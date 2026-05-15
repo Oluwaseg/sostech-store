@@ -122,6 +122,14 @@ export function ProductForm(props: ProductFormProps) {
     update('flashSale', { ...current, [key]: value });
   };
 
+  const formatDateTimeLocal = (value?: string) => {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isFinite(date.getTime())
+      ? date.toISOString().slice(0, 16)
+      : '';
+  };
+
   return (
     <form
       className='space-y-6'
@@ -492,9 +500,7 @@ export function ProductForm(props: ProductFormProps) {
                 <input
                   type='datetime-local'
                   className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
-                  value={new Date(form.flashSale.startsAt)
-                    .toISOString()
-                    .slice(0, 16)}
+                  value={formatDateTimeLocal(form.flashSale.startsAt)}
                   onChange={(e) =>
                     handleUpdateFlashSale(
                       'startsAt',
@@ -512,9 +518,7 @@ export function ProductForm(props: ProductFormProps) {
                 <input
                   type='datetime-local'
                   className='w-full px-4 py-2.5 border-2 border-border rounded-lg bg-background text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all'
-                  value={new Date(form.flashSale.endsAt)
-                    .toISOString()
-                    .slice(0, 16)}
+                  value={formatDateTimeLocal(form.flashSale.endsAt)}
                   onChange={(e) =>
                     handleUpdateFlashSale(
                       'endsAt',

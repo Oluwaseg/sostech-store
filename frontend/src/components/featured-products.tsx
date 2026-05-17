@@ -54,12 +54,12 @@ function ProductCard({ product }: { product: Product }) {
       className='group p-1 flex flex-col overflow-hidden rounded-xl border border-border/60 bg-card transition-all duration-300 hover:shadow-xl hover:border-brand/50 h-full'
     >
       {/* Image Container */}
-      <div className='relative h-56 overflow-hidden bg-gradient-to-br from-surface-2 to-surface-2/80 flex-shrink-0'>
+      <div className='relative h-56 overflow-hidden flex-shrink-0'>
         <Image
           src={product.images?.[0]?.url ?? '/placeholder.png'}
           alt={product.name}
           fill
-          className='object-cover transition-transform duration-500 group-hover:scale-105'
+          className='object-cover transition-transform duration-500 group-hover:scale-105 rounded-xl'
         />
         {/* Overlay Gradient on Hover */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
